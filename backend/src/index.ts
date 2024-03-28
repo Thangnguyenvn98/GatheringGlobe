@@ -5,11 +5,12 @@ import "dotenv/config"
 
 const app = express()
 const PORT = process.env.PORT || 5050;
+
 app.use(express.json())
 app.use(cors())
 
 app.get('/', (req:Request, res: Response) => {
-    return res.json({message: "Testing"})
+    return res.json({message: "Testing Hello World Ahihihiihhi"})
 })
 
 app.listen( PORT, () => {
