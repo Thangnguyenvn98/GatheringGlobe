@@ -1,19 +1,20 @@
 import express, { Request, Response } from "express"
-import cors from "cors"
-import "dotenv/config"
-import mongoose from "mongoose"
+import cors from "cors";
+import "dotenv/config";
+import mongoose from "mongoose";
+import userRoutes from './routes/users';
 
+
+mongoose.connect(process.env.MONGODB_CONNECTION_STRING as string )
 
 const app = express()
-const PORT = process.env.PORT || 5050;
 
 app.use(express.json())
+app.use(express.urlencoded({extended: true}));
 app.use(cors())
 
-app.get('/', (req:Request, res: Response) => {
-    return res.json({message: "Testing Hello World Ahihihiihhi"})
-})
+app.use("/api/users", userRoutes);
 
-app.listen( PORT, () => {
-    console.log(`Server running on port : ${PORT}`)
+app.listen( 7000, () => {
+    console.log("Server running on localhost:7000");
 } )
