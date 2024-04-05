@@ -4,6 +4,8 @@ import "dotenv/config"
 import mongoose from "mongoose"
 import path from "path"
 
+
+mongoose.connect(process.env.MONGODB_CONNECTION_STRING as string).then(()=> console.log("MongoDB conected succesfully for GatheringGlobe"))
 const app = express()
 const PORT = process.env.PORT || 5050;
 
