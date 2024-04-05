@@ -3,7 +3,14 @@ import AboutBanner from '../images/about-banner(1).jpg'
 import Megaphone from '../images/announcement-speaker.jpg'
 import Celebrating from '../images/Celebrating-end-about.jpg'
 import { CircleArrowRight, MicVocal, PartyPopper, TicketCheck } from 'lucide-react'
+
+import { useServerTest } from '@/services/api'
 const AboutUs = () => {
+  const testMessageQuery = useServerTest()
+
+  console.log(testMessageQuery.data?.message)
+  
+  
   return (
     <div className="flex flex-col min-h-screen">
         <div style={{backgroundImage: `url("${AboutBanner}")` }} className="flex justify-center items-center h-[400px]" >
