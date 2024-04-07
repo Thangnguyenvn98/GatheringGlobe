@@ -21,6 +21,9 @@ module.exports = {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
+        // Add the new custom colors we need in the web color pallete
+        'custom-green': '#7FEE3E',
+        'dark-green': '#2AD048',
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         primary: {
@@ -75,3 +78,19 @@ module.exports = {
   },
   plugins: [require("tailwindcss-animate")],
 }
+// Next UI installation
+// tailwind.config.js
+// const {nextui} = require("@nextui-org/react");
+
+// /** @type {import('tailwindcss').Config} */
+// module.exports = {
+//   content: [
+//     // ...
+//     "./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}",
+//   ],
+//   theme: {
+//     extend: {},
+//   },
+//   darkMode: "class",
+//   plugins: [nextui()],
+// };

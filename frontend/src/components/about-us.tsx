@@ -141,9 +141,9 @@ const AboutUs = () => {
       {/* Right column content or image here */}
       <div className="flex items-center justify-center gap-x-4 w-[395px] h-[395px] rounded-[50%] bg-white">
         <h2 className="text-black text-lg">Find your next events</h2>
-        <Link to='/'>
+        <div>
         <CircleArrowRight fill="white" size={50} />
-        </Link>
+        </div>
       </div>
      
       
