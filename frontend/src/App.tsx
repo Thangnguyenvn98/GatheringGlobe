@@ -1,4 +1,4 @@
-import { TabsDemo } from "./components/ui/tabdemo";
+import { RegisterForm } from "./components/ui/tabdemo";
 import "./global.css";
 import {
   BrowserRouter as Router,
@@ -16,7 +16,7 @@ function App() {
           path="/"
           element={<div className="bg-white ">Hello There testing</div>}
         />
-        <Route path="/login" element={<TabsDemo />} />
+        <Route path="/register" element={<RegisterForm />} />
 
         <Route path="/about" element={<AboutUs />} />
 
