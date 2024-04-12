@@ -6,7 +6,7 @@ import {
   Routes,
   Navigate,
 } from "react-router-dom";
-import AboutUs from "./components/about-us";
+import AboutUs from "./components/aboutUs/about-us";
 
 function App() {
   return (
