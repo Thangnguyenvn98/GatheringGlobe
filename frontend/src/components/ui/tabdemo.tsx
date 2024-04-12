@@ -11,28 +11,28 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import GatheringGlobe from "../images/GatheringGlobe.png";
-import axios from "axios";
 
-import React, { useState } from "react";
-import { useForm } from "react-hook-form";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { RegisterUser } from "@/services/api";
-const baseURL = import.meta.env.VITE_API_BASE_URL;
+import { SignInFormData } from "@/types/signInFormData";
+
+
+
 
 const RegisterForm = () => {
   const {
     register,
-    handleSubmit,
     watch,
-    formState: { errors },
-  } = useForm();
-  const handleRegistration = async (data: any) => {
+    handleSubmit,
+    formState: { errors }
+  } = useForm<SignInFormData>();
+  const handleRegistration:SubmitHandler<SignInFormData> = async (data) => {
     try {
-      // const response = await axios.post(`${baseURL}/api/users/register`, data);
       RegisterUser(data);
 
       console.log("Registration sucessful");
-    } catch (error: any) {
-      console.error("Registartion failed", error.response || error);
+    } catch (error) {
+      console.error("Registartion failed", error);
     }
   };
 
@@ -72,6 +72,9 @@ const RegisterForm = () => {
                       placeholder="Enter your email"
                       {...register("email", { required: true })}
                     />
+                     {errors.email && (
+                <span className="text-red-500">{errors.email.message}</span>
+              )}
                   </div>
                   <div className="space-y-1">
                     <Label htmlFor="password">Password</Label>
@@ -111,8 +114,14 @@ const RegisterForm = () => {
                     <Input
                       id="email"
                       type="email"
-                      {...register("email", { required: true })}
+                      {...register("email", { required: "This field is required",
+                      minLength: {
+                        value: 8,
+                        message: "Password must be at least 8 characters"}, })}
                     />
+                       {errors.email && (
+                <span className="text-red-500">{errors.email.message}</span>
+              )}
                   </div>
                   <div className="space-y-1">
                     <Label htmlFor="current">Enter your password</Label>
@@ -121,14 +130,30 @@ const RegisterForm = () => {
                       type="password"
                       {...register("password", { required: true })}
                     />
+                        {errors.password && (
+                <span className="text-red-500">{errors.password.message}</span>
+              )}
                   </div>
                   <div className="space-y-1">
                     <Label htmlFor="new">Confirm your password</Label>
                     <Input
                       id="new"
                       type="password"
-                      {...register("confirmPassword", { required: true })}
+                      {...register("confirmPassword", {
+                        validate: (val) => {
+                          if (!val) {
+                            return "This field is required";
+                          } else if (watch("password") !== val) {
+                            return "Your passwords do no match";
+                          }
+                        },
+                      })}
                     />
+                          {errors.confirmPassword && (
+                <span className="text-red-500">
+                  {errors.confirmPassword.message}
+                </span>
+              )}
                   </div>
                 </CardContent>
                 <CardFooter>
