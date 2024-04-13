@@ -21,6 +21,17 @@ export const useServerTest = () => {
 };
 
 export const RegisterUser = async (data: SignInFormData) => {
+  try {
   const response = await axiosInstance.post("/api/users/register", data);
-  return response.data;
+  if (response.status >= 200 && response.status < 300) {
+    return response.data;
+  }
+  else {
+    throw new Error(`Server responded with status: ${response.status}`);
+  }
+} catch (error) {
+  console.error("Registration failed", error);
+  throw error
+}
+
 };

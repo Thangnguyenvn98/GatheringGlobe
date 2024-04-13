@@ -16,17 +16,15 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { RegisterUser } from "@/services/api";
 import { SignInFormData } from "@/types/signInFormData";
 
-
-
-
 const RegisterForm = () => {
   const {
     register,
     watch,
     handleSubmit,
-    formState: { errors }
+    formState: { errors },
   } = useForm<SignInFormData>();
-  const handleRegistration:SubmitHandler<SignInFormData> = async (data) => {
+
+  const handleRegistration: SubmitHandler<SignInFormData> = async (data) => {
     try {
       RegisterUser(data);
 
@@ -72,9 +70,11 @@ const RegisterForm = () => {
                       placeholder="Enter your email"
                       {...register("email", { required: true })}
                     />
-                     {errors.email && (
-                <span className="text-red-500">{errors.email.message}</span>
-              )}
+                    {errors.email && (
+                      <span className="text-red-500">
+                        {errors.email.message}
+                      </span>
+                    )}
                   </div>
                   <div className="space-y-1">
                     <Label htmlFor="password">Password</Label>
@@ -114,14 +114,19 @@ const RegisterForm = () => {
                     <Input
                       id="email"
                       type="email"
-                      {...register("email", { required: "This field is required",
-                      minLength: {
-                        value: 8,
-                        message: "Password must be at least 8 characters"}, })}
+                      {...register("email", {
+                        required: "This field is required",
+                        minLength: {
+                          value: 8,
+                          message: "Password must be at least 8 characters",
+                        },
+                      })}
                     />
-                       {errors.email && (
-                <span className="text-red-500">{errors.email.message}</span>
-              )}
+                    {errors.email && (
+                      <span className="text-red-500">
+                        {errors.email.message}
+                      </span>
+                    )}
                   </div>
                   <div className="space-y-1">
                     <Label htmlFor="current">Enter your password</Label>
@@ -130,9 +135,11 @@ const RegisterForm = () => {
                       type="password"
                       {...register("password", { required: true })}
                     />
-                        {errors.password && (
-                <span className="text-red-500">{errors.password.message}</span>
-              )}
+                    {errors.password && (
+                      <span className="text-red-500">
+                        {errors.password.message}
+                      </span>
+                    )}
                   </div>
                   <div className="space-y-1">
                     <Label htmlFor="new">Confirm your password</Label>
@@ -149,11 +156,11 @@ const RegisterForm = () => {
                         },
                       })}
                     />
-                          {errors.confirmPassword && (
-                <span className="text-red-500">
-                  {errors.confirmPassword.message}
-                </span>
-              )}
+                    {errors.confirmPassword && (
+                      <span className="text-red-500">
+                        {errors.confirmPassword.message}
+                      </span>
+                    )}
                   </div>
                 </CardContent>
                 <CardFooter>
