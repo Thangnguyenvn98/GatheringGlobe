@@ -1,4 +1,4 @@
-import { RegisterForm } from "./components/ui/tabdemo";
+import { TabsDemo } from "./components/ui/tabdemo";
 import "./global.css";
 import {
   BrowserRouter as Router,
@@ -8,6 +8,8 @@ import {
 } from "react-router-dom";
 import AboutUs from "./components/aboutUs/about-us";
 
+import DiscoverEvent from "./components/Discover_Event/DiscoverEvent";
+
 function App() {
   return (
     <Router>
@@ -16,10 +18,10 @@ function App() {
           path="/"
           element={<div className="bg-white ">Hello There testing</div>}
         />
-        <Route path="/register" element={<RegisterForm />} />
+        <Route path="/login" element={<TabsDemo />} />
 
         <Route path="/about" element={<AboutUs />} />
-
+        <Route path="/discover" element={<DiscoverEvent />} />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </Router>
