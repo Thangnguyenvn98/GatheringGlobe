@@ -5,11 +5,11 @@
   "main": "index.js",
   "scripts": {
     "dev": "run-p dev:*",
-    "dev:front": "cd frontend && yarn dev",
-    "dev:back": "cd backend && yarn dev",
+    "dev:front": "cd frontend && npm run dev",
+    "dev:back": "cd backend && npm run dev",
     "setup": "run-p install:*",
-    "install:client": "cd frontend && yarn install",
-    "install:server": "cd backend && yarn install"
+    "install:client": "cd frontend && npm install",
+    "install:server": "cd backend && npm install"
   },
   "repository": "https://github.com/Thangnguyenvn98/GatheringGlobe.git",
   "author": "BinniesLite <89041460+BinniesLite@users.noreply.github.com>",

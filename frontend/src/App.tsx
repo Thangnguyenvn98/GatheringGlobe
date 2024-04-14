@@ -1,4 +1,4 @@
-import { TabsDemo } from "./components/ui/tabdemo";
+import { RegisterForm } from "./components/ui/tabdemo";
 import "./global.css";
 import {
   BrowserRouter as Router,
@@ -6,8 +6,8 @@ import {
   Routes,
   Navigate,
 } from "react-router-dom";
-import AboutUs from "./components/about-us";
 import Homepage from "./components/homepage/homepage";
+import AboutUs from "./components/aboutUs/about-us";
 
 function App() {
   return (
@@ -17,7 +17,7 @@ function App() {
           path="/"
           element={<div className="bg-white ">Hello There testing</div>}
         />
-        <Route path="/login" element={<TabsDemo />} />
+        <Route path="/register" element={<RegisterForm />} />
 
         <Route path="/about" element={<AboutUs />} />
 
