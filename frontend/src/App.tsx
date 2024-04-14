@@ -7,6 +7,7 @@ import {
   Navigate,
 } from "react-router-dom";
 import AboutUs from "./components/about-us";
+import Homepage from "./components/homepage/homepage";
 
 function App() {
   return (
@@ -19,6 +20,8 @@ function App() {
         <Route path="/login" element={<TabsDemo />} />
 
         <Route path="/about" element={<AboutUs />} />
+
+        <Route path="/homepage" element={<Homepage />} />
 
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
