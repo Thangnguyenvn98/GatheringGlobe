@@ -7,6 +7,7 @@ import {
   Navigate,
 } from "react-router-dom";
 import AboutUs from "./components/aboutUs/about-us";
+import ChatPage from "./components/chatRoom/Chat";
 
 function App() {
   return (
@@ -19,7 +20,8 @@ function App() {
         <Route path="/register" element={<RegisterForm />} />
 
         <Route path="/about" element={<AboutUs />} />
-
+        <Route path="/messages" element={<ChatPage />} />
+        <Route path="/messages/c/:ownerId/t/:roomId" element={<ChatPage />} />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </Router>

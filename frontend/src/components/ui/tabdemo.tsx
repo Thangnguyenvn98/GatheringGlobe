@@ -28,6 +28,7 @@ const RegisterForm = () => {
   } = useForm<SignInFormData>();
   const handleRegistration:SubmitHandler<SignInFormData> = async (data) => {
     try {
+      console.log(data)
       RegisterUser(data);
 
       console.log("Registration sucessful");
@@ -121,6 +122,20 @@ const RegisterForm = () => {
                     />
                        {errors.email && (
                 <span className="text-red-500">{errors.email.message}</span>
+              )}
+                  </div>
+                  <div className="space-y-1">
+                    <Label htmlFor="email">Enter your username</Label>
+                    <Input
+                      id="username"
+                      type="text"
+                      {...register("username", { required: "This field is required",
+                      minLength: {
+                        value: 4,
+                        message: "Username must be at least 4 characters"}, })}
+                    />
+                       {errors.username && (
+                <span className="text-red-500">{errors.username.message}</span>
               )}
                   </div>
                   <div className="space-y-1">
