@@ -11,12 +11,16 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import GatheringGlobe from "../../images/GatheringGlobe.png";
+import LoginPic from "../../images/LoginPic.png";
 
 import { SubmitHandler, useForm } from "react-hook-form";
-import { RegisterUser } from "@/services/api";
+import { RegisterUser, SignInUser } from "@/services/api";
 import { SignInFormData } from "@/types/signInFormData";
+import { useAppContext } from "@/contexts/AppContext";
+import { useNavigate } from "react-router-dom";
 
 const RegisterForm = () => {
+  const navigate = useNavigate();
   const {
     register,
     watch,
@@ -28,11 +32,14 @@ const RegisterForm = () => {
     try {
       RegisterUser(data);
 
-      console.log("Registration sucessful");
-    } catch (error) {
-      console.error("Registartion failed", error);
+      showToast({ message: "Registration Success!", type: "SUCCESS" });
+      navigate("/");
+    } catch (error: any) {
+      showToast({ message: error.message, type: "ERROR" });
     }
   };
+
+  const { showToast } = useAppContext();
 
   return (
     <div
@@ -47,7 +54,7 @@ const RegisterForm = () => {
             className="justify-items-start mx-28 "
             style={{ width: "200px", height: "190px" }}
           />
-          <Tabs defaultValue="account" className="w-[400px] ">
+          <Tabs defaultValue="account" className="w-[400px] h-[500px] ">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="account">Log in</TabsTrigger>
               <TabsTrigger value="password">Sign Up</TabsTrigger>
@@ -82,6 +89,7 @@ const RegisterForm = () => {
                       id="password"
                       placeholder="Enter your password"
                       {...register("password", { required: true })}
+                      type="password"
                     />
                   </div>
                 </CardContent>

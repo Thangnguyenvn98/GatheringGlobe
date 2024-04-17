@@ -20,6 +20,7 @@ export const useServerTest = () => {
   });
 };
 
+// Handle registration
 export const RegisterUser = async (data: SignInFormData) => {
   try {
   const response = await axiosInstance.post("/api/users/register", data);
@@ -35,3 +36,19 @@ export const RegisterUser = async (data: SignInFormData) => {
 }
 
 };
+
+// Handle SignIn
+export const SignInUser =async (data: SignInFormData) => {
+    try {
+      const response = await axiosInstance.post("/api/users/signin", data);
+      if (response.status >= 200 && response.status < 300) {
+        return response.data;
+      }
+      else {
+        throw new Error(`Server responded with status: ${response.status}`);
+      }
+    } catch (error) {
+      console.error("Login failed", error);
+      throw error
+  }
+}
