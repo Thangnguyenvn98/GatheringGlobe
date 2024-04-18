@@ -12,6 +12,9 @@ import { Server } from "socket.io";
 import http from "http";
 import Room from "./models/room";
 import Message from "./models/message";
+import { log } from "handlebars";
+
+require("dotenv").config();
 
 const PORT = process.env.PORT || 5050;
 
