@@ -10,7 +10,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-// import GatheringGlobe from "../GatheringGlobe.png";
+import GatheringGlobe from "../../images/GatheringGlobe.png";
 export function TabsDemo() {
   return (
     <div

@@ -1,4 +1,3 @@
-import React from "react";
 import "./FilterSection.css"; // Make sure to create the corresponding CSS file
 
 const FilterSection = () => {
