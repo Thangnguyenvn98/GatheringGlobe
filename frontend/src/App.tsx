@@ -8,7 +8,7 @@ import {
 } from "react-router-dom";
 import AboutUs from "./components/aboutUs/about-us";
 import DiscoverEvent from "./components/Discover_Event/DiscoverEvent";
-// import EventDetail from "./components/Discover_Event/EventDetail";
+import EventDetail from "./components/Discover_Event/EventDetail";
 
 function App() {
   return (
@@ -22,6 +22,7 @@ function App() {
 
         <Route path="/about" element={<AboutUs />} />
         <Route path="/discover" element={<DiscoverEvent />} />
+        <Route path="/discover-event-details" element={<EventDetail />} />
         <Route path="*" element={<Navigate to="/" />} />
 
         {/* <Route path="/eventdetail" element={<EventDetail />} /> */}
