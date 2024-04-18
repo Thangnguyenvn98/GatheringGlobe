@@ -24,8 +24,6 @@ function App() {
         <Route path="/discover" element={<DiscoverEvent />} />
         <Route path="/discover-event-details" element={<EventDetail />} />
         <Route path="*" element={<Navigate to="/" />} />
-
-        {/* <Route path="/eventdetail" element={<EventDetail />} /> */}
       </Routes>
     </Router>
   );
