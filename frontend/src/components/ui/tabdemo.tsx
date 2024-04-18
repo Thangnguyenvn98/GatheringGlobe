@@ -193,3 +193,4 @@ const RegisterForm = () => {
     </div>
   );
 };
+export { RegisterForm };
