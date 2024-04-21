@@ -1,4 +1,4 @@
-import EventBanner from "../../images/diversity.jpg"
+import EventBanner from "../../images/diversity_inclusion1.jpg"
 // import {DatePickerDemo} from "./searchdate"
 // import { Form } from "./formfooter";
 //import * as React from "react"
