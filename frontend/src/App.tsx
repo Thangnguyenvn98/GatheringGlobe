@@ -24,13 +24,12 @@ function App() {
 
         <Route path="/about" element={<AboutUs />} />
         <Route path="/messages" element={<ChatPage />} />
-        <Route path="/messages/c/:ownerId/t/:roomId" element={<ChatPage />} />
-        <Route path="/homepage" element={<Homepage />} />
-
+        <Route path="/messages/c/:ownerId/t/:roomId" element={<ChatPage />} />        <Route path="/messages" element={<ChatPage />} />
         <Route path="*" element={<Navigate to="/" />} />
         <Route path="/about" element={<AboutUs />} />
         <Route path="/discover" element={<DiscoverEvent />} />
         <Route path="/discover-event-details" element={<EventDetail />} />
+        <Route path="/homepage" element={<Homepage />} />
       </Routes>
     </Router>
   );
