@@ -31,25 +31,25 @@ function Pageheader() {
         <div className=" flex flex-col w-full bg-green-200 fixed bg-opacity-100 z-30">
             <div className = "flex p-2 justify-between w-full text-white items-center">
                 <div className="relative p-4 flex items-center">
-                    <Button className="bg-transparent text-green-800 hover:bg-transparent">
+                    <Button className="bg-transparent shadow-none text-green-800 hover:bg-transparent">
                         <img src={GatheringGlobe} alt="logo" className="h-20 w-20" />
                     </Button>
                 </div>
                 <div>
-                    <Button className="bg-transparent text-green-800 hover:bg-white">
+                    <Button className="bg-transparent shadow-none text-green-800 hover:bg-transparent hover:text-green-500 hover:underline">
                         Discover
                     </Button>
-                    <Button className="bg-transparent text-green-800 hover:bg-white">
+                    <Button className="bg-transparent shadow-none text-green-800 hover:bg-transparent hover:text-green-500 hover:underline">
                         Community
                     </Button>
-                    <Button className="bg-transparent text-green-800 hover:bg-white">
+                    <Button className="bg-transparent shadow-none text-green-800 hover:bg-transparent hover:text-green-500 hover:underline">
                         About Us
                     </Button>
-                    <Button className="bg-transparent text-green-800 hover:bg-white">
+                    <Button className="bg-transparent shadow-none text-green-800 hover:bg-transparent hover:text-green-500 hover:underline">
                         FAQs
                     </Button>
                 </div>
-                <Button className="bg-transparent text-green-800 hover:bg-white" >
+                <Button className="bg-transparent text-green-800 hover:bg-transparent hover:text-green-500 hover:underline" >
                     Log In/Sign up
                 </Button>
             </div>
