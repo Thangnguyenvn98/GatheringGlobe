@@ -5,9 +5,7 @@ import {DropdownMenu,
     } from "../ui/dropdown-menu"
 import { Button } from "../ui/button"
 import GatheringGlobe from '../../images/GatheringGlobe.png'
-import SearchByKeyword from "./eventsearch";
-import { DatePickerWithRange } from "./date-picker-with-range";
-import EventLocation from "./searchlocation";
+import SearchForm from "./searchform";
 
 function Pageheader() {
     return( 
@@ -31,7 +29,7 @@ function Pageheader() {
         </div>
 
         <div className=" flex flex-col w-full bg-green-200 fixed bg-opacity-100 z-30">
-            <div className = "flex p-2 justify-between z-30 w-full text-white items-center">
+            <div className = "flex p-2 justify-between w-full text-white items-center">
                 <div className="relative p-4 flex items-center">
                     <Button className="bg-transparent text-green-800 hover:bg-transparent">
                         <img src={GatheringGlobe} alt="logo" className="h-20 w-20" />
@@ -55,14 +53,13 @@ function Pageheader() {
                     Log In/Sign up
                 </Button>
             </div>
-            <div className="flex flex-row justify-center mb-2">
-                <EventLocation/>
-                <DatePickerWithRange/>
-                <SearchByKeyword/>
+            <div className="flex justify-center">
+                <SearchForm/>
             </div>
         </div>
         
     </>
     );
 }
+
 export default Pageheader;

@@ -7,9 +7,7 @@ import EventBanner from "../../images/diversity_inclusion1.jpg"
 function Events (){
     return (
         <div className="flex flex-col w-full overflow-hidden">
-            <div style={{backgroundImage: `url("${EventBanner}")` }} className="bg-opacity-20 flex flex-col justify-center items-center h-[400px]" >
-                {/* <Form /> */}
-                {/* <DatePickerDemo /> */}
+            <div style={{backgroundImage: `url("${EventBanner}")` }} className="bg-opacity-20 h-[400px]" >
             </div>
         </div>
     )

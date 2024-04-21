@@ -116,12 +116,17 @@ const events: Event[] = [
     title: 'Classical Evenings',
     artist: 'The City Orchestra',
   },
+  {
+    imageUrl: Evenlist3,
+    title: 'Classical Evenings',
+    artist: 'The City Orchestra',
+  },
 
 ];
 
 const EventList: any = ({}) => {
   return (
-    <div className="place-items-center items-center w-auto h-auto">
+    <div className="place-items-center items-center w-auto h-auto mx-10">
               <div className="grid grid-rows-2 grid-flow-col gap-4">
               {events.map((event, _) => (
                 <div className="row-span-1">
