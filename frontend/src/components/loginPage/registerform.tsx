@@ -29,12 +29,14 @@ const Register = () => {
     try {
       console.log(data);
       RegisterUser(data);
-      toast.success("Registration Success");
       navigate("/");
+      toast.success("Registration Success");
     } catch (error) {
       const errorMessage =
-      error instanceof AxiosError ? error.response?.data.message : "Register failed";
-    toast.error(errorMessage);
+        error instanceof AxiosError
+          ? error.response?.data.message
+          : "Register failed";
+      toast.error(errorMessage);
     }
   };
 
