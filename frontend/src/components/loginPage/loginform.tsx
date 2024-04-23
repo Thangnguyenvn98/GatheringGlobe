@@ -25,12 +25,14 @@ const Login = () => {
   const handleSignIn: SubmitHandler<SignInFormData> = async (data) => {
     try {
       console.log(data);
-      SignInUser(data);
-      toast.success("Login Success");
+      await SignInUser(data);
       navigate("/");
+      toast.success("Login Success");
     } catch (error) {
       const errorMessage =
-      error instanceof AxiosError ? error.response?.data.message : "Login failed";
+        error instanceof AxiosError
+          ? error.response?.data.message
+          : "Login failed";
       toast.error(errorMessage);
     }
   };
