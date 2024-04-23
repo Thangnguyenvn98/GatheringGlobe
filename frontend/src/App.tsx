@@ -1,4 +1,4 @@
-import { RegisterForm } from "./components/ui/tabdemo";
+import LoginPage from "./components/loginPage/loginPage";
 import "./global.css";
 import DiscoverEvent from "./components/Discover_Event/DiscoverEvent";
 import EventDetail from "./components/Discover_Event/EventDetail";
@@ -20,7 +20,7 @@ function App() {
           path="/"
           element={<div className="bg-white ">Hello There testing</div>}
         />
-        <Route path="/register" element={<RegisterForm />} />
+        <Route path="/register" element={<LoginPage />} />
 
         <Route path="/about" element={<AboutUs />} />
         <Route path="/messages" element={<ChatPage />} />
