@@ -14,6 +14,7 @@ import { useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { AxiosError } from "axios";
 const Login = () => {
   const navigate = useNavigate();
   const {
@@ -27,8 +28,10 @@ const Login = () => {
       SignInUser(data);
       toast.success("Login Success");
       navigate("/");
-    } catch (error: any) {
-      toast.error("Login failed");
+    } catch (error) {
+      const errorMessage =
+      error instanceof AxiosError ? error.response?.data.message : "Login failed";
+      toast.error(errorMessage);
     }
   };
   return (
