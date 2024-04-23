@@ -14,8 +14,6 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 
-var DatePicked: DateRange | undefined;
-
 function DatePickerWithRange({
   className,
 }: React.HTMLAttributes<HTMLDivElement>) {
@@ -23,6 +21,11 @@ function DatePickerWithRange({
     from: new Date(2024, 2, 20),
     to: addDays(new Date(2024, 4, 20), 20),
   })
+
+  const onSubmit = (data: DateRange| undefined) => {
+    setDate(data);
+    console.log(data);
+  }
 
   return (
     <div className={cn("grid gap-2", className)}>
@@ -32,14 +35,12 @@ function DatePickerWithRange({
             id="date"
             variant={"outline"}
             className={cn(
-              "w-[400px]  h-[40px] text-left font-normal rounded-none",
-              !date && "text-muted-foreground" 
+              "w-auto h-[40px] justify-start text-left font-normal rounded-none bg-white text-green-800 border-none hover:bg-green-800",
+              !date && "text-muted-foreground"
             )}
-            // if date is left undefined => !date is true => the string is assessed and since it is always true, it is inlcuded
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
-            {/* syntax: [condition ? (what to do if true/) : (what to do if false)] */}
-            {date?.from ? ( //
+            {date?.from ? (
               date.to ? (
                 <>
                   {format(date.from, "LLL dd, y")} -{" "}
@@ -57,10 +58,9 @@ function DatePickerWithRange({
           <Calendar
             initialFocus
             mode="range"
-            defaultMonth={date?.from} //if date is defined, access atribute from
+            defaultMonth={date?.from}
             selected={date}
-            onSelect={setDate}
-            {...DatePicked = date}
+            onSelect={onSubmit} //onSelect={()=>{setDate; onSubmit}} (where onsubmit does not tigger setDate)
             numberOfMonths={2}
           />
         </PopoverContent>
@@ -70,4 +70,5 @@ function DatePickerWithRange({
 }
 
 
-export {DatePickerWithRange, DatePicked}
+
+export {DatePickerWithRange}
