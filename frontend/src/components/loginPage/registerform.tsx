@@ -14,6 +14,7 @@ import { useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { AxiosError } from "axios";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -30,8 +31,10 @@ const Register = () => {
       RegisterUser(data);
       toast.success("Registration Success");
       navigate("/");
-    } catch (error: any) {
-      toast.error("Register failed");
+    } catch (error) {
+      const errorMessage =
+      error instanceof AxiosError ? error.response?.data.message : "Register failed";
+    toast.error(errorMessage);
     }
   };
 

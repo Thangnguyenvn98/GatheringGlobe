@@ -25,38 +25,32 @@ export const useServerTest = () => {
 // Handle registration
 export const RegisterUser = async (data: SignInFormData) => {
   try {
-  const response = await axiosInstance.post("/api/users/register", data, {
-    credentials: "include"
-  } as any);
-  if (response.status >= 200 && response.status < 300) {
-    return response.data;
+    const response = await axiosInstance.post("/api/users/register", data);
+    if (response.status >= 200 && response.status < 300) {
+      return response.data;
+    } else {
+      throw new Error(`Server responded with status: ${response.status}`);
+    }
+  } catch (error) {
+    console.error("Registration failed", error);
+    throw error;
   }
-  else {
-    throw new Error(`Server responded with status: ${response.status}`);
-  }
-} catch (error) {
-  console.error("Registration failed", error);
-  throw error
-}
-
 };
 
-
 // Handle SignIn
-export const SignInUser =async (data: SignInFormData) => {
-    try {
-      const response = await axiosInstance.post("/api/users/signin", data);
-      if (response.status >= 200 && response.status < 300) {
-        return response.data;
-      }
-      else {
-        throw new Error(`Server responded with status: ${response.status}`);
-      }
-    } catch (error) {
-      console.error("Login failed", error);
-      throw error
+export const SignInUser = async (data: SignInFormData) => {
+  try {
+    const response = await axiosInstance.post("/api/users/signin", data);
+    if (response.status >= 200 && response.status < 300) {
+      return response.data;
+    } else {
+      throw new Error(`Server responded with status: ${response.status}`);
+    }
+  } catch (error) {
+    console.error("Login failed", error);
+    throw error;
   }
-}
+};
 
 export const createRoom = async (data: { name: string }) => {
   const response = await axiosInstance.post("/api/room", data);
@@ -92,17 +86,17 @@ export const getRooms = async () => {
 
 export const getCurrentUser = async () => {
   const response = await axiosInstance.get<User>("/api/users");
-  console.log(response.data)
+  console.log(response.data);
   return response.data;
 };
 
-export const validateToken = async() => {
-  const response = await fetch (`${API_BASE_URL}/api/auth/validate-token`, {
-    credentials: "include"
-  })
+export const validateToken = async () => {
+  const response = await fetch(`${API_BASE_URL}/api/auth/validate-token`, {
+    credentials: "include",
+  });
 
-  if(!response.ok) {
+  if (!response.ok) {
     throw new Error("Token invalid");
   }
   return response.json();
-}
+};
