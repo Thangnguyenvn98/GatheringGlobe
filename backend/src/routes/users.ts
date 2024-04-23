@@ -2,11 +2,13 @@ import express, {Request, Response} from "express";
 import User from "../models/user";
 import jwt from "jsonwebtoken"
 import { check, validationResult } from "express-validator";
+import verifyToken from "../middleware/auth";
 
 const router = express.Router();
 
 router.post("/register", [
     check("email", "Email is required").isEmail(),
+    check("username", "Username with 6 or more characters required ").isLength({min: 4}),
     check("password", "Password with 6 or more characters required ").isLength({min: 6})
 ], async(req: Request, res: Response) => {
     const errors = validationResult(req);
@@ -14,9 +16,9 @@ router.post("/register", [
         return res.status(400).json({message: errors.array()})
     }
     try {
+        console.log(req.body)
         let user = await User.findOne({
-            email: req.body.email,
-
+            $or: [{ email: req.body.email }, { username: req.body.username }]
         });
 
         if(user) {
@@ -48,6 +50,21 @@ router.post("/register", [
 
     }
 
+});
+
+router.get("/", verifyToken, async (req: Request, res: Response) => {
+  try {
+    const user = await User.findById(req.userId).select("username email");
+    if (!user) {
+      return res.status(400).json({ message: "User not exists!" });
+    }
+    res.status(200).json(user);
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ message: "An error occurred while fetching the user." });
+  }
 });
 
 export default router
