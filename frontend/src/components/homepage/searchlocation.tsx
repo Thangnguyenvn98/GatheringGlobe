@@ -25,8 +25,8 @@ function EventLocation () {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-96 bg-emerald-800">
                         <ScrollArea className="h-[300px] w-full rounded-md border">
-                            {loc.map((locchosen, _) => (
-                                <DropdownMenuItem className="flex flex-row justify-around">
+                            {loc.map((locchosen, index) => (
+                                <DropdownMenuItem className="flex flex-row justify-around" key={index}>
                                     <Button className = "rounded-none bg-transparent w-full flex text-green-500" onClick={() => locationChosen(locchosen)}>{locchosen}</Button>
                                     {/* when the button is clicked, function locationChsoen is triggered with value of locchosen passed in as parameter */}
                                 </DropdownMenuItem>
