@@ -40,7 +40,7 @@ export const RegisterUser = async (data: SignInFormData) => {
 // Handle SignIn
 export const SignInUser = async (data: SignInFormData) => {
   try {
-    const response = await axiosInstance.post("/api/users/signin", data);
+    const response = await axiosInstance.post("/api/users/login", data);
     if (response.status >= 200 && response.status < 300) {
       return response.data;
     } else {
