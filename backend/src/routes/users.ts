@@ -1,11 +1,13 @@
 import express, {Request, Response} from "express";
-import User from "../models/user";
+import User, {UserType} from "../models/user";
 import jwt from "jsonwebtoken"
 import { check, validationResult } from "express-validator";
 import verifyToken from "../middleware/auth";
+import { compare } from "bcryptjs";
 
 const router = express.Router();
 
+// Handle register
 router.post("/register", [
     check("email", "Email is required").isEmail(),
     check("username", "Username with 6 or more characters required ").isLength({min: 4}),
@@ -43,7 +45,7 @@ router.post("/register", [
         secure: process.env.NODE_ENV === "production",
         maxAge: 86400000,
      })
-     return res.sendStatus(200);
+     return res.status(200).send({message: "User registration OK"});
     }catch(error){
         console.log(error)
         res.status(500).send({message: "Something went wrong"});
@@ -51,6 +53,50 @@ router.post("/register", [
     }
 
 });
+
+// Handle login
+router.post("/login", [
+  check("email", "Email is required").isEmail(),
+  check("password", "Password is required").exists()
+], async(req: Request, res: Response) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+  }
+
+  const { email, password } = req.body;
+
+  try {
+      let user: UserType | null = await User.findOne({ email });
+
+      if (!user) {
+          return res.status(400).json({ message: "Invalid credentials" });
+      }
+
+      const isMatch: boolean = await compare(password, user.password);
+
+      if (!isMatch) {
+          return res.status(400).json({ message: "Invalid credentials" });
+      }
+
+      const token: string = jwt.sign({ userId: user._id }, process.env.JWT_SECRET_KEY as string, {
+          expiresIn: "1d",
+      });
+
+      res.cookie("auth_token", token, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          maxAge: 86400000,
+      });
+
+      res.status(200).json({ message: "Login successful", token });
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Something went wrong" });
+  }
+});
+
+
 
 router.get("/", verifyToken, async (req: Request, res: Response) => {
   try {

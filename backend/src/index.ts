@@ -5,7 +5,6 @@ import "dotenv/config";
 import mongoose from "mongoose";
 import path from "path";
 import userRoutes from "./routes/users";
-import authRoutes from "./routes/auth";
 import messageRoutes from "./routes/messages";
 import roomRoutes from "./routes/rooms";
 import { Server } from "socket.io";
@@ -42,7 +41,6 @@ const io = new Server(server, {
   },
 });
 
-app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/room", roomRoutes);
