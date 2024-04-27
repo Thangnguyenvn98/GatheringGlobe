@@ -5,7 +5,7 @@ import {DropdownMenu,
     } from "../ui/dropdown-menu"
 import { Button } from "../ui/button"
 import GatheringGlobe from '../../images/GatheringGlobe.png'
-import SearchForm from "./searchbar";
+import SearchForm from "../navbar/searchbar";
 
 function Pageheader() {
     return( 

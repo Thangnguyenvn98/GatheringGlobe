@@ -14,21 +14,20 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 
-function DatePickerWithRange({
-  className,
-}: React.HTMLAttributes<HTMLDivElement>) {
+function DatePickerWithRange({setDateFromParent}:{ setDateFromParent: (value: DateRange | undefined) => void })
+{
+
   const [date, setDate] = React.useState<DateRange | undefined>({
     from: new Date(2024, 2, 20),
     to: addDays(new Date(2024, 4, 20), 20),
   })
 
   const onSubmit = (data: DateRange| undefined) => {
+    setDateFromParent(data)
     setDate(data);
-    console.log(data);
   }
-
   return (
-    <div className={cn("grid gap-2", className)}>
+    <div className={cn("grid gap-2")}>
       <Popover>
         <PopoverTrigger asChild>
           <Button

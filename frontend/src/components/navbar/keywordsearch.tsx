@@ -1,3 +1,5 @@
+"use client"
+
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -8,17 +10,13 @@ import {
     FormItem,
   } from "../ui/form"
 import { Input } from "../ui/input"
-import { Button } from "../ui/button"
 
-
-const FormSchema = z.object({
-  keyword: z.string(), // Removed .optional() to make the field required
-})
-
-
-const SearchByKeyword = () => {
+function SearchByKeyword({setKeywordFromParent}:{setKeywordFromParent:(value:string)=>void}) {
+    const FormSchema = z.object({
+      keyword: z.string(), // Removed .optional() to make the field required
+    })
     const onSubmit = (data: any) => {
-      console.log(data.keyword);
+      setKeywordFromParent(data);
     }
     const form = useForm<z.infer<typeof FormSchema>>({
       resolver: zodResolver(FormSchema),
@@ -36,13 +34,12 @@ const SearchByKeyword = () => {
                     render={({ field }) => (
                         <FormItem>
                         <FormControl>
-                            <Input className="w-[600px] h-[40px] rounded-none text-green-800 bg-whitefont-normal border-none" placeholder="Event Keyword" {...field} />
+                            <Input className="w-[600px] h-[40px] rounded-none text-green-800 bg-whitefont-normal border-none" placeholder="Event Keyword" {...field}/>
                         </FormControl>
                         </FormItem>
                     )}
                 />
-                <Button type="submit" className = "flex h-[40px] rounded-none text-green-800 bg-white hover:bg-green-800 hover:text-white font-normal shadow-none">Search</Button>
-            </form>
+              </form>
           </div>
         </Form>
     )
