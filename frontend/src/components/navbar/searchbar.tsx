@@ -1,6 +1,6 @@
 import * as React from "react"
 import SearchByKeyword from "./keywordsearch";
-import {DatePickerWithRange} from "./date-picker-with-range";
+import DatePickerWithRange from "./date-picker-with-two-range";
 import { DateRange } from "react-day-picker"
 import EventLocation from "./searchlocation";
 import { addDays} from "date-fns"
@@ -11,24 +11,37 @@ import { Button} from "../ui/button"
 function SearchForm() {
     const [location, setLocation] = useState("All locations")
     const [date, setDate] = React.useState<DateRange | undefined>({
-        from: new Date(2024, 2, 20),
-        to: addDays(new Date(2024, 4, 20), 20),
+            from: new Date(2024, 2, 20),
+            to: addDays(new Date(2024, 4, 20), 20),
     })
     const [keyword, setKeyword] = useState("")
     
-    const onSubmit:any = () => {
+    const onSubmit = () => {
         console.log(location);
         console.log(date);
         console.log(keyword);
     }
     return(
-        <div className="flex flex-row justify-center mb-2">
+        <div className="flex justify-center mb-2 items-center bg-white ">
+            <div className='border-r-black border-[1px] p-1'>
             <EventLocation setLocationFromParent={setLocation}/>
+            </div>
+            <div className='border-r-black border-[1px] p-1' >
             <DatePickerWithRange setDateFromParent={setDate}/>
+            </div>
+          
+            
             <SearchByKeyword setKeywordFromParent={setKeyword}/>
-            <Button type="submit" onClick={onSubmit} className = "flex h-[40px] rounded-none text-green-800 bg-white hover:bg-green-800 hover:text-white font-normal shadow-none">Search</Button>
+            <div className="p-1">
+            <Button type="submit" size={"sm"} onClick={onSubmit} className = " bg-green-200  text-green-800  font-normal shadow-none ">Search</Button>
+
+            </div>
+         
+            
+
+          
         </div>
     )
-};
+}
 
 export default SearchForm;
