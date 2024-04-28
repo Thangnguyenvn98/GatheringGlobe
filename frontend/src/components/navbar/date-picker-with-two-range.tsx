@@ -30,7 +30,7 @@ function DatePickerWithRange({setDateFromParent}:{ setDateFromParent: (value: Da
             variant={"outline"}
             size={"sm"}
             className={cn(
-              "w-auto justify-start text-left font-normal rounded-none bg-white text-green-800 hover:bg-white border-none  ",
+              "w-auto justify-start text-left font-normal rounded-none bg-white text-green-800 hover:bg-white border-none",
               !date && "text-green-800"
             )}
           >
