@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
 
-
 type PopulatedOwner = {
     _id: mongoose.Schema.Types.ObjectId;
     username: string;
