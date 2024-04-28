@@ -5,7 +5,7 @@ import {DropdownMenu,
     } from "../ui/dropdown-menu"
 import { Button } from "../ui/button"
 import GatheringGlobe from '../../images/GatheringGlobe.png'
-import SearchForm from "./searchform";
+import SearchForm from "../navbar/searchbar";
 
 function Pageheader() {
     return( 
@@ -49,7 +49,7 @@ function Pageheader() {
                         FAQs
                     </Button>
                 </div>
-                <Button className="bg-transparent text-green-800 hover:bg-transparent hover:text-green-500 hover:underline" >
+                <Button className="bg-transparent text-green-800 hover:bg-white" >
                     Log In/Sign up
                 </Button>
             </div>
