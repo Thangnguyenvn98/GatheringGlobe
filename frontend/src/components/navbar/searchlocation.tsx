@@ -1,9 +1,8 @@
-"use client"
-
 import {useState } from 'react';
 import { DropdownMenu, DropdownMenuItem, DropdownMenuContent, DropdownMenuTrigger } from "../ui/dropdown-menu"
 import { ScrollArea } from "../ui/scroll-area"
 import { Button } from "../ui/button"
+import { Navigation } from 'lucide-react';
 
 
 function EventLocation({setLocationFromParent}:{setLocationFromParent:(value:string)=>void}) {
@@ -21,13 +20,16 @@ function EventLocation({setLocationFromParent}:{setLocationFromParent:(value:str
     return (
         <div>
             <DropdownMenu>
-                <DropdownMenuTrigger className="w-full bg-transparent">
-                    <Button className="bg-white text-green-800 rounded-none h-[40px] hover:bg-green-800 hover:text-white font-normal">{location}</Button>
+                <DropdownMenuTrigger className="w-full">
+                    <div className='flex items-center'>
+                    <Navigation className="h-4 w-4" />  
+                    <Button variant={"outline"} size={"sm"} className="text-green-800 rounded-none hover:bg-white font-normal border-none">{location}</Button>
+                    </div>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-96 bg-emerald-800">
                         <ScrollArea className="h-[300px] w-full rounded-md border">
-                            {loc.map((locchosen, _) => (
-                                <DropdownMenuItem className="flex flex-row justify-around">
+                            {loc.map((locchosen, index) => (
+                                <DropdownMenuItem key={index} className="flex flex-row justify-around">
                                     <Button className = "rounded-none bg-transparent w-full flex text-green-500" type = "submit" onClick={() => {setLocation(locchosen); onSubmit(locchosen);} }>{locchosen}</Button>
                                     {/* when the button is clicked, function locationChsoen is triggered with value of locchosen passed in as parameter */}
                                 </DropdownMenuItem>

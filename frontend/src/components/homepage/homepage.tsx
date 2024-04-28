@@ -18,7 +18,7 @@ const Homepage = () =>{
             </div> 
             <Separator orientation="horizontal" className="mb-10 mt-10"/> 
             <div>
-                <EventList displayMode="grid"/>
+                <EventList/>
             </div>
             <Separator orientation="horizontal" className="mb-10 mt-10"/>
             <div>

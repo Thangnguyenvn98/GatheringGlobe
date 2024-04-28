@@ -124,12 +124,12 @@ const events: Event[] = [
 
 ];
 
-const EventList: any = ({}) => {
+const EventList:React.FC = () => {
   return (
     <div className="place-items-center items-center w-auto h-auto mx-10">
               <div className="grid grid-rows-2 grid-flow-col gap-4">
-              {events.map((event, _) => (
-                <div className="row-span-1">
+              {events.map((event, index) => (
+                <div className="row-span-1" key={index}>
                   <img src={event.imageUrl} alt={event.title} className="size-auto" />
                   <h3>{event.title}</h3>
                   <h3>{event.artist}</h3>

@@ -1,47 +1,17 @@
-"use client"
-
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-  } from "../ui/form"
+import { Search } from "lucide-react";
 import { Input } from "../ui/input"
 
 function SearchByKeyword({setKeywordFromParent}:{setKeywordFromParent:(value:string)=>void}) {
-    const FormSchema = z.object({
-      keyword: z.string(), // Removed .optional() to make the field required
-    })
-    const onSubmit = (data: any) => {
-      setKeywordFromParent(data);
-    }
-    const form = useForm<z.infer<typeof FormSchema>>({
-      resolver: zodResolver(FormSchema),
-      defaultValues: {
-        keyword: "",
-      },
-    })
+ 
     return (
-        <Form {...form}>
-          <div className = "flex flex-row">
-            <form onSubmit={form.handleSubmit(onSubmit)} className="flex">
-                <FormField
-                    control={form.control}
-                    name="keyword"
-                    render={({ field }) => (
-                        <FormItem>
-                        <FormControl>
-                            <Input className="w-[600px] h-[40px] rounded-none text-green-800 bg-whitefont-normal border-none" placeholder="Event Keyword" {...field}/>
-                        </FormControl>
-                        </FormItem>
-                    )}
-                />
-              </form>
-          </div>
-        </Form>
+      <div className="relative flex items-center ml-1 w-[400px]">
+      <Search className="absolute left-2 h-4 w-4 " />
+      <Input
+        className="w-full pl-10 rounded-sm  text-sm h-auto text-green-800 focus-visible:ring-border-red-500 border-none  placeholder:text-muted-foreground"
+        placeholder="Search by Artist, Event or Venue"
+        onChange={(e) => setKeywordFromParent(e.target.value)}
+      />
+    </div>
     )
 }
 
