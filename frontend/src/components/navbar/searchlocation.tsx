@@ -23,7 +23,7 @@ function EventLocation({setLocationFromParent}:{setLocationFromParent:(value:str
                 <DropdownMenuTrigger className="w-full">
                     <div className='flex items-center'>
                     <Navigation className="h-4 w-4" />  
-                    <Button variant={"outline"} size={"sm"} className="text-green-800 rounded-none hover:bg-white font-normal border-none">{location}</Button>
+                    <Button variant={"outline"} size={"sm"} className="text-green-800 rounded-none hover:bg-white bg-white font-normal border-none">{location}</Button>
                     </div>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-96 bg-emerald-800">

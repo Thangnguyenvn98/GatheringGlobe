@@ -23,23 +23,17 @@ function SearchForm() {
     }
     return(
         <div className="flex justify-center mb-2 items-center bg-white ">
-            <div className='border-r-black border-[1px] p-1'>
+            <div className='border-r-black border-r-[1px] p-1'>
             <EventLocation setLocationFromParent={setLocation}/>
             </div>
-            <div className='border-r-black border-[1px] p-1' >
+            <div className='border-r-black border-r-[1px] p-1' >
             <DatePickerWithRange setDateFromParent={setDate}/>
-            </div>
-          
-            
+            </div>  
             <SearchByKeyword setKeywordFromParent={setKeyword}/>
             <div className="p-1">
             <Button type="submit" size={"sm"} onClick={onSubmit} className = " bg-green-200  text-green-800  font-normal shadow-none ">Search</Button>
-
             </div>
          
-            
-
-          
         </div>
     )
 }
