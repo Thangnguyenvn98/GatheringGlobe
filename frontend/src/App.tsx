@@ -5,33 +5,32 @@ import EventDetail from "./components/Discover_Event/EventDetail";
 import AboutUs from "./components/aboutUs/about-us";
 import ChatPage from "./components/chatRoom/Chat";
 import Homepage from "./components/homepage/homepage"
+import { SocketProvider } from "./components/providers/socket-provider";
 import {
   BrowserRouter as Router,
   Route,
   Routes,
   Navigate,
 } from "react-router-dom";
+import Layout from "./components/layouts/layout";
 
 function App() {
   return (
     <Router>
       <Routes>
-        <Route
-          path="/"
-          element={<div className="bg-white ">Hello There testing</div>}
-        />
+        <Route path="/" element={<Homepage />} />
         <Route path="/register" element={<LoginPage />} />
-        <Route path="/about" element={<AboutUs />} />
+        <Route path="/about" element={<Layout><AboutUs/></Layout>} />
         <Route path="/messages" element={<ChatPage />} />
-        <Route path="/messages/c/:ownerId/t/:roomId" element={<ChatPage />} />        
-        <Route path="/messages" element={<ChatPage />} />
+        <Route path="/messages/c/:ownerId/t/:roomId" element={<SocketProvider><ChatPage /></SocketProvider>} />        
+        <Route path="/messages" element={<SocketProvider><ChatPage /></SocketProvider>} />
         <Route path="*" element={<Navigate to="/" />} />
         <Route path="/discover" element={<DiscoverEvent />} />
         <Route path="/discover-event-details" element={<EventDetail />} />
-        <Route path="/homepage" element={<Homepage />} />
       </Routes>
     </Router>
   );
 }
 
 export default App;
+ 

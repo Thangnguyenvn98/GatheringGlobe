@@ -26,8 +26,8 @@ const ServicesComponent = () => {
             Above and beyond our guarantee, we offer:
           </h2>
           <div className="grid grid-cols-3 mt-10 gap-10">
-            {services.map((service) => (
-              <div className="flex flex-col items-center text-center text-sm gap-y-4">
+            {services.map((service,index) => (
+              <div className="flex flex-col items-center text-center text-sm gap-y-4" key={index}>
                 <h2 className="font-bold text-sm">{service.title}</h2>
                 <service.Icon size={60} fill="grey" />
                 <p>{service.text}</p>

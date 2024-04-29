@@ -3,9 +3,9 @@ import {DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
     } from "../ui/dropdown-menu"
-import { Button } from "../ui/button"
 import GatheringGlobe from '../../images/GatheringGlobe.png'
 import SearchForm from "../navbar/searchbar";
+import { Link } from "react-router-dom";
 
 function Pageheader() {
     return( 
@@ -28,32 +28,32 @@ function Pageheader() {
         </DropdownMenu>
         </div>
 
-        <div className=" flex flex-col w-full bg-green-200 fixed bg-opacity-100 z-30">
-            <div className = "flex p-2 justify-between w-full text-white items-center">
-                <div className="relative p-4 flex items-center">
-                    <Button className="bg-transparent shadow-none text-green-800 hover:bg-transparent">
-                        <img src={GatheringGlobe} alt="logo" className="h-20 w-20" />
-                    </Button>
+        <div className="flex flex-col w-full bg-green-200 fixed bg-opacity-100 z-30">
+            <div className = "flex justify-between w-full text-white items-center">
+                <div className="relative flex items-center">
+                    <Link to="/">
+                        <img src={GatheringGlobe} alt="logo" className="h-40 w-40" />
+                    </Link >
                 </div>
-                <div>
-                    <Button className="bg-transparent shadow-none text-green-800 hover:bg-transparent hover:text-green-500 hover:underline">
+                <div className="flex items-center gap-x-4 text-lg font-bold text-green-800">
+                    <Link to="/discover" className="   hover:text-green-500">
                         Discover
-                    </Button>
-                    <Button className="bg-transparent shadow-none text-green-800 hover:bg-transparent hover:text-green-500 hover:underline">
+                    </Link>
+                    <Link to="/community" className=" hover:text-green-500 ">
                         Community
-                    </Button>
-                    <Button className="bg-transparent shadow-none text-green-800 hover:bg-transparent hover:text-green-500 hover:underline">
+                    </Link>
+                    <Link to="/about" className="    hover:text-green-500 ">
                         About Us
-                    </Button>
-                    <Button className="bg-transparent shadow-none text-green-800 hover:bg-transparent hover:text-green-500 hover:underline">
+                    </Link>
+                    <Link to="/support/faq" className=" hover:text-green-500 ">
                         FAQs
-                    </Button>
+                    </Link>
                 </div>
-                <Button className="bg-transparent text-green-800 hover:bg-white" >
+                <Link to="/register" className="bg-white text-green-800 text-lg p-4 rounded-md mr-2" >
                     Log In/Sign up
-                </Button>
+                </Link>
             </div>
-            <div className="flex justify-center">
+            <div className="flex justify-center pb-4">
                 <SearchForm/>
             </div>
         </div>

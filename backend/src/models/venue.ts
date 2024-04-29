@@ -1,4 +1,4 @@
-import moongose from 'mongoose';
+import mongoose from 'mongoose';
 
 export type VenueType = { 
 venueId: number,    
@@ -9,11 +9,11 @@ venueId: number,
 
 };
 
-const venueSchema = new moongose.Schema({
+const venueSchema = new mongoose.Schema({
     name: { type: String, required: true },
     address: { type: String, required: true },
     city: { type: String, required: true },
     capacity: { type: Number, required: true },
 }); 
 
-export const Venue = moongose.model<VenueType>("Venue", venueSchema);   
+export const Venue = mongoose.model<VenueType>("Venue", venueSchema);   

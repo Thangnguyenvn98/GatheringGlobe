@@ -23,8 +23,8 @@ const StatsComponent = () => {
           Live experiences hold the keys to happiness.
         </h1>
         <div className="grid grid-cols-3 gap-x-4 text-emerald-400 mt-4">
-          {stats.map((stat) => (
-            <div className="flex flex-col gap-y-4 text-center">
+          {stats.map((stat,index) => (
+            <div className="flex flex-col gap-y-4 text-center" key={index}>
               <h1 className="font-bold text-6xl">{stat.percentage}</h1>
               <p className="text-white">{stat.description}</p>
             </div>
