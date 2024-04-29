@@ -15,6 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { AxiosError } from "axios";
+
 const Login = () => {
   const navigate = useNavigate();
   const {
@@ -38,8 +39,8 @@ const Login = () => {
   };
   return (
     <form onSubmit={handleSubmit(handleSignIn)}>
-      <Card>
-        <CardHeader>
+      <Card className="h-[450px]  ">
+        <CardHeader className="mt-[1.9rem]">
           <CardTitle className="text-center">
             Sign in to GatheringGlobe
           </CardTitle>
