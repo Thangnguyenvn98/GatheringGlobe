@@ -31,7 +31,7 @@ function SearchForm() {
             </div>  
             <SearchByKeyword setKeywordFromParent={setKeyword}/>
             <div className="p-1">
-            <Button type="submit" size={"sm"} onClick={onSubmit} className = " bg-green-200  text-green-800  font-normal shadow-none ">Search</Button>
+            <Button type="submit" size={"lg"} onClick={onSubmit} className = "bg-green-200  text-green-800 text-lg hover:text-black hover:bg-green-200  font-normal shadow-none ">Search</Button>
             </div>
          
         </div>

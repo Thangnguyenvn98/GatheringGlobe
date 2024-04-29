@@ -34,7 +34,7 @@ function DatePickerWithRange({setDateFromParent}:{ setDateFromParent: (value: Da
               !date && "text-green-800"
             )}
           >
-            <CalendarIcon className="mr-2 h-4 w-4 text-black" />
+            <CalendarIcon className="mr-2 h-6 w-6 text-black" />
             {date?.from ? (
               date.to ? (
                 <>
@@ -45,7 +45,7 @@ function DatePickerWithRange({setDateFromParent}:{ setDateFromParent: (value: Da
                 format(date.from, "LLL dd, y")
               )
             ) : (
-              <span>All Dates</span>
+              <span className="font-normal text-lg">All Dates</span>
             )}
           </Button>
         </PopoverTrigger>

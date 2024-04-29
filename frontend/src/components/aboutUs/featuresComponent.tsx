@@ -34,8 +34,8 @@ const FeaturesComponent = () => {
               <img src={Megaphone} alt="megaphone" />
             </div>
             <div className="grid grid-cols-2 auto-rows-auto gap-4">
-              {features.map((feature) => (
-                <div className="flex flex-col p-2 gap-y-4">
+              {features.map((feature,index) => (
+                <div className="flex flex-col p-2 gap-y-4" key={index}>
                   <h2 className="font-bold text-2xl">{feature.title}</h2>
                   <p>{feature.text}</p>
                 </div>

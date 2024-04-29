@@ -13,7 +13,7 @@ export type DiscountType = {
 };
 
 const discountSchema = new mongoose.Schema({  
-    eventId: { type: String, required: true },
+    eventId: { type: mongoose.Schema.Types.ObjectId, ref: 'Event' },
     code: { type: String, required: true },
     percentage: { type: Number, required: true },
     validUntil: { type: String, required: true },

@@ -7,6 +7,7 @@ import path from "path";
 import userRoutes from "./routes/users";
 import messageRoutes from "./routes/messages";
 import roomRoutes from "./routes/rooms";
+import eventRoutes from './routes/events'
 import { Server } from "socket.io";
 import http from "http";
 import Room from "./models/room";
@@ -44,6 +45,7 @@ const io = new Server(server, {
 app.use("/api/users", userRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/room", roomRoutes);
+app.use("/api/events", eventRoutes);
 
 io.on("connection", async (socket) => {
   console.log(`A user connected ${socket.id}`);

@@ -7,7 +7,7 @@ import OurStory from "./ourStory";
 
 const AboutUs = () => {
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col">
       <div
         style={{
           backgroundImage: `url("${AboutBanner}")`,
