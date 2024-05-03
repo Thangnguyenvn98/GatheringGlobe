@@ -5,6 +5,15 @@ import Event from "../models/event";
 
 const router = express.Router();
 
+
+router.get('/search', async (req:Request, res:Response) => {
+  console.log(req.query)
+  return res.status(200).json({message:"Test successfully"})
+})
+
+
+
+
 router.post("/", verifyToken, async (req: Request, res: Response) => {
   const user = await User.findById(req.userId);
   if (!user) {

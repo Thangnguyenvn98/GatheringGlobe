@@ -47,6 +47,7 @@ app.use("/api/messages", messageRoutes);
 app.use("/api/room", roomRoutes);
 app.use("/api/events", eventRoutes);
 
+
 io.on("connection", async (socket) => {
   console.log(`A user connected ${socket.id}`);
 
