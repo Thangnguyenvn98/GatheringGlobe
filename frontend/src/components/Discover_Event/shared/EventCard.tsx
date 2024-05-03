@@ -1,16 +1,7 @@
 import React from "react";
+import { Event } from "@/types/event";
 
-interface EventProps {
-  title: string;
-  description: string;
-  startTime: string;
-  endTime: string;
-  artistName: string;
-  imageUrls: string[];
-  location: string;
-}
-
-const EventCard: React.FC<EventProps> = ({
+const EventCard: React.FC<Omit<Event, "id">> = ({
   title,
   description,
   startTime,
