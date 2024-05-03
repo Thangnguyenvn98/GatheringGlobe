@@ -112,7 +112,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({
                 <div
                   key={message._id}
                   className={cn(
-                    "rounded-lg p-2 my-4 inline-block break-words w-full max-w-[300px]",
+                    "rounded-lg p-2 my-4 inline-block break-words w-auto",
                     message.username === username
                       ? "ml-auto mr-2 bg-blue-500 text-right"
                       : "mr-auto ml-2 bg-chat text-left"
@@ -140,11 +140,11 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({
                     className={cn(
                       "flex text-sm items-center",
                       message.username === username
-                        ? "justify-end pr-2"
-                        : "justify-start pl-2"
+                        ? "justify-end px-2"
+                        : "justify-start px-2"
                     )}
                   >
-                    <div className="flex items-center gap-x-2 mt-2">
+                    <div className="flex gap-x-2 mt-2 items-center">
                       <span>{message.username || ""}</span>
                       {currentRoom?.owner.username === message.username ? (
                         <ShieldCheck className="ml-1" fill="green" />
