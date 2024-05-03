@@ -26,20 +26,16 @@ const ChatList: React.FC<ChatListProps> = ({
   const [searchTerm, setSearchTerm] = useState("");
   const { onOpen } = useModal();
   const handleRoomClick = (room: Room) => {
-    console.log(room);
-    console.log(username);
     if (room._id && username) {
       if (roomId && roomId !== room._id) {
         socket.emit("leave_room", { room: roomId, userId });
       }
-      console.log("is it runing heresss");
       socket.emit("join_room", { userId, username, roomId: room._id });
       navigate(`/messages/c/${room.owner._id}/t/${room._id}`);
     }
   };
 
   const handleEditClick = (room: Room, e: React.MouseEvent) => {
-    console.log("hi");
     e.stopPropagation(); // Prevent triggering room click
     onOpen("editRoom", { room }); // Assuming 'editRoom' is a valid modal type
   };

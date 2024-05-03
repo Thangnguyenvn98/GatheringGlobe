@@ -89,7 +89,6 @@ export const getRooms = async () => {
 
 export const getCurrentUser = async () => {
   const response = await axiosInstance.get<User>("/api/users");
-  console.log(response.data);
   return response.data;
 };
 

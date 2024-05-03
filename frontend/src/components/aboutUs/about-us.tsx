@@ -11,10 +11,12 @@ const AboutUs = () => {
       <div
         style={{
           backgroundImage: `url("${AboutBanner}")`,
-          backgroundSize: "cover",
+          backgroundSize: "100% 100%",
           backgroundRepeat: "no-repeat",
+          backgroundPosition: "center center",
+
         }}
-        className="flex justify-center items-center h-[400px]"
+        className="flex justify-center items-center min-h-[600px] w-full"
       >
         <h1 className="font-extrabold text-4xl text-white">
           We're in the business of making memories.
