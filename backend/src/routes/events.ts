@@ -1,17 +1,40 @@
 import express, { Request, Response } from "express";
 import verifyToken from "../middleware/auth";
 import User from "../models/user";
-import Event from "../models/event";
+import Event from "../models/event"; // this is the model <-------
 
 const router = express.Router();
-
-
+  //By using the model to find it
+  //You can stack finding an event basically calling it 4 times, first by location then startDate then endDate then keyword
+  //There a mongodb option to find event by date give startDate and endDate
+  //After found the model return the response something like    res.status(200).json(foundEvent);
 router.get('/search', async (req:Request, res:Response) => {
-  console.log(req.query)
-  return res.status(200).json({message:"Test successfully"})
+  //get all the location, startDate, endDeate, keyword sent from front end
+  const {locationChosen,startDate,endDate,keyword} = req.query
+  const regex = new RegExp(String(keyword), "i"); // Create a regular expression with the variable and make it case-insensitive
+  try {
+    let event;
+    if (String(locationChosen) !== "All locations") {
+      event = await Event.find({$and:[
+        {location: String(locationChosen)}, 
+        {description:{$regex: regex}},
+      ]})
+    }
+    else
+    {
+      event = await Event.find({description:{$regex: regex}})
+    }
+    if (event.length===0) {
+      //set the response and return so that it will set the status and would not run the part after the if statement
+      return res.status(201).json({ message: "Event not found" }); //how do we use the message here
+    }
+    console.log(event)
+    res.status(200).json(event);
+  } catch (error) {
+    console.error("Failed to fetch event:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
 })
-
-
 
 
 router.post("/", verifyToken, async (req: Request, res: Response) => {

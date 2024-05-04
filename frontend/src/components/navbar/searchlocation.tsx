@@ -1,19 +1,14 @@
 import {FormEvent, useCallback, useEffect, useState } from 'react';
-import { DropdownMenu, DropdownMenuItem, DropdownMenuContent, DropdownMenuTrigger } from "../ui/dropdown-menu"
-import { ScrollArea } from "../ui/scroll-area"
-import { Button } from "../ui/button"
 import { Navigation } from 'lucide-react';
 import {useMap, useMapsLibrary} from '@vis.gl/react-google-maps';
 import {Input} from '../ui/input';
 
 function EventLocation({setLocationFromParent}:{setLocationFromParent:(value:string)=>void}) {
-    const loc = ["New York", "Los Angeles", "Chicago", "Houston", "Phoenix", "Philadelphia", "San Antonio", "San Diego", "Dallas", "San Jose", "Austin", "Jacksonville", "San Francisco", "Indianapolis", "Columbus", "Fort Worth", "Charlotte", "Seattle", "Denver", "El Paso", "Detroit", "Washington", "Boston", "Memphis", "Nashville", "Portland", "Oklahoma City", "Las Vegas", "Baltimore", "Louisville"]
     //setlocation is the function called when the event happen
     //state of location object is what chenged
     //"Event Locations" is the initial value of location object
     //locationChosen is triggered when button is click, the value locchosen in the button  is passed in
     //it then trigger setlocation which set location object to the value of locchosen
-    const [location, setLocation] = useState("Event Locations") //declare the usestate
     const map = useMap();
     const places = useMapsLibrary('places');
 

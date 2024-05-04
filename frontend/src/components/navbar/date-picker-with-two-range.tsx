@@ -19,7 +19,7 @@ function DatePickerWithRange({setDateFromParent}:{ setDateFromParent: (value: Da
 
   const onSubmit = (data: DateRange| undefined) => {
 
-    setDateFromParent(data)
+    setDateFromParent(data);
     setDate(data);
   }
   return (
