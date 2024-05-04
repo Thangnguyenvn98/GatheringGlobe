@@ -33,24 +33,15 @@ function App() {
             </Layout>
           }
         />
-        <Route element={<ProtectedRoute />}>
-          <Route
-            path="/messages/c/:ownerId/t/:roomId"
-            element={
-              <SocketProvider>
-                <ChatPage />
-              </SocketProvider>
-            }
-          />
-          <Route
-            path="/messages"
-            element={
-              <SocketProvider>
-                <ChatPage />
-              </SocketProvider>
-            }
-          />
-        </Route>
+        <Route element={<ProtectedRoute />} />
+        <Route
+          path="/messages/c/:ownerId/t/:roomId"
+          element={
+            <SocketProvider>
+              <ChatPage />
+            </SocketProvider>
+          }
+        />
 
         <Route path="*" element={<Navigate to="/" />} />
         <Route
@@ -61,14 +52,7 @@ function App() {
             </Layout>
           }
         />
-        <Route
-          path="/help"
-          element={
-            <Layout>
-              <Faq />
-            </Layout>
-          }
-        />
+
         <Route
           path="/discover/event/:eventId"
           element={
@@ -77,6 +61,24 @@ function App() {
             </Layout>
           }
         />
+        <Route
+          path="/messages"
+          element={
+            <SocketProvider>
+              <ChatPage />
+            </SocketProvider>
+          }
+        />
+        <Route path="*" element={<Navigate to="/" />} />
+        <Route
+          path="/help"
+          element={
+            <Layout>
+              <Faq />
+            </Layout>
+          }
+        />
+
         <Route
           path="/contact-us"
           element={
