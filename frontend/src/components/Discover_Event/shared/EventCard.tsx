@@ -11,24 +11,28 @@ const EventCard: React.FC<Omit<Event, "id">> = ({
   location,
 }) => {
   return (
-    <div className="mb-5 bg-white shadow-md rounded-lg p-4">
+    <div className="flex mb-5 bg-white shadow-md rounded-lg p-4">
       <img
         src={imageUrls[0]} // Assuming the first URL is the primary image
         alt={title}
-        className="w-full max-w-xs h-auto rounded-t-lg"
+        className="w-60 h-auto object-contain rounded-lg mr-4 "
       />
-      <div className="p-4">
-        <h3 className="text-lg font-bold">{title}</h3>
-        <p className="text-sm text-gray-600">{artistName}</p>
-        <p className="text-sm">{description}</p>
-        <div className="text-xs text-gray-500 mt-2">
-          <p>Start: {startTime}</p>
-          <p>End: {endTime}</p>
-          <p>Location: {location}</p>
+
+      <div className="flex-1 flex flex-col justify-center pl-4">
+        <div className="event-description">
+          <h1 className="text-lg font-bold py-2">{title}</h1>
+          <h2 className="text-sm text-gray-600 py-2">{artistName}</h2>
+          <h3 className="text-sm py-2">{description}</h3>
+          <div className="text-xs text-gray-500 mt-2 ">
+            <h3 className="py-2">Start: {startTime}</h3>
+            <h3 className="py-2">End: {endTime}</h3>
+            <h3>Location: {location}</h3>
+          </div>
+          <button className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-auto">
+            View Event Details
+            {/* dunfg link react */}
+          </button>
         </div>
-        <button className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-          View Event Details
-        </button>
       </div>
     </div>
   );
