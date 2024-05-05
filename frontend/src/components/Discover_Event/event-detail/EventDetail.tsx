@@ -1,10 +1,6 @@
 import React, { useState } from "react";
-import { Event } from "@/types/event";
-import EventCard from "@/components/Discover_Event/shared/EventCard";
-<<<<<<< HEAD
-=======
+import { useLocation } from "react-router-dom"; //to call props in event card to the even detail page by clicking the button "view event details"
 
->>>>>>> 4273fde... event detail doing
 const EventDetail: React.FC = () => {
   // Event details hardcoded directly into the component
   // const eventName = "Summer Music Festival";
@@ -12,6 +8,8 @@ const EventDetail: React.FC = () => {
   //   "https://cluecho.com/wp-content/uploads/2023/04/NCT-DREAM_THE-DREAM-SHOW2_-In-A-DREAM_Newark-Image-3-900x600.jpg";
   // const eventLocation = "Central Park, New York City";
   // const eventDateTime = "2024-07-16T20:00:00";
+  const location = useLocation();
+  const eventData = location.state;
   const eventTags = ["Music", "Festival", "Summer", "Live"];
   const ticketPrice = "59.99";
 
@@ -26,18 +24,18 @@ const EventDetail: React.FC = () => {
     <div className="flex flex-col md:flex-row p-6">
       <div className="flex-1">
         <img
-          src={event.imageUrls}
-          alt={event.title}
+          src={eventData.imageUrls}
+          alt={eventData.title}
           className="rounded-lg mb-4"
         />
-        <h1 className="text-2xl font-bold mb-2">{event.title}</h1>
-        <p className="text-gray-600 mb-2">{event.location}</p>
-        <p className="text-gray-600 mb-2">{event.startTime}</p>
-        <p className="text-gray-600 mb-2">{event.endTime}</p>
+        <h1 className="text-2xl font-bold mb-2">{eventData.title}</h1>
+        <p className="text-gray-600 mb-2">{eventData.location}</p>
+        <p className="text-gray-600 mb-2">{eventData.startTime}</p>
+        <p className="text-gray-600 mb-2">{eventData.endTime}</p>
         <div className="mb-4">
           {eventTags.map((tag) => (
             <span
-              key={event.id}
+              key={eventData.id}
               className="inline-block bg-blue-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2"
             >
               {tag}
@@ -45,7 +43,7 @@ const EventDetail: React.FC = () => {
           ))}
         </div>
         <h2 className="text-xl font-semibold mb-2">About this event</h2>
-        <p>{event.description}</p>
+        <p>{eventData.description}</p>
       </div>
       <div className="flex-1">
         <div className="bg-gray-100 p-6 rounded-lg shadow-lg">

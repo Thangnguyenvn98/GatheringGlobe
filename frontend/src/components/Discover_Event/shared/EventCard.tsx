@@ -10,6 +10,7 @@ const EventCard: React.FC<Omit<Event, "id">> = ({
   artistName,
   imageUrls,
   location,
+  onClick,
 }) => {
   return (
     <div className="event-card-container flex mb-5 bg-white shadow-md rounded-lg p-4">
@@ -29,7 +30,10 @@ const EventCard: React.FC<Omit<Event, "id">> = ({
             <h3 className="py-2">End: {endTime}</h3>
             <h3>Location: {location}</h3>
           </div>
-          <button className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-auto">
+          <button
+            className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-auto"
+            onClick={onClick}
+          >
             View Event Details
             {/* dunfg link react */}
           </button>

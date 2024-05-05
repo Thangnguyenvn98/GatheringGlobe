@@ -7,4 +7,5 @@ export interface Event {
   imageUrls: string[];
   location: string;
   id: string;
+  onClick: () => void;
 }
