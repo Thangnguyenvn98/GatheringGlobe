@@ -1,5 +1,6 @@
 import React from "react";
 import { Event } from "@/types/event";
+import "./EventCard.css";
 
 const EventCard: React.FC<Omit<Event, "id">> = ({
   title,
@@ -11,7 +12,7 @@ const EventCard: React.FC<Omit<Event, "id">> = ({
   location,
 }) => {
   return (
-    <div className="flex mb-5 bg-white shadow-md rounded-lg p-4">
+    <div className="event-card-container flex mb-5 bg-white shadow-md rounded-lg p-4">
       <img
         src={imageUrls[0]} // Assuming the first URL is the primary image
         alt={title}

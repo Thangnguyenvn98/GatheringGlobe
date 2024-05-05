@@ -96,7 +96,7 @@ const EventList: React.FC<EventListProps> = ({ displayMode }) => {
     <div style={{ padding: "20px" }}>
       {" "}
       <div
-        className="grid place-items-center h-screen p-4 pb-5"
+        className="grid place-items-center p-4 pb-5"
         style={gridStyle}
         onClick={handleClick}
       >
