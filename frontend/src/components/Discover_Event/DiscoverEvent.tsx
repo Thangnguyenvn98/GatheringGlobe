@@ -12,9 +12,7 @@ const DiscoverEvent: React.FC = () => {
           <EventList displayMode="list" />
         </div>
       </div>
-      <div className="flex justify-center pb-4">
-        <Pagination />
-      </div>
+      <Pagination />
     </div>
   );
 };

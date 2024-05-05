@@ -29,10 +29,7 @@ const EventdataList: React.FC<eventdataListProps> = ({ displayMode }) => {
 
   return (
     <div style={{ padding: "20px" }}>
-      <div
-        className="grid place-items-center p-4 pb-5"
-        style={gridStyle}
-      >
+      <div className="grid place-items-center p-4 pb-5" style={gridStyle}>
         {eventdatas.map((eventData) => (
           <div key={eventData.id}>
             <EventCard
