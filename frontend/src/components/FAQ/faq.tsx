@@ -3,8 +3,9 @@ import { useState } from 'react'
 import StarBackground from '../../images/starFAQ.jpg'
 
 import CustomAccordion from './customAccordion'
-import { CircleUserRound, ReceiptText, TicketCheck, Handshake, BellRing,Receipt } from 'lucide-react';
+import { CircleUserRound, ReceiptText, TicketCheck, Handshake, BellRing,Receipt} from 'lucide-react';
 import CategoryCard from './CategoryCard';
+import { Link } from 'react-router-dom';
 
 
 
@@ -112,6 +113,12 @@ const Faq = () => {
          
              
 
+        </div>
+        <div className="flex flex-col gap-y-4 pb-10 items-center">
+            <h2 className="text-2xl font-bold">FIND SUPPORT</h2>
+       
+            <Link to="/contact-us" className="bg-black text-white p-4 rounded-md hover:bg-opacity-80 min-w-[150px] max-h-[100px] text-center">Contact us &#x2192; </Link>
+          
         </div>
         </div>
     )

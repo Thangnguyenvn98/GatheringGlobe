@@ -4,7 +4,7 @@ import Celebrating from "../../images/Celebrating-end-about.jpg";
 
 const AboutEndingSection = () => {
   return (
-    <section className="max-w-screen-lg mx-auto p-10 w-full">
+    <section className="max-w-screen-lg mx-auto mb-16 w-full">
       <div className="grid grid-cols-2">
         <div
           className="flex text-white font-bold text-2xl justify-center items-center bg-no-repeat bg-center"

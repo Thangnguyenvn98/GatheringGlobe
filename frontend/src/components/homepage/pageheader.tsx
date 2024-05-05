@@ -45,7 +45,7 @@ function Pageheader() {
                     <Link to="/about" className="    hover:text-green-500 ">
                         About Us
                     </Link>
-                    <Link to="/support/faq" className=" hover:text-green-500 ">
+                    <Link to="/help" className=" hover:text-green-500 ">
                         FAQs
                     </Link>
                 </div>
