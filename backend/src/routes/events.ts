@@ -26,9 +26,8 @@ router.get('/search', async (req:Request, res:Response) => {
     }
     if (event.length===0) {
       //set the response and return so that it will set the status and would not run the part after the if statement
-      return res.status(201).json({ message: "Event not found" }); //how do we use the message here
+      return res.status(201).json({ message: "Event not found" }); //not sure how this message is used
     }
-    console.log(event)
     res.status(200).json(event);
   } catch (error) {
     console.error("Failed to fetch event:", error);
