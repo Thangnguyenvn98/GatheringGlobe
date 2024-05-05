@@ -1,3 +1,4 @@
+import Footer from "../homepage/footer";
 import Pageheader from "../homepage/pageheader"
 
 interface Props {
@@ -11,6 +12,7 @@ const Layout = ({ children }: Props) => {
         <div className="flex-1 pt-[232px]">
             {children}
         </div>
+        <Footer/>
     </div>
   )
 }
