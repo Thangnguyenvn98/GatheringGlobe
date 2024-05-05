@@ -15,7 +15,7 @@ import {useNavigate} from "react-router-dom";
 
 function SearchForm() {
     const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || ''
-    const [location, setLocation] = useState("All locations")
+    const [location, setLocation] = useState("")
     const [date, setDate] = React.useState<DateRange | undefined>({
             from: new Date(2024, 2, 20),
             to: addDays(new Date(2024, 4, 20), 20),
