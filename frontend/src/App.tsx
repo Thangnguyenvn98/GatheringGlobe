@@ -13,6 +13,9 @@ import {
   Navigate,
 } from "react-router-dom";
 import Layout from "./components/layouts/layout";
+import Faq from "./components/FAQ/faq";
+import ContactUs from "./components/contact-us/contactUs";
+
 
 function App() {
   return (
@@ -28,6 +31,7 @@ function App() {
         <Route path="/discover" element={<Layout><DiscoverEvent/></Layout>} />
         <Route path="/help" element={<Layout><Faq/></Layout>} />
         <Route path="/discover/event/:eventId" element={<Layout><EventDetail/></Layout>} />
+        <Route path="/contact-us" element={<Layout><ContactUs/></Layout>} />
       </Routes>
     </Router>
   );
