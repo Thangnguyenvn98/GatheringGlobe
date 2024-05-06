@@ -1,4 +1,5 @@
 import {
+  Pagination,
   PaginationContent,
   PaginationEllipsis,
   PaginationItem,
@@ -7,9 +8,9 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 
-export default function Pagination() {
+export default function PaginationComponent() {
   return (
-    <div className="p-5">
+    <Pagination className="p-4">
       <PaginationContent>
         <PaginationItem>
           <PaginationPrevious href="#" />
@@ -34,6 +35,6 @@ export default function Pagination() {
           <PaginationNext href="#" />
         </PaginationItem>
       </PaginationContent>
-    </div>
+    </Pagination>
   );
 }
