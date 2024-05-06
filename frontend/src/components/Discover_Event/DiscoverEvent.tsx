@@ -1,28 +1,20 @@
 import React from "react";
-import HeroSection from "./HeroSection";
-import NavigationButtons from "./NavigationButtons";
-import EventList from "./EventList";
-import FilterSection from "./FilterSection";
+import EventList from "./event-list/EventList";
+import FilterSection from "./filter-section/FilterSection";
 import Pagination from "./Pagination";
 
-const App: React.FC = () => {
+const DiscoverEvent: React.FC = () => {
   return (
     <div>
-      <HeroSection />
-      <NavigationButtons />
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <FilterSection />
-        </div>
-        <div>
+      <div className="grid grid-cols-6 ps-8 pt-8">
+        <FilterSection />
+        <div className="col-span-4">
           <EventList displayMode="list" />
         </div>
       </div>
-      <div className=" inset-x-0 bottom-0 flex justify-center pb-4 w-full ">
-        <Pagination />
-      </div>
+      <Pagination />
     </div>
   );
 };
 
-export default App;
+export default DiscoverEvent;
