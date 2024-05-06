@@ -28,8 +28,7 @@ function EventLocation({setLocationFromParent}:{setLocationFromParent:(value:str
   >([]);
 
   const [inputValue, setInputValue] = useState<string>("");
-  const [selectedPlace, setSelectedPlace] =
-  useState<google.maps.places.PlaceResult | null>(null);
+
 
   useEffect(() => {
     if (!places || !map) return;

@@ -9,12 +9,15 @@
     "dev:back": "cd backend && npm run dev",
     "setup": "run-p install:*",
     "install:client": "cd frontend && npm install",
-    "install:server": "cd backend && npm install"
+    "install:server": "cd backend && npm install",
+    "pre-commit": "cd frontend && npm install && npm run build && cd ../backend && npm run build",
+    "prepare": "husky install"
   },
   "repository": "https://github.com/Thangnguyenvn98/GatheringGlobe.git",
   "author": "BinniesLite <89041460+BinniesLite@users.noreply.github.com>",
   "license": "MIT",
   "devDependencies": {
+    "husky": "^8.0.0",
     "npm-run-all": "^4.1.5"
   }
 }
