@@ -97,7 +97,7 @@ const Faq = () => {
 
 
 
-        <div className="my-10 flex flex-col self-center">
+        <div className="my-10 flex flex-col self-center p-4">
                 <h1 className="text-4xl text-center font-bold">Frequently Asked Questions </h1>
            
              <CustomAccordion question='How do I create an event on the platform?' answer={`To create an event, log in to your account, and navigate to the 'Create Event' section. Fill out the event details form, including event name, date, location, and description. You can also upload images and set ticket prices. Once you've reviewed your details, submit the form to publish your event.`} expanded={triggers.first} setExpanded={() => toggleTrigger('first')}/>
