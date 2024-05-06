@@ -32,6 +32,7 @@ function App() {
         <Route path="/help" element={<Layout><Faq/></Layout>} />
         <Route path="/discover/event/:eventId" element={<Layout><EventDetail/></Layout>} />
         <Route path="/contact-us" element={<Layout><ContactUs/></Layout>} />
+        <Route path="/discover-event-details" element={<Layout><EventDetail/></Layout>} />
       </Routes>
     </Router>
   );
