@@ -1,10 +1,7 @@
 import { ScrollArea } from "../ui/scroll-area"
 import { Separator } from "../ui/separator"
  
-const tags = Array.from({ length: 50 }).map
-(
-    (_, a) => `Gathering Globe Upcoming Events.${a}`
-)
+const tags = Array.from({ length: 50 }).map((_, a) => `Gathering Globe Upcoming Events.${a}`)
 
 function Scrollable() {
     return (

@@ -10,6 +10,7 @@ import {APIProvider, Map} from '@vis.gl/react-google-maps';
 import queryString from 'query-string';
 import axios from "axios";
 import {useNavigate} from "react-router-dom";
+import { Event } from "@/types/event";
 
 
 
@@ -39,9 +40,9 @@ function SearchForm() {
             const response = await axios.get(`${API_BASE_URL}/api/events/search?${finalParams}`)
             if (response.status === 200) {
                 //if the data fetched successfully (status code === 200), navigate to another page
-                response.data.forEach(item => {
+                response.data.forEach((item: Event) => {
                     console.log(item);
-                  });
+                });
                 navigate(`/events/search?${finalParams}`)
             }
             else if (response.status === 201) {
