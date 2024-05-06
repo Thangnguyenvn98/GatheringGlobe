@@ -18,7 +18,8 @@ function DatePickerWithRange({setDateFromParent}:{ setDateFromParent: (value: Da
   const [date, setDate] = React.useState<DateRange | undefined>();
 
   const onSubmit = (data: DateRange| undefined) => {
-    setDateFromParent(data)
+
+    setDateFromParent(data);
     setDate(data);
   }
   return (

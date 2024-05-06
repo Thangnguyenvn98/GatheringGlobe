@@ -5,8 +5,8 @@ export type EventType = {
     _id: string;
     title: string;
     description: string;
-    startTime: string;
-    endTime: string;
+    startTime:Date;
+    endTime: Date;
     venueId?: string;  
     capacity?: number; 
     organizerId: string;
@@ -24,8 +24,8 @@ export type EventType = {
 const eventSchema = new mongoose.Schema({
     title: { type: String, required: true },
     description: { type: String, required: true },
-    startTime: { type: String, required: true },
-    endTime: { type: String, required: true },
+    startTime: { type: Date, required: true },
+    endTime: { type: Date, required: true },
     venueId: { type: mongoose.Schema.Types.ObjectId, ref: 'Venue', required: false },
     capacity: { type: Number, required: false }, // Optional based on venue presence
     organizerId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
