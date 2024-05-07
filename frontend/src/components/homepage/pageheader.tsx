@@ -34,7 +34,6 @@ function Pageheader() {
         </DropdownMenu>
       </div>
 
-
       <div className="flex flex-col w-full bg-green-200 fixed bg-opacity-100 z-30">
         <div className="flex justify-between w-full text-white items-center">
           <div className="relative flex items-center">
