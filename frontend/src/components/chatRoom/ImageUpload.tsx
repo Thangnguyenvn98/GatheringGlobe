@@ -21,14 +21,14 @@ interface ImageUploadProps {
   onChange: (url: string) => void;
   // Defines the type for the onChange prop
   className?: string;
-  iconClassName?:string;
+  iconClassName?: string;
 }
 const CLOUDNAME = import.meta.env.VITE_CLOUDINARY_CLOUDNAME || "";
 const UPLOADPRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || "";
 const ImageUpload: React.FC<ImageUploadProps> = ({
   onChange,
   className = "",
-  iconClassName= ""
+  iconClassName = "",
 }) => {
   const openCloudinaryWidget = () => {
     const myWidget = cloudinary.createUploadWidget(
@@ -42,7 +42,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
 
           onChange(result.info.secure_url);
         }
-      }
+      },
     );
 
     myWidget.open();
@@ -55,7 +55,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
         onClick={openCloudinaryWidget}
         className="bg-transparent hover:bg-transparent"
       >
-        <Paperclip  className={cn( iconClassName)} /> 
+        <Paperclip className={cn(iconClassName)} />
       </Button>
     </div>
   );

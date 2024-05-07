@@ -19,5 +19,5 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
       <Toaster />
       <App />
     </QueryClientProvider>
-  </React.StrictMode>
+  </React.StrictMode>,
 );

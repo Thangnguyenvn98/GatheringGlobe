@@ -46,7 +46,7 @@ const ChatList: React.FC<ChatListProps> = ({
   };
 
   const filteredRooms = rooms.filter((room) =>
-    room.name.toLowerCase().includes(searchTerm.toLowerCase())
+    room.name.toLowerCase().includes(searchTerm.toLowerCase()),
   );
   return (
     <aside className="w-96 bg-white flex flex-shrink-0 overflow-y-auto sticky top-0 h-[100dvh]">
@@ -74,7 +74,7 @@ const ChatList: React.FC<ChatListProps> = ({
               "flex flex-col p-2 rounded-md cursor-pointer hover:bg-slate-100",
               room._id === roomId
                 ? "bg-chat-color text-white hover:bg-chat-color"
-                : ""
+                : "",
             )}
           >
             <div className="flex flex-col ">
