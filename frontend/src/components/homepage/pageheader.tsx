@@ -3,12 +3,35 @@ import {
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuGroup,
+  DropdownMenuShortcut,
 } from "../ui/dropdown-menu";
+import { Button } from "../ui/button";
 import GatheringGlobe from "../../images/GatheringGlobe.png";
 import SearchForm from "../navbar/searchbar";
 import { Link } from "react-router-dom";
+import { CircleUserRound, LogOut } from "lucide-react";
+import useAuthStore from "@/hooks/use-auth-store";
+import { signOutUser } from "@/services/api";
+import toast from "react-hot-toast";
+import { useCurrentUser } from "@/services/queries";
 
 function Pageheader() {
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const { data: userData, isLoading, isError } = useCurrentUser();
+
+  const signOut = async () => {
+    try {
+      const response = await signOutUser();
+      useAuthStore.getState().clearAuthenticated();
+      toast.success(response.message);
+    } catch (e) {
+      console.log(e);
+      toast.error("Logout failed");
+    }
+  };
   return (
     <>
       <div className="flex md:hidden left-0">
@@ -34,7 +57,7 @@ function Pageheader() {
         </DropdownMenu>
       </div>
 
-      <div className="flex flex-col w-full bg-green-200 fixed bg-opacity-100 z-30">
+      <div className="flex flex-col w-full bg-green-200 fixed bg-opacity-100 z-30 p-4">
         <div className="flex justify-between w-full text-white items-center">
           <div className="relative flex items-center">
             <Link to="/">
@@ -55,12 +78,51 @@ function Pageheader() {
               FAQs
             </Link>
           </div>
-          <Link
-            to="/register"
-            className="bg-white text-green-800 text-lg p-4 rounded-md mr-2"
-          >
-            Log In/Sign up
-          </Link>
+          {isAuthenticated && !isLoading && !isError && (
+            <DropdownMenu modal={false}>
+              <DropdownMenuTrigger asChild>
+                <Button variant={"profile"}>
+                  <CircleUserRound />
+                </Button>
+              </DropdownMenuTrigger>
+
+              <DropdownMenuContent align="end" className="w-72">
+                <div>
+                  <span className="ml-2 text-muted-foreground">
+                    Welcome back!
+                  </span>{" "}
+                  <DropdownMenuLabel className="text-lg">
+                    {userData?.username}
+                  </DropdownMenuLabel>
+                </div>
+                <DropdownMenuSeparator />
+                <DropdownMenuGroup>
+                  <DropdownMenuItem>My Profile</DropdownMenuItem>
+                  <DropdownMenuItem>My Tickets</DropdownMenuItem>
+                  <DropdownMenuItem>My Settings</DropdownMenuItem>
+                  <DropdownMenuItem>My Events</DropdownMenuItem>
+                </DropdownMenuGroup>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={signOut}
+                  className="text-red-500 font-bold text-lg "
+                >
+                  Sign Out
+                  <DropdownMenuShortcut className="text-red-500">
+                    <LogOut />
+                  </DropdownMenuShortcut>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
+          {!isAuthenticated && (
+            <Link
+              to="/register"
+              className="bg-white text-green-800 text-lg p-4 rounded-md mr-2"
+            >
+              Log In/Sign up
+            </Link>
+          )}
         </div>
         <div className="flex justify-center pb-4">
           <SearchForm />

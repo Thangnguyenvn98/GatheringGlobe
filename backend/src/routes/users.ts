@@ -113,4 +113,13 @@ router.get("/", verifyToken, async (req: Request, res: Response) => {
   }
 });
 
+router.get("/validate-token", verifyToken, (req: Request, res: Response) => {
+    res.status(200).send({ userId: req.userId });
+  });
+
+router.post("/logout", (req: Request, res: Response) => {
+    res.clearCookie("auth_token");
+    res.status(200).send({ message: "Logged out successfully" });
+});
+
 export default router

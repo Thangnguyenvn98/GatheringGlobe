@@ -93,12 +93,11 @@ export const getCurrentUser = async () => {
 };
 
 export const validateToken = async () => {
-  const response = await fetch(`${API_BASE_URL}/api/auth/validate-token`, {
-    credentials: "include",
-  });
+  const response = await axiosInstance.get("/api/users/validate-token");
+  return response.data;
+};
 
-  if (!response.ok) {
-    throw new Error("Token invalid");
-  }
-  return response.json();
+export const signOutUser = async () => {
+  const response = await axiosInstance.post("/api/users/logout");
+  return response.data;
 };
