@@ -15,8 +15,11 @@ import {
 import Layout from "./components/layouts/layout";
 import Faq from "./components/FAQ/faq";
 import ContactUs from "./components/contact-us/contactUs";
+import ProtectedRoute from "./utils/ProtectedRoute";
+import useCheckAuth from "./hooks/useCheckAuth";
 
 function App() {
+  useCheckAuth();
   return (
     <Router>
       <Routes>
@@ -30,23 +33,25 @@ function App() {
             </Layout>
           }
         />
-        <Route path="/messages" element={<ChatPage />} />
-        <Route
-          path="/messages/c/:ownerId/t/:roomId"
-          element={
-            <SocketProvider>
-              <ChatPage />
-            </SocketProvider>
-          }
-        />
-        <Route
-          path="/messages"
-          element={
-            <SocketProvider>
-              <ChatPage />
-            </SocketProvider>
-          }
-        />
+        <Route element={<ProtectedRoute />}>
+          <Route
+            path="/messages/c/:ownerId/t/:roomId"
+            element={
+              <SocketProvider>
+                <ChatPage />
+              </SocketProvider>
+            }
+          />
+          <Route
+            path="/messages"
+            element={
+              <SocketProvider>
+                <ChatPage />
+              </SocketProvider>
+            }
+          />
+        </Route>
+
         <Route path="*" element={<Navigate to="/" />} />
         <Route
           path="/discover"

@@ -15,6 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { AxiosError } from "axios";
+import useAuthStore from "@/hooks/use-auth-store";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -27,6 +28,7 @@ const Login = () => {
     try {
       console.log(data);
       await SignInUser(data);
+      useAuthStore.getState().setAuthenticated(true);
       navigate("/");
       toast.success("Login Success");
     } catch (error) {
