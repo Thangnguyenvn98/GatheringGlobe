@@ -25,8 +25,9 @@ function Pageheader() {
   const signOut = async () => {
     try {
       const response = await signOutUser();
-      useAuthStore.getState().clearAuthenticated();
+      console.log(response.message);
       toast.success(response.message);
+      useAuthStore.getState().clearAuthenticated();
     } catch (e) {
       console.log(e);
       toast.error("Logout failed");
