@@ -26,7 +26,6 @@ const Login = () => {
   } = useForm<SignInFormData>();
   const handleSignIn: SubmitHandler<SignInFormData> = async (data) => {
     try {
-      console.log(data);
       await SignInUser(data);
       useAuthStore.getState().setAuthenticated(true);
       navigate("/");
