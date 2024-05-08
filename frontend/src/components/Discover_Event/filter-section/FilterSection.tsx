@@ -3,14 +3,43 @@ import { Calendar } from "@/components/ui/calendar";
 import { useState } from "react";
 import { useEffect } from "react";
 import { useRef } from "react";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { Button } from "../../ui/button";
 
 const FilterSection = () => {
+  const categories = [
+    "Music",
+    "Movies",
+    "Books",
+    "Sports",
+    "Technology",
+    "Travel",
+    "Food",
+    "Fashion",
+    "Art",
+    "Science",
+    "Politics",
+    "History",
+    "Education",
+    "Health",
+    "Finance",
+    "Gaming",
+    "Lifestyle",
+    "Parenting",
+    "Pets",
+    "Gardening",
+  ];
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [showCalendar, setShowCalendar] = useState(false);
+  const [showCatergory, setshowCatergory] = useState(false);
   const calendarRef = useRef(null);
+  const catergoryRef = useRef(null);
 
   const toggleCalendar = () => {
     setShowCalendar(!showCalendar);
+  };
+  const catergoryShow = () => {
+    setshowCatergory(!showCatergory);
   };
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -20,21 +49,46 @@ const FilterSection = () => {
       ) {
         setShowCalendar(false);
       }
+      if (
+        catergoryRef.current &&
+        !(catergoryRef.current as HTMLElement).contains(event.target as Node)
+      ) {
+        setshowCatergory(false);
+      }
     }
 
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [calendarRef]);
+  }, [calendarRef, catergoryRef]);
 
   return (
     <div className="filter-section-container relative">
-      <div className=" filter-section fixed bottom-7">
+      <div className=" filter-section top-[152px] bottom-7">
         <p>Filter</p>
-        <div className="filter-category">
-          <h3>Category</h3>
-          <div>
+        <div className="filter-catergory">
+          <Button
+            onClick={catergoryShow}
+            className="bg-transparent border-none p-0 shadow-none hover:bg-transparent mx-0 text-[12pt] text-black"
+          >
+            Catergory
+          </Button>
+          {showCatergory && (
+            <ScrollArea ref={catergoryRef} className="h-72 rounded-md border">
+              {categories.map((cat, index) => (
+                <div>
+                  <input type="checkbox" name="date" id={String(index)} />
+                  <label htmlFor={String(index)} key={index}>
+                    {cat}
+                  </label>
+                </div>
+              ))}
+              <ScrollBar orientation="vertical" />
+            </ScrollArea>
+          )}
+
+          {/* <div>
             <input type="checkbox" id="business" />
             <label htmlFor="business">Business</label>
           </div>
@@ -49,8 +103,7 @@ const FilterSection = () => {
           <div>
             <input type="checkbox" id="music" />
             <label htmlFor="music">Music</label>
-          </div>
-          <button>View more</button>
+          </div> */}
         </div>
         <div className="filter-date">
           <h3>Date</h3>
@@ -75,17 +128,11 @@ const FilterSection = () => {
             />
             <label htmlFor="pick-date">Pick a date...</label>
             {showCalendar && (
-              <div className="calendar-container" ref={calendarRef}>
-                <Calendar
-                  mode="single"
-                  selected={date}
-                  onSelect={setDate}
-                  className="rounded-md border"
-                />
+              <div ref={calendarRef}>
+                <Calendar mode="single" selected={date} onSelect={setDate} />
               </div>
             )}
           </div>
-          <button>View more</button>
         </div>
         <div className="filter-price">
           <h3>Price</h3>
