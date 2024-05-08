@@ -14,6 +14,7 @@ router.post("/:ticketId/bookings/payment-intent", verifyToken,async (req: Reques
     // 1. totalPrice
     // 2. tickets (ticketId, quantity)
     // 3. userId
+    try {
     const {numberOfTickets} = req.body;
     const ticketId = req.params.ticketId;
 
@@ -21,8 +22,15 @@ router.post("/:ticketId/bookings/payment-intent", verifyToken,async (req: Reques
     if (!order) {
         return res.status(400).json({message: "Order not found"});
     }
+
+    // Calculate the total price
+    let totalPrice = 0;
+    order.tickets.forEach(ticket => {
+        totalPrice += ticket.price * ticket.quantity;
+    })
+
     const paymentIntent = await stripe.paymentIntents.create({
-        amount: order.totalPrice,
+        amount: totalPrice,
         currency: "usd",
         metadata: {
             ticketId,
@@ -37,9 +45,13 @@ router.post("/:ticketId/bookings/payment-intent", verifyToken,async (req: Reques
     const response = {
         paymentIntent: paymentIntent.id,
         clientSecret: paymentIntent.client_secret.toString(),
-        totalPrice: order.totalPrice,
+        totalPrice,
     };
     res.send(response);
+} catch (error) {
+    console.log(error);
+    res.status(500).json({message: "Something went wrong"});
+}
 });
 
 router.post("/:ticketId/bookings", verifyToken,async (req: Request, res: Response) => {
@@ -49,7 +61,7 @@ router.post("/:ticketId/bookings", verifyToken,async (req: Request, res: Respons
         const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId as string);
 
         if(!paymentIntent) {
-            return res.status(500).json({message: "Payment intent not found"});
+            return res.status(400).json({message: "Payment intent not found"});
         }
         if (paymentIntent.metadata.ticketId !== req.params.ticketId ||
             paymentIntent.metadata.userId !== req.userId) {
@@ -82,3 +94,5 @@ router.post("/:ticketId/bookings", verifyToken,async (req: Request, res: Respons
     }
     
 })
+
+export default router

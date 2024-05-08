@@ -3,6 +3,10 @@ import { SignInFormData } from "@/types/signInFormData";
 import { User } from "@/types/user";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import {
+  PaymentIntentResponse,
+  UserType
+} from "../../../backend/src/shared/types";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 export const axiosInstance = axios.create({
@@ -51,6 +55,27 @@ export const SignInUser = async (data: SignInFormData) => {
     throw error;
   }
 };
+
+// Handle payment
+export const createPaymentIntent = async (ticketId: string, numberOfTickets: string): Promise<PaymentIntentResponse> => {
+  try {
+    const response = await axiosInstance.post(
+      `/api/payments/${ticketId}/bookings/payment-intent`,
+      {numberOfTickets},
+    
+    );
+
+    if (response.status >= 200 && response.status < 300) {
+      return response.data;
+    } else {
+      throw new Error(`Server responded with status: ${response.status}`);
+    }
+  } catch(error) {
+    throw new Error("Failed to create payment intent");
+  }
+};
+
+
 
 export const createRoom = async (data: { name: string }) => {
   const response = await axiosInstance.post("/api/room", data);
