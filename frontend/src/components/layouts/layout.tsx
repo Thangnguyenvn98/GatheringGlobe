@@ -1,20 +1,18 @@
 import Footer from "../homepage/footer";
-import Pageheader from "../homepage/pageheader"
+import Pageheader from "../homepage/pageheader";
 
 interface Props {
-    children: React.ReactNode;
-  }
+  children: React.ReactNode;
+}
 
 const Layout = ({ children }: Props) => {
   return (
     <div className="flex flex-col min-h-screen">
-        <Pageheader/>
-        <div className="flex-1 pt-[232px]">
-            {children}
-        </div>
-        <Footer/>
+      <Pageheader />
+      <div className="flex-1 pt-[152px]">{children}</div>
+      <Footer />
     </div>
-  )
-}
+  );
+};
 
-export default Layout
+export default Layout;

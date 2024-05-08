@@ -15,7 +15,7 @@ import { useNavigate } from "react-router-dom";
 
 export const DeleteChannelModal = () => {
   const { isOpen, onClose, type, data } = useModal();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const deleteRoomMutation = useDeleteRoom();
 
   const isModalOpen = isOpen && type === "deleteRoom";
@@ -30,7 +30,7 @@ export const DeleteChannelModal = () => {
 
       onClose();
       setIsLoading(false);
-      navigate('/messages')
+      navigate("/messages");
     } catch (error) {
       console.log(error);
     }

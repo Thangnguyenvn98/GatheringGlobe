@@ -29,16 +29,9 @@ const ChatPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (useUserQuery.status !== "pending" && !userId) {
-      console.log("how about this one")
-      navigate("/register");
-      return;
-    }
-
     if (useRoomsQuery.status !== "pending" && !currentRoom) {
       // Redirect to /messages if the current room does not exist
       navigate("/messages");
- 
     }
 
     if (

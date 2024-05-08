@@ -18,14 +18,14 @@ const LoginPage = () => {
       </div>
       <div className="flex flex-col justify-center w-1/2 items-center p-8 mt-[-50px]">
         <Link to="/">
-        <img
-          src={GatheringGlobe}
-          alt="GatheringGlobe Logo"
-          className="justify-items-start mx-28 "
-          style={{ width: "200px", height: "200px" }}
-        />
+          <img
+            src={GatheringGlobe}
+            alt="GatheringGlobe Logo"
+            className="justify-items-start my-20 "
+            style={{ width: "200px", height: "200px" }}
+          />
         </Link>
-    
+
         <Tabs defaultValue="account" className="w-[400px] mt-[-65px]">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="account">Log in</TabsTrigger>
