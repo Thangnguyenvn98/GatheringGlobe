@@ -16,19 +16,15 @@ router.get('/search', async (req:Request, res:Response) => {
     const regexLocation = new RegExp(String(locationChosen), "i");
     //find matching data
     let event;
-    if (String(endDate) === "")
+    //if no endDate input, we let it be one day after startDate (so that we only search for event within the day)
+    if (!endDate)
     {
-      console.log("startDate: ",startDate)
-      event = await Event.find({$and:[
-        {location: {$regex: regexLocation}}, 
-        {description:{$regex: regexKeyword}},
-        {startTime: {$gte: new Date(String(startDate))}}
-      ]})
+      const date = new Date(String(startDate).split('T')[0]);
+      // Add one day to the Date object
+      date.setDate(date.getDate() + 1);
+      // Convert the modified Date object back to a string
+      endDate = date.toISOString();
     }
-    else
-    {
-      console.log("startDate: ",startDate)
-      console.log("endDate: ",endDate)
       event = await Event.find({$and:[
         {location: {$regex: regexLocation}}, 
         {description:{$regex: regexKeyword}},
@@ -43,7 +39,7 @@ router.get('/search', async (req:Request, res:Response) => {
             }}
           ]}
       ]})
-    }
+
     //if no matching event found
     if (event.length===0) {
       //set the response and return so that it will set the status and would not run the part after the if statement

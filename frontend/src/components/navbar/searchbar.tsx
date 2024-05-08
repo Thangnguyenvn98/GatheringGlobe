@@ -16,8 +16,8 @@ function SearchForm() {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
   const [location, setLocation] = useState("");
   const [date, setDate] = React.useState<DateRange | undefined>({
-    from: new Date(2024, 2, 20),
-    to: addDays(new Date(2024, 4, 20), 20),
+    from: new Date(1000, 2, 20),
+    to: addDays(new Date(3000, 4, 20), 20),
   });
   const [keyword, setKeyword] = useState("");
   const apikey = import.meta.env.VITE_PUBLIC_GOOGLE_MAPS_API_KEY;
