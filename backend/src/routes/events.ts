@@ -11,20 +11,44 @@ const router = express.Router();
 router.get('/search', async (req:Request, res:Response) => {
   try {
     //get all the location, startDate, endDeate, keyword sent from front end
-    const {locationChosen,startDate,endDate,keyword} = req.query
+    let {locationChosen,startDate,endDate,keyword} = req.query
     const regexKeyword = new RegExp(String(keyword), "i"); // Create a regular expression with the variable and make it case-insensitive
     const regexLocation = new RegExp(String(locationChosen), "i");
-
-    let event = await Event.find({$and:[
+    //find matching data
+    let event;
+    if (String(endDate) === "")
+    {
+      console.log("startDate: ",startDate)
+      event = await Event.find({$and:[
         {location: {$regex: regexLocation}}, 
-        {description:{$regex: regexKeyword}}
+        {description:{$regex: regexKeyword}},
+        {startTime: {$gte: new Date(String(startDate))}}
       ]})
+    }
+    else
+    {
+      console.log("startDate: ",startDate)
+      console.log("endDate: ",endDate)
+      event = await Event.find({$and:[
+        {location: {$regex: regexLocation}}, 
+        {description:{$regex: regexKeyword}},
+        {$or: [{
+            startTime: {
+              $gte: new Date(String(startDate)),
+              $lte: new Date(String(endDate))
+            }},
+            {endTime: {
+              $gte: new Date(String(startDate)),
+              $lte: new Date(String(endDate))
+            }}
+          ]}
+      ]})
+    }
+    //if no matching event found
     if (event.length===0) {
       //set the response and return so that it will set the status and would not run the part after the if statement
       return res.status(201).json({ message: "Event not found" }); //not sure how this message is used
     }
-    // event = await Event.find({  range: { path: "startTime", gt: new Date("1900-01-01T00:00:00.000Z"), lt: new Date("2100-12-31T00:00:00.000Z") }})
-    // console.log(event)
     res.status(200).json(event);
   } catch (error) {
     console.error("Failed to fetch event:", error);
