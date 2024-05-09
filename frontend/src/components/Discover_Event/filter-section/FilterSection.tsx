@@ -105,6 +105,7 @@ const FilterSection = () => {
               type="radio"
               name="date"
               id="today"
+              key="today"
               onClick={() => setShowCalendar(false)}
             />
             <label className="font-bold p-2" htmlFor="today">
@@ -116,6 +117,7 @@ const FilterSection = () => {
               type="radio"
               name="date"
               id="tomorrow"
+              key="tomorrow"
               onClick={() => setShowCalendar(false)}
             />
             <label className="font-bold p-2" htmlFor="tomorrow">
@@ -127,6 +129,7 @@ const FilterSection = () => {
               type="radio"
               name="date"
               id="this-weekend"
+              key="this-weekend"
               onClick={() => setShowCalendar(false)}
             />
             <label className="font-bold p-2" htmlFor="this-weekend">
@@ -138,6 +141,7 @@ const FilterSection = () => {
               type="radio"
               name="date"
               id="pick-date"
+              key="pick-date"
               onClick={() => setShowCalendar(!showCalendar)}
             />
             <label className="font-bold p-2" htmlFor="pick-date">
@@ -158,13 +162,13 @@ const FilterSection = () => {
         <h3 className="mt-3">Price</h3>
         <div className="mx-5">
           <div>
-            <input type="radio" name="price" id="free" />
+            <input type="radio" name="price" key="free" id="free" />
             <label className="font-bold p-2" htmlFor="free">
               Free
             </label>
           </div>
           <div>
-            <input type="radio" name="price" id="paid" />
+            <input type="radio" name="price" key="paid" id="paid" />
             <label className="font-bold p-2" htmlFor="paid">
               Paid
             </label>
