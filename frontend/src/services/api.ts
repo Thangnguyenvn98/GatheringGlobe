@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import {
   PaymentIntentResponse,
-  UserType
+  UserType,
 } from "../../../backend/src/shared/types";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
@@ -29,7 +29,10 @@ export const useServerTest = () => {
 // Handle registration
 export const RegisterUser = async (data: SignInFormData) => {
   try {
-    const response = await axiosInstance.post("/api/users/register", data);
+    const response = await axiosInstance.post(
+      "http://localhost:5050/api/users/register",
+      data,
+    );
     if (response.status >= 200 && response.status < 300) {
       return response.data;
     } else {
@@ -57,12 +60,14 @@ export const SignInUser = async (data: SignInFormData) => {
 };
 
 // Handle payment
-export const createPaymentIntent = async (ticketId: string, numberOfTickets: string): Promise<PaymentIntentResponse> => {
+export const createPaymentIntent = async (
+  ticketId: string,
+  numberOfTickets: string,
+): Promise<PaymentIntentResponse> => {
   try {
     const response = await axiosInstance.post(
       `/api/payments/${ticketId}/bookings/payment-intent`,
-      {numberOfTickets},
-    
+      { numberOfTickets },
     );
 
     if (response.status >= 200 && response.status < 300) {
@@ -70,12 +75,10 @@ export const createPaymentIntent = async (ticketId: string, numberOfTickets: str
     } else {
       throw new Error(`Server responded with status: ${response.status}`);
     }
-  } catch(error) {
+  } catch (error) {
     throw new Error("Failed to create payment intent");
   }
 };
-
-
 
 export const createRoom = async (data: { name: string }) => {
   const response = await axiosInstance.post("/api/room", data);
@@ -94,7 +97,7 @@ export const editRoom = async (data: {
   console.log(data.name);
   const response = await axiosInstance.put<Room>(
     `/api/room/${data.roomId}`,
-    data
+    data,
   );
   return response.data;
 };
@@ -115,12 +118,11 @@ export const getCurrentUser = async () => {
 };
 
 export const validateToken = async () => {
-  const response = await fetch(`${API_BASE_URL}/api/auth/validate-token`, {
-    credentials: "include",
-  });
+  const response = await axiosInstance.get("/api/users/validate-token");
+  return response.data;
+};
 
-  if (!response.ok) {
-    throw new Error("Token invalid");
-  }
-  return response.json();
+export const signOutUser = async () => {
+  const response = await axiosInstance.post("/api/users/logout");
+  return response.data;
 };

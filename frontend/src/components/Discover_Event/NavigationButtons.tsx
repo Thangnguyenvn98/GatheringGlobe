@@ -46,7 +46,7 @@ const categories: Category[] = [
 // CategoryBar component
 const CategoryBar: React.FC = () => {
   const [activeCategory, setActiveCategory] = useState<string>(
-    categories[0].name
+    categories[0].name,
   );
 
   return (

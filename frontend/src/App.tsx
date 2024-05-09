@@ -1,7 +1,7 @@
 import LoginPage from "./components/loginPage/loginPage";
 import "./global.css";
 import DiscoverEvent from "./components/Discover_Event/DiscoverEvent";
-import EventDetail from "./components/Discover_Event/EventDetail";
+import EventDetail from "./components/Discover_Event/event-detail/EventDetail";
 import AboutUs from "./components/aboutUs/about-us";
 import ChatPage from "./components/chatRoom/Chat";
 import Homepage from "./components/homepage/homepage";
@@ -16,8 +16,12 @@ import Layout from "./components/layouts/layout";
 import Faq from "./components/FAQ/faq";
 import Booking from "./pages/Booking";
 import Ticket from "./components/BookingForm/Ticket";
+import ContactUs from "./components/contact-us/contactUs";
+import ProtectedRoute from "./utils/ProtectedRoute";
+import useCheckAuth from "./hooks/useCheckAuth";
 
 function App() {
+  useCheckAuth();
   return (
     <Router>
       <Routes>
@@ -31,23 +35,34 @@ function App() {
             </Layout>
           }
         />
-        <Route
-          path="/messages/c/:ownerId/t/:roomId"
-          element={
-            <SocketProvider>
-              <ChatPage />
-            </SocketProvider>
-          }
-        />
-        <Route
-          path="/messages"
-          element={
-            <SocketProvider>
-              <ChatPage />
-            </SocketProvider>
-          }
-        />
+        <Route element={<ProtectedRoute />}>
+          <Route
+            path="/messages/c/:ownerId/t/:roomId"
+            element={
+              <SocketProvider>
+                <ChatPage />
+              </SocketProvider>
+            }
+          />
+          <Route
+            path="/messages"
+            element={
+              <SocketProvider>
+                <ChatPage />
+              </SocketProvider>
+            }
+          />
+        </Route>
+
         <Route path="*" element={<Navigate to="/" />} />
+        <Route
+          path="/discover"
+          element={
+            <Layout>
+              <DiscoverEvent />
+            </Layout>
+          }
+        />
         <Route
           path="/help"
           element={
@@ -57,14 +72,29 @@ function App() {
           }
         />
         <Route
-          path="/discover"
+          path="/discover/event/:eventId"
           element={
             <Layout>
-              <DiscoverEvent />
+              <EventDetail />
             </Layout>
           }
         />
-        <Route path="/discover-event-details" element={<EventDetail />} />
+        <Route
+          path="/contact-us"
+          element={
+            <Layout>
+              <ContactUs />
+            </Layout>
+          }
+        />
+        <Route
+          path="/discover-event-details"
+          element={
+            <Layout>
+              <EventDetail />
+            </Layout>
+          }
+        />
         <Route path="/booking/:ticketId" element={<Booking />} />
         <Route path="/ticket" element={<Ticket />} />
       </Routes>

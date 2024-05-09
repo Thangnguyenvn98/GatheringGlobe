@@ -14,7 +14,6 @@ const AboutUs = () => {
           backgroundSize: "100% 100%",
           backgroundRepeat: "no-repeat",
           backgroundPosition: "center center",
-
         }}
         className="flex justify-center items-center min-h-[600px] w-full"
       >

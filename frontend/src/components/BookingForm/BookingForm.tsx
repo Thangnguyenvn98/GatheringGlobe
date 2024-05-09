@@ -3,6 +3,7 @@ import { useStripe, useElements, CardElement } from "@stripe/react-stripe-js";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { useState } from "react";
 import { User } from "@/types/user";
+import { StripeCardElement } from "@stripe/stripe-js";
 
 type Props = {
   currentUser: User;
@@ -24,22 +25,19 @@ const BookingForm = ({ currentUser, paymentIntent }: Props) => {
   const stripe = useStripe();
   const elements = useElements();
   const [isLoading, setIsLoading] = useState(false);
-  const handleBooking: SubmitHandler<TicketBookingFormData> = async (
-    formData
-  ) => {
+  const onSubmit: SubmitHandler<TicketBookingFormData> = async (formData) => {
     if (!stripe || !elements) {
       return;
     }
 
     setIsLoading(true);
-    const cardElement = elements.getElement(CardElement);
-    if (!cardElement) {
-      alert("Stripe Card Element not found.");
-      setIsLoading(false);
-      return;
-    }
-
     try {
+      const cardElement = elements.getElement(CardElement);
+      if (!cardElement) {
+        alert("Stripe Card Element not found.");
+        setIsLoading(false);
+        return;
+      }
       const paymentResult = await stripe.confirmCardPayment(
         paymentIntent.clientSecret,
         {
@@ -50,7 +48,7 @@ const BookingForm = ({ currentUser, paymentIntent }: Props) => {
               email: formData.email, // Assuming email is correctly set from context or props
             },
           },
-        }
+        },
       );
       if (paymentResult.error) {
         alert(`Payment failed: ${paymentResult.error.message}`);
@@ -70,7 +68,7 @@ const BookingForm = ({ currentUser, paymentIntent }: Props) => {
 
   return (
     <form
-      onSubmit={handleSubmit(handleBooking)}
+      onSubmit={handleSubmit(onSubmit)}
       className="grid grid-cols-1 gap-5 rounded-lg border border-slate-300 p-5"
     >
       <span className="text-3xl font-bold">Confirm Your Details</span>
