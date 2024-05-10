@@ -1,8 +1,9 @@
 import LoginPage from "./components/loginPage/loginPage";
 import "./global.css";
 import DiscoverEvent from "./components/Discover_Event/DiscoverEvent";
-import EventDetail from "./components/Discover_Event/event-detail/EventDetail";
+import EventDetail from "./components/Discover_Event/EventDetail";
 import AboutUs from "./components/aboutUs/about-us";
+import EventForm from "./components/newEventForm/EventForm";
 import ChatPage from "./components/chatRoom/Chat";
 import Homepage from "./components/homepage/homepage";
 import { SocketProvider } from "./components/providers/socket-provider";
@@ -90,6 +91,14 @@ function App() {
           element={
             <Layout>
               <EventDetail />
+            </Layout>
+          }
+        />
+        <Route
+          path="/create-new-event"
+          element={
+            <Layout>
+              <EventForm />
             </Layout>
           }
         />

@@ -2,9 +2,7 @@ import React from "react";
 import EventCard from "../shared/EventCard";
 import "./EventList.css";
 import { useNavigate } from "react-router-dom";
-// import { useState, useEffect } from "react";
-// import Pagination from "./Pagination";
-import eventdatas from "../eventdatas";
+import eventdatas from "./eventdatas";
 
 interface eventdataListProps {
   displayMode: string;

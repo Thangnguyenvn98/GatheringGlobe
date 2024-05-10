@@ -1,4 +1,14 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-cd frontend && npm run build && cd ../backend && npm run build
+# Exit on error, not continue
+set -e
+
+# Build frontend and backend before pushing to repository
+echo "Starting frontend build..."
+cd frontend && npm run build
+echo "Frontend build completed successfully."
+
+echo "Starting backend build..."
+cd ../backend && npm run build
+echo "Backend build completed successfully."
