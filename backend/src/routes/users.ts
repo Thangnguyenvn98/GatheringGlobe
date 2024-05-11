@@ -125,4 +125,7 @@ router.post("/logout", (req: Request, res: Response) => {
     res.status(200).json({ message: "Logout successful" });
   });
 
+router.post("/forgetPassword", forgetPassword);
+router.post("/reset-password/:token",resetPassword)
+
 export default router

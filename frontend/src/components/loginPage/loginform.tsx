@@ -10,7 +10,7 @@ import { SignInUser } from "@/services/api";
 import toast from "react-hot-toast";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { SignInFormData } from "@/types/signInFormData";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -83,6 +83,11 @@ const Login = () => {
           >
             Sign in with Google
           </Button>
+          <div className="text-gray-600">
+            <p className=" flex justify-center">
+              <Link to="/forgot-password">Forgot Password</Link>
+            </p>
+          </div>
         </div>
       </Card>
     </form>

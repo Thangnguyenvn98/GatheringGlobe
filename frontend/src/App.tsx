@@ -19,6 +19,7 @@ import Ticket from "./components/BookingForm/Ticket";
 import ContactUs from "./components/contact-us/contactUs";
 import ProtectedRoute from "./utils/ProtectedRoute";
 import useCheckAuth from "./hooks/useCheckAuth";
+import ForgotPassword from "./components/loginPage/Forgotpassword";
 
 function App() {
   useCheckAuth();
@@ -97,6 +98,7 @@ function App() {
         />
         <Route path="/booking/:ticketId" element={<Booking />} />
         <Route path="/ticket" element={<Ticket />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
       </Routes>
     </Router>
   );
