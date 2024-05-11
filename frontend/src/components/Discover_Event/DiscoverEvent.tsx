@@ -1,6 +1,6 @@
 import React from "react";
-import EventList from "./event-list/EventList";
-import FilterSection from "./filter-section/FilterSection";
+import EventList from "./EventList";
+import FilterSection from "./FilterSection";
 import Pagination from "./Pagination";
 
 const DiscoverEvent: React.FC = () => {
