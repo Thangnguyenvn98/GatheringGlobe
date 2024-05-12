@@ -2,12 +2,6 @@ import React, { useState } from "react";
 import { useLocation } from "react-router-dom"; //to call props in event card to the even detail page by clicking the button "view event details"
 
 const EventDetail: React.FC = () => {
-  // Event details hardcoded directly into the component
-  // const eventName = "Summer Music Festival";
-  // const eventImage =
-  //   "https://cluecho.com/wp-content/uploads/2023/04/NCT-DREAM_THE-DREAM-SHOW2_-In-A-DREAM_Newark-Image-3-900x600.jpg";
-  // const eventLocation = "Central Park, New York City";
-  // const eventDateTime = "2024-07-16T20:00:00";
   const location = useLocation();
   const eventData = location.state;
   const eventTags = ["Music", "Festival", "Summer", "Live"];
