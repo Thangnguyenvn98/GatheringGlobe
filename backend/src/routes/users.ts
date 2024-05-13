@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken"
 import { check, validationResult } from "express-validator";
 import verifyToken from "../middleware/auth";
 import { compare } from "bcryptjs";
+import sendEmail from "../utils/email/sendEmail";
 
 const router = express.Router();
 
@@ -112,6 +113,25 @@ router.get("/", verifyToken, async (req: Request, res: Response) => {
       .json({ message: "An error occurred while fetching the user." });
   }
 });
+
+router.post("/help/contact-us", async (req:Request,res:Response) => {
+  try {
+   
+      const {email,firstName,lastName,subject,description,attachments} = req.body;
+      if (!email || !firstName || !lastName || !subject || !description) {
+
+          return res.status(400).json({ message: "All fields are required" });
+      }
+      console.log(req.body)
+
+      await sendEmail(undefined,undefined,`Request Support From ${email}`,{email,firstName,lastName,subject,description,attachments},"./template/contactUsSupport.handlebars");
+      return res.json({message:"Message been sent sucessfully!"});
+  }catch (e) {
+      console.log(e)
+      res.status(500).send({message:"Something went wrong"})
+  }
+})
+
 
 router.get("/validate-token", verifyToken, (req: Request, res: Response) => {
     res.status(200).send({ userId: req.userId });
