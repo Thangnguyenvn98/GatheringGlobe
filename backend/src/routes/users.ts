@@ -4,6 +4,8 @@ import jwt from "jsonwebtoken"
 import { check, validationResult } from "express-validator";
 import verifyToken from "../middleware/auth";
 import { compare } from "bcryptjs";
+import sendEmail from "../utils/email/sendEmail";
+import { forgetPassword, resetPassword } from "../../controllers/forgetPassword";
 
 const router = express.Router();
 
@@ -60,12 +62,13 @@ router.post("/login", [
   check("password", "Password is required").exists()
 ], async(req: Request, res: Response) => {
   const errors = validationResult(req);
+  
   if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
   }
 
   const { email, password } = req.body;
-
+  console.log("is it running")
   try {
       let user: UserType | null = await User.findOne({ email });
 
@@ -113,6 +116,25 @@ router.get("/", verifyToken, async (req: Request, res: Response) => {
   }
 });
 
+router.post("/help/contact-us", async (req:Request,res:Response) => {
+  try {
+   
+      const {email,firstName,lastName,subject,description,attachments} = req.body;
+      if (!email || !firstName || !lastName || !subject || !description) {
+
+          return res.status(400).json({ message: "All fields are required" });
+      }
+      console.log(req.body)
+
+      await sendEmail(undefined,undefined,`Request Support From ${email}`,{email,firstName,lastName,subject,description,attachments},"./template/contactUsSupport.handlebars");
+      return res.json({message:"Message been sent sucessfully!"});
+  }catch (e) {
+      console.log(e)
+      res.status(500).send({message:"Something went wrong"})
+  }
+})
+
+
 router.get("/validate-token", verifyToken, (req: Request, res: Response) => {
     res.status(200).send({ userId: req.userId });
   });
@@ -123,5 +145,8 @@ router.post("/logout", (req: Request, res: Response) => {
     });
     res.status(200).json({ message: "Logout successful" });
   });
+
+router.post("/forgetPassword", forgetPassword);
+router.post("/reset-password/:token",resetPassword)
 
 export default router

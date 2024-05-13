@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useEffect } from "react";
 import { useRef } from "react";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { Button } from "../../ui/button";
+import { Button } from "../ui/button";
 
 const FilterSection = () => {
   const categories = [

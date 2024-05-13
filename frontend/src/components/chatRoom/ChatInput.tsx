@@ -59,7 +59,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
       <div className="relative">
         <div className="flex flex-col">
           {imageUrl && (
-            <div className="relative mb-2">
+            <div className="relative mb-2 ">
               <img
                 src={imageUrl}
                 alt="Uploaded"
@@ -67,7 +67,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
               />
               <button
                 type="button"
-                className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center"
+                className="absolute top-[-1rem] left-40 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center"
                 onClick={handleImageRemove}
               >
                 &times;
