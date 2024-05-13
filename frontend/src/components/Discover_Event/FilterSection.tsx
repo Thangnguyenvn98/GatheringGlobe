@@ -69,7 +69,6 @@ const FilterSection = () => {
     "Marathon",
   ];
   const [date, setDate] = useState<Date | undefined>(new Date());
-  const [categoriesChosen, setCategoriesChosen] = useState<Array<String>>([]);
   const [showCalendar, setShowCalendar] = useState(false);
   const [showCategory, setShowCategory] = useState(false);
   const [showEventType, setShowEventType] = useState(false);
