@@ -5,6 +5,7 @@ import { check, validationResult } from "express-validator";
 import verifyToken from "../middleware/auth";
 import { compare } from "bcryptjs";
 import sendEmail from "../utils/email/sendEmail";
+import { forgetPassword, resetPassword } from "../../controllers/forgetPassword";
 
 const router = express.Router();
 

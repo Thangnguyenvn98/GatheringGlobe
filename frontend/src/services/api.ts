@@ -1,14 +1,10 @@
-import { PaymentIntentResponse } from "./../../../backend/src/shared/types";
 import { Room } from "@/types/room";
 import { SignInFormData } from "@/types/signInFormData";
 import { User } from "@/types/user";
 import { useQuery } from "@tanstack/react-query";
 import { ContactUsFormData } from "@/types/contactUsFormData";
 import axios from "axios";
-import {
-  PaymentIntentResponse,
-  UserType,
-} from "../../../backend/src/shared/types";
+import { PaymentIntentResponse } from "../../../backend/src/shared/types";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 export const axiosInstance = axios.create({
@@ -126,22 +122,6 @@ export const validateToken = async () => {
 
 export const signOutUser = async () => {
   const response = await axiosInstance.post("/api/users/logout");
-  return response.data;
-};
-
-export const createPaymentIntent = async (
-  ticketId: string,
-  numberOfTickets: number,
-): Promise<PaymentIntentResponse> => {
-  const response = await axiosInstance.post(
-    `/api/payments/${ticketId}/bookings/payment-intent`,
-    {
-      numberOfTickets,
-    },
-  );
-  if (response.status >= 400) {
-    throw new Error("Error creating payment intent");
-  }
   return response.data;
 };
 

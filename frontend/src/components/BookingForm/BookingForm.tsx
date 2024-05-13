@@ -3,7 +3,7 @@ import { useStripe, useElements, CardElement } from "@stripe/react-stripe-js";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { useState } from "react";
 import { User } from "@/types/user";
-import { StripeCardElement } from "@stripe/stripe-js";
+// import { StripeCardElement } from "@stripe/stripe-js";
 
 type Props = {
   currentUser: User;
@@ -20,7 +20,7 @@ export type TicketBookingFormData = {
   totalPrice: number; // Total cost of the tickets
 };
 
-const BookingForm = ({ currentUser, paymentIntent }: Props) => {
+const BookingForm = ({ paymentIntent }: Props) => {
   const { register, handleSubmit } = useForm<TicketBookingFormData>();
   const stripe = useStripe();
   const elements = useElements();

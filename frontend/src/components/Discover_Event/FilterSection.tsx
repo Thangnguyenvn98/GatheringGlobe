@@ -1,125 +1,205 @@
-import "./FilterSection.css"; // Make sure to create the corresponding CSS file
 import { Calendar } from "@/components/ui/calendar";
 import { useState } from "react";
-import { useEffect } from "react";
-import { useRef } from "react";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { Button } from "../ui/button";
 
 const FilterSection = () => {
+  const categories = [
+    "Music",
+    "Movies",
+    "Books",
+    "Sports",
+    "Technology",
+    "Travel",
+    "Food",
+    "Fashion",
+    "Art",
+    "Science",
+    "Politics",
+    "History",
+    "Education",
+    "Health",
+    "Finance",
+    "Gaming",
+    "Lifestyle",
+    "Parenting",
+    "Pets",
+    "Gardening",
+  ];
+  const eventTypes = [
+    "Party",
+    "Conference",
+    "Concert",
+    "Festival",
+    "Seminar",
+    "Workshop",
+    "Meetup",
+    "Networking",
+    "Exhibition",
+    "Tradeshow",
+    "Convention",
+    "Summit",
+    "Gala",
+    "Fundraiser",
+    "Awards",
+    "Screening",
+    "Premiere",
+    "Launch",
+    "Fair",
+    "Expo",
+    "Charity",
+    "Sports",
+    "Competition",
+    "Tournament",
+    "Hackathon",
+    "Webinar",
+    "Virtual Event",
+    "Livestream",
+    "Auction",
+    "Sale",
+    "Open House",
+    "Tour",
+    "Tasting",
+    "Masterclass",
+    "Retreat",
+    "Camp",
+    "Cruise",
+    "Rally",
+    "Parade",
+    "Marathon",
+  ];
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [showCalendar, setShowCalendar] = useState(false);
-  const calendarRef = useRef(null);
-
-  const toggleCalendar = () => {
-    setShowCalendar(!showCalendar);
-  };
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (
-        calendarRef.current &&
-        !(calendarRef.current as HTMLElement).contains(event.target as Node)
-      ) {
-        setShowCalendar(false);
-      }
-    }
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [calendarRef]);
+  const [showCatergory, setShowCatergory] = useState(false);
+  const [showEventType, setShowEventType] = useState(false);
 
   return (
-    <div className="filter-section-container relative">
-      <div className=" filter-section fixed bottom-7">
-        <p>Filter</p>
-        <div className="filter-category">
-          <h3>Category</h3>
-          <div>
-            <input type="checkbox" id="business" />
-            <label htmlFor="business">Business</label>
-          </div>
-          <div>
-            <input type="checkbox" id="food-drink" />
-            <label htmlFor="food-drink">Food & Drink</label>
-          </div>
-          <div>
-            <input type="checkbox" id="health" />
-            <label htmlFor="health">Health</label>
-          </div>
-          <div>
-            <input type="checkbox" id="music" />
-            <label htmlFor="music">Music</label>
-          </div>
-          <button>View more</button>
+    <div className="filter-section-container relative font-bold">
+      <h1 className="size-10 text-4xl mx-0 my-7">Filter</h1>
+      <div className=" top-[152px] bottom-7">
+        <div className="">
+          <Button
+            onClick={() => setShowCatergory(!showCatergory)}
+            className="bg-transparent border-none p-0 shadow-none hover:bg-transparent mx-0 text-[12pt] text-black font-bold"
+          >
+            Catergory
+          </Button>
+          {showCatergory && (
+            <ScrollArea className="h-72 border-none mx-5">
+              {categories.map((cat, index) => (
+                <div>
+                  <input type="checkbox" name="date" id={String(index)} />
+                  <label className="font-bold p-2" htmlFor={String(index)}>
+                    {cat}
+                  </label>
+                </div>
+              ))}
+              <ScrollBar orientation="vertical" />
+            </ScrollArea>
+          )}
         </div>
-        <div className="filter-date">
-          <h3>Date</h3>
+        <h3 className="mt-3">Date</h3>
+        <div className="mx-5">
           <div>
-            <input type="radio" name="date" id="today" />
-            <label htmlFor="today">Today</label>
+            <input
+              type="radio"
+              name="date"
+              id="today"
+              key="today"
+              onClick={() => setShowCalendar(false)}
+            />
+            <label className="font-bold p-2" htmlFor="today">
+              Today
+            </label>
           </div>
           <div>
-            <input type="radio" name="date" id="tomorrow" />
-            <label htmlFor="tomorrow">Tomorrow</label>
+            <input
+              type="radio"
+              name="date"
+              id="tomorrow"
+              key="tomorrow"
+              onClick={() => setShowCalendar(false)}
+            />
+            <label className="font-bold p-2" htmlFor="tomorrow">
+              Tomorrow
+            </label>
           </div>
           <div>
-            <input type="radio" name="date" id="this-weekend" />
-            <label htmlFor="this-weekend">This weekend</label>
+            <input
+              type="radio"
+              name="date"
+              id="this-weekend"
+              key="this-weekend"
+              onClick={() => setShowCalendar(false)}
+            />
+            <label className="font-bold p-2" htmlFor="this-weekend">
+              This weekend
+            </label>
           </div>
           <div>
             <input
               type="radio"
               name="date"
               id="pick-date"
-              onClick={toggleCalendar}
+              key="pick-date"
+              onClick={() => setShowCalendar(!showCalendar)}
             />
-            <label htmlFor="pick-date">Pick a date...</label>
+            <label className="font-bold p-2" htmlFor="pick-date">
+              Pick a date...
+            </label>
             {showCalendar && (
-              <div className="calendar-container" ref={calendarRef}>
+              <div className="left-0">
                 <Calendar
+                  className="left-0"
                   mode="single"
                   selected={date}
                   onSelect={setDate}
-                  className="rounded-md border"
                 />
               </div>
             )}
           </div>
-          <button>View more</button>
         </div>
-        <div className="filter-price">
-          <h3>Price</h3>
+        <h3 className="mt-3">Price</h3>
+        <div className="mx-5">
           <div>
-            <input type="radio" name="price" id="free" />
-            <label htmlFor="free">Free</label>
+            <input type="radio" name="price" key="free" id="free" />
+            <label className="font-bold p-2" htmlFor="free">
+              Free
+            </label>
           </div>
           <div>
-            <input type="radio" name="price" id="paid" />
-            <label htmlFor="paid">Paid</label>
+            <input type="radio" name="price" key="paid" id="paid" />
+            <label className="font-bold p-2" htmlFor="paid">
+              Paid
+            </label>
           </div>
         </div>
-        <div className="filter-format">
-          <h3>Format</h3>
-          <div>
-            <input type="radio" name="format" id="class" />
-            <label htmlFor="class">Class</label>
-          </div>
-          <div>
-            <input type="radio" name="format" id="conference" />
-            <label htmlFor="conference">Conference</label>
-          </div>
-          <div>
-            <input type="radio" name="format" id="festival" />
-            <label htmlFor="festival">Festival</label>
-          </div>
-          <div>
-            <input type="radio" name="format" id="party" />
-            <label htmlFor="party">Party</label>
+        <div className=" top-[152px] bottom-7">
+          <div className="mt-3">
+            <Button
+              onClick={() => setShowEventType(!showEventType)}
+              className="bg-transparent border-none p-0 shadow-none hover:bg-transparent mx-0 text-[12pt] text-black font-bold"
+            >
+              Event Type
+            </Button>
+            {showEventType && (
+              <ScrollArea className="h-72 border-none mx-5">
+                {eventTypes.map((type, index) => (
+                  <div>
+                    <input type="checkbox" name="date" id={String(index)} />
+                    <label className="font-bold p-2" htmlFor={String(index)}>
+                      {type}
+                    </label>
+                  </div>
+                ))}
+                <ScrollBar orientation="vertical" />
+              </ScrollArea>
+            )}
           </div>
         </div>
       </div>
     </div>
   );
 };
-
+//htmlFor helps matching the label to the radio button so clciking on the label instead of the button also work
 export default FilterSection;

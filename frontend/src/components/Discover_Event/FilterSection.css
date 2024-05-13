@@ -30,13 +30,3 @@
   cursor: pointer;
   font-weight: 500;
 }
-
-.calendar-container {
-  position: absolute;
-  top: 30px;
-  left: 0;
-  z-index: 999;
-  background-color: white;
-  border: 1px solid black;
-  padding: 10px;
-}
