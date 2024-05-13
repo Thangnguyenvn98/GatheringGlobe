@@ -1,4 +1,4 @@
-import User from "../src/models/user"
+import User from "../models/user"
 import {Request, Response} from "express"
 import jwt, {JwtPayload} from "jsonwebtoken";
 import nodemailer from "nodemailer";
