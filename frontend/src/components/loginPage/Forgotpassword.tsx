@@ -22,18 +22,31 @@ const ForgotPassword = () => {
     validationSchema: Yup.object({
       email: Yup.string().email("Invalid email address").required("Required"),
     }),
-    onSubmit: (values) => {
+    onSubmit: (values, { setSubmitting, resetForm }) => {
       axios
-        .post("users/forgetPassword", values)
-        .then((response) => {
+        .post("/users/forgetPassword", values)
+        .then(() => {
+          // Assuming the backend sends some kind of response that you can use
           toast.success("Email sent successfully");
+          resetForm(); // Optionally reset the form
+          setSubmitting(false); // Set submitting to false
         })
         .catch((error) => {
-          if (error.response.status === 404) {
-            toast.error("Email not found");
+          if (error.response) {
+            if (error.response.status === 404) {
+              toast.error("Email not found");
+            } else {
+              // More specific messages can be based on the error response status or data
+              toast.error("Server error");
+            }
+          } else if (error.request) {
+            // The request was made but no response was received
+            toast.error("No response from server");
           } else {
-            toast.error("Server error");
+            // Something happened in setting up the request that triggered an Error
+            toast.error("Error: " + error.message);
           }
+          setSubmitting(false); // Set submitting to false
         });
     },
   });
@@ -47,17 +60,19 @@ const ForgotPassword = () => {
           Discover, host, and buy event tickets with us
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-2">
-        <div className="space-y-1">
-          <Label htmlFor="email">Enter your email</Label>
-          <Input id="email" placeholder="Enter your email" />
-        </div>
-      </CardContent>
-      <CardFooter>
-        <Button className="w-full mb-2 rounded-full" type="submit">
-          Send
-        </Button>
-      </CardFooter>
+      <form onSubmit={formik.handleSubmit}>
+        <CardContent className="space-y-2">
+          <div className="space-y-1">
+            <Label htmlFor="email">Enter your email</Label>
+            <Input id="email" placeholder="Enter your email" />
+          </div>
+        </CardContent>
+        <CardFooter>
+          <Button className="w-full mb-2 rounded-full" type="submit">
+            Send
+          </Button>
+        </CardFooter>
+      </form>
       <div className="flex flex-col">
         <div className="text-gray-600"></div>
       </div>

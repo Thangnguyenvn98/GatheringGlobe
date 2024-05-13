@@ -12,6 +12,7 @@ const Booking = () => {
   const { stripePromise } = useAppContext();
   const { ticketId } = useParams(); // giồng này lấy ra từ url nên cần
   const [numberOfTickets, setNumberOfTickets] = useState<number>(1); // Define numberOfTickets state
+  console.log(setNumberOfTickets(5));
   const navigate = useNavigate();
   const currentUser = useCurrentUser();
   const userId = currentUser.data?._id;
