@@ -3,7 +3,6 @@ import SearchByKeyword from "./keywordsearch";
 import DatePickerWithRange from "./date-picker-with-two-range";
 import { DateRange } from "react-day-picker";
 import EventLocation from "./searchlocation";
-import { addDays } from "date-fns";
 import { useState } from "react";
 import { Button } from "../ui/button";
 import { APIProvider, Map } from "@vis.gl/react-google-maps";
@@ -15,30 +14,42 @@ import { Event } from "@/types/event";
 function SearchForm() {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
   const [location, setLocation] = useState("");
-  const [date, setDate] = React.useState<DateRange | undefined>({
-    from: new Date(1000, 2, 20),
-    to: addDays(new Date(3000, 4, 20), 20),
-  });
+  const [date, setDate] = React.useState<DateRange | undefined>();
   const [keyword, setKeyword] = useState("");
   const apikey = import.meta.env.VITE_PUBLIC_GOOGLE_MAPS_API_KEY;
   const navigate = useNavigate();
 
   const onSubmit = async () => {
     //create a list of part of the query string with the input to join into 1 query string later, slice the string to get only the part that we need
-    const params = [
-      "locationChosen=" +
-        queryString.stringify({ location }, { encode: true }).slice(9),
-      "startDate=" +
-        queryString
-          .stringify({ startDate: date?.from?.toISOString() }, { encode: true })
-          .slice(10),
-      "endDate=" +
-        queryString
-          .stringify({ endDate: date?.to?.toISOString() }, { encode: true })
-          .slice(8),
-      "keyword=" +
-        queryString.stringify({ keyword }, { encode: true }).slice(8),
-    ];
+    let params = [];
+    if (location) {
+      params.push(
+        "locationChosen=" +
+          queryString.stringify({ location }, { encode: true }).slice(9),
+      );
+    }
+    if (date && date.from) {
+      params.push(
+        "startDate=" +
+          queryString
+            .stringify({ startDate: date.from.toISOString() }, { encode: true })
+            .slice(10),
+      );
+    }
+    if (date && date.to) {
+      params.push(
+        "endDate=" +
+          queryString
+            .stringify({ endDate: date.to.toISOString() }, { encode: true })
+            .slice(8),
+      );
+    }
+    if (keyword !== "") {
+      params.push(
+        "keyword=" +
+          queryString.stringify({ keyword }, { encode: true }).slice(8),
+      );
+    }
     const finalParams = params.join("&"); //join the strings into one query
     console.log(`${API_BASE_URL}/?${finalParams}`);
     try {
