@@ -14,6 +14,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import Tiptap from "../tiptap";
 import { Button } from "../ui/button";
 import ImageUpload from "../chatRoom/ImageUpload";
+import { useState } from "react";
+import toast from "react-hot-toast";
+import { useCurrentUser } from "@/services/queries";
+import { sendUserHelpRequest } from "@/services/api";
+import { useNavigate } from "react-router-dom";
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -25,31 +30,45 @@ const formSchema = z.object({
     .min(10, { message: "The description is not long enough" })
     .max(100, { message: "The description is too long" })
     .trim(),
-  attachment: z
-    .array(
-      z.object({
-        url: z.string(),
-      }),
-    )
-    .optional(),
+  attachments: z.object({ url: z.string() }).array(),
 });
 
+type FormData = z.infer<typeof formSchema>;
+
 const ContactUs = () => {
-  const form = useForm<z.infer<typeof formSchema>>({
+  const { data: userData } = useCurrentUser();
+  const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: "",
+      email: userData?.email || "",
       firstName: "",
       lastName: "",
       subject: "",
       description: "",
-      attachment: [],
+      attachments: [],
     },
   });
+  const navigate = useNavigate();
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    console.log(values);
+  const [loading, setLoading] = useState(false);
+
+  const onSubmit = async (values: FormData) => {
+    try {
+      setLoading(true);
+      const response = await sendUserHelpRequest(values);
+      console.log(values);
+      form.reset();
+      toast.success(response.message);
+      setTimeout(() => {
+        navigate(0);
+      }, 2000);
+    } catch (error) {
+      toast.error("Something went wrong");
+    } finally {
+      setLoading(false);
+    }
   };
+
   return (
     <div className="flex flex-col items-center">
       <div
@@ -65,7 +84,7 @@ const ContactUs = () => {
           SUBMIT A REQUEST
         </h1>
       </div>
-      <div className="bg-gray-100 min-w-[1000px] p-4 mb-10">
+      <div className="bg-gray-100 max-w-[1000px] p-4 mb-10">
         <div className="grid grid-cols-2 ">
           <div className="flex flex-col break-words max-w-[400px] p-4 gap-y-4 ">
             <h2 className="text-zinc-600 text-6xl font-semibold ">
@@ -156,39 +175,19 @@ const ContactUs = () => {
                   />
                   <FormField
                     control={form.control}
-                    name="attachment"
+                    name="attachments"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Attachments &#40;optional &#41;</FormLabel>
+                        <FormLabel>Attachments (optional)</FormLabel>
                         <FormControl>
                           <ImageUpload
+                            disabled={loading}
+                            multiple={true}
                             iconClassName="text-black"
-                            onChange={(url) =>
-                              field.onChange([...(field.value || []), { url }])
-                            }
+                            value={field.value.map((image) => image.url)}
                           />
                         </FormControl>
-                        {field.value && Array.isArray(field.value) && (
-                          <ul>
-                            {field.value.map((item, index) => (
-                              <li
-                                key={index}
-                                className="overflow-hidden text-ellipsis gap-x-4 flex justify-between items-center"
-                              >
-                                <Button className="bg-red-500" size="sm">
-                                  X
-                                </Button>
-                                <a
-                                  href={item.url}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                >
-                                  {item.url}
-                                </a>
-                              </li>
-                            ))}
-                          </ul>
-                        )}
+
                         <FormMessage />
                       </FormItem>
                     )}
