@@ -1,0 +1,21 @@
+<html>
+    <head>
+        <style>
+            /* Your styles here */
+        </style>
+    </head>
+    <body>
+        <p>Account Email Address: {{email}}</p>
+        <p>Full Name: {{firstName}} {{lastName}}</p>
+        <p>Subject: {{subject}}</p>
+        <p>Description: {{{description}}}</p> <!-- Use triple braces for HTML content -->
+        {{#if attachments.length}}
+            <p>Attachments:</p>
+            {{#each attachments}}
+                <img src="{{this.url}}" alt="supportPhoto" style="max-width: 100%;">
+            {{/each}}
+        {{else}}
+            <p>No attachments provided.</p>
+        {{/if}}
+    </body>
+</html>

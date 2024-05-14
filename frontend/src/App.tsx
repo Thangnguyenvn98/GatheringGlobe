@@ -15,9 +15,12 @@ import {
 } from "react-router-dom";
 import Layout from "./components/layouts/layout";
 import Faq from "./components/FAQ/faq";
+import Booking from "./pages/Booking";
+import Ticket from "./components/BookingForm/Ticket";
 import ContactUs from "./components/contact-us/contactUs";
 import ProtectedRoute from "./utils/ProtectedRoute";
 import useCheckAuth from "./hooks/useCheckAuth";
+import ForgotPassword from "./components/loginPage/Forgotpassword";
 
 function App() {
   useCheckAuth();
@@ -94,6 +97,9 @@ function App() {
             </Layout>
           }
         />
+        <Route path="/booking/:ticketId" element={<Booking />} />
+        <Route path="/ticket" element={<Ticket />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route
           path="/create-new-event"
           element={

@@ -2,7 +2,9 @@ import { Room } from "@/types/room";
 import { SignInFormData } from "@/types/signInFormData";
 import { User } from "@/types/user";
 import { useQuery } from "@tanstack/react-query";
+import { ContactUsFormData } from "@/types/contactUsFormData";
 import axios from "axios";
+import { PaymentIntentResponse } from "../../../backend/src/shared/types";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 export const axiosInstance = axios.create({
@@ -55,6 +57,27 @@ export const SignInUser = async (data: SignInFormData) => {
   }
 };
 
+// Handle payment
+export const createPaymentIntent = async (
+  ticketId: string,
+  numberOfTickets: string,
+): Promise<PaymentIntentResponse> => {
+  try {
+    const response = await axiosInstance.post(
+      `/api/payments/${ticketId}/bookings/payment-intent`,
+      { numberOfTickets },
+    );
+
+    if (response.status >= 200 && response.status < 300) {
+      return response.data;
+    } else {
+      throw new Error(`Server responded with status: ${response.status}`);
+    }
+  } catch (error) {
+    throw new Error("Failed to create payment intent");
+  }
+};
+
 export const createRoom = async (data: { name: string }) => {
   const response = await axiosInstance.post("/api/room", data);
   return response.data;
@@ -99,5 +122,15 @@ export const validateToken = async () => {
 
 export const signOutUser = async () => {
   const response = await axiosInstance.post("/api/users/logout");
+  return response.data;
+};
+
+export const getEventById = async (eventId: string) => {
+  const response = await axiosInstance.get(`/api/events/${eventId}/details`);
+  return response.data;
+};
+
+export const sendUserHelpRequest = async (data: ContactUsFormData) => {
+  const response = await axiosInstance.post("api/users/help/contact-us", data);
   return response.data;
 };
