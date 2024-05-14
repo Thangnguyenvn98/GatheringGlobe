@@ -5,7 +5,6 @@ import { DateRange } from "react-day-picker";
 import EventLocation from "./searchlocation";
 import { useState } from "react";
 import { Button } from "../ui/button";
-// import { APIProvider, Map } from "@vis.gl/react-google-maps";
 import queryString from "query-string";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -16,7 +15,6 @@ function SearchForm() {
   const [location, setLocation] = useState("");
   const [date, setDate] = React.useState<DateRange | undefined>();
   const [keyword, setKeyword] = useState("");
-  // const apikey = import.meta.env.VITE_PUBLIC_GOOGLE_MAPS_API_KEY;
   const navigate = useNavigate();
 
   const onSubmit = async () => {

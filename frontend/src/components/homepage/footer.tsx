@@ -1,6 +1,6 @@
 function Footer() {
   return (
-    <div className="flex justify-around bottom-0">
+    <div className="flex justify-around">
       <div className="grid grid-cols-4 gap-4 bg-green-500 w-full bg-opacity-20">
         <div className="p-4 col-span-2">
           <h2 className="text-left font-extrabold">Gathering Globe</h2>

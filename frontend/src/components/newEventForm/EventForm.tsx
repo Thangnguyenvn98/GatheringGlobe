@@ -15,7 +15,6 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { useMap, useMapsLibrary } from "@vis.gl/react-google-maps";
 import { FormEvent, useCallback, useEffect, useState } from "react";
-// import { APIProvider, Map } from "@vis.gl/react-google-maps";
 
 const EventForm = () => {
   const {
@@ -257,24 +256,4 @@ const EventForm = () => {
   );
 };
 
-// const AppWithAPIProvider = () => {
-//   const apikey = import.meta.env.VITE_PUBLIC_GOOGLE_MAPS_API_KEY;
-
-//   return (
-//     <APIProvider apiKey={apikey}>
-//       <div>
-//         <Map
-//             defaultZoom={3}
-//             defaultCenter={{ lat: 22.54992, lng: 0 }}
-//             gestureHandling={"greedy"}
-//             disableDefaultUI={true}
-//             className="hidden"
-//           />
-//         <EventForm />
-//       </div>
-//     </APIProvider>
-//   );
-// };
-
-// export default AppWithAPIProvider;
 export default EventForm;
