@@ -21,6 +21,7 @@ import ProtectedRoute from "./utils/ProtectedRoute";
 import useCheckAuth from "./hooks/useCheckAuth";
 import ForgotPassword from "./components/loginPage/Forgotpassword";
 import EventDetailMock from "./components/testComponent/EventDetailMock";
+import Booking from "./components/BookingForm/Booking";
 
 function App() {
   useCheckAuth();
@@ -55,12 +56,10 @@ function App() {
             }
           />
           <Route
-            path="/ticket/:ticketId/booking"
+            path="/:userId/checkout"
             element={
               <Layout>
-                <DiscoverEvent />
-
-                {/* <Booking /> */}
+                <Booking />
               </Layout>
             }
           />

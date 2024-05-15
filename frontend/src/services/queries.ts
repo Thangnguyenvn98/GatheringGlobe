@@ -1,12 +1,14 @@
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import {
   axiosInstance,
+  createPaymentIntent,
   getCurrentUser,
   getEventById,
   getRoom,
   getRooms,
 } from "./api";
 import { useSocket } from "@/components/providers/socket-provider";
+import { CartItem } from "@/hooks/use-cart-store";
 
 export function useRooms() {
   return useQuery({
@@ -30,13 +32,13 @@ export const useCurrentEventDetail = (eventId: string) => {
   });
 };
 
-// export const usePaymentIntent = (ticketId: string, numberOfTickets: number) => {
-//   return useQuery({
-//     queryKey: ["paymentIntent"],
-//     queryFn: () => createPaymentIntent(ticketId, numberOfTickets),
-//     enabled: !!ticketId && numberOfTickets > 0,
-//   });
-// };
+export const usePaymentIntent = (cartItems: CartItem[]) => {
+  return useQuery({
+    queryKey: ["paymentIntent"],
+    queryFn: () => createPaymentIntent(cartItems),
+    enabled: !!(cartItems.length > 0),
+  });
+};
 
 export const useChatQuery = (roomId: string | undefined) => {
   const { isConnected } = useSocket();

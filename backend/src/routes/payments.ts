@@ -36,65 +36,71 @@ const router = express.Router()
 
 
 router.post("/bookings/payment-intent", verifyToken, async (req: CartRequest, res: Response) => {
-    const { cartItems } = req.body;
-  
-    if (!Array.isArray(cartItems) || cartItems.length === 0) {
+  const { cartItems } = req.body;
+
+  if (!Array.isArray(cartItems) || cartItems.length === 0) {
       return res.status(400).json({ message: "No cart items provided." });
-    }
-  
-    try {
+  }
+
+  try {
       const user = await User.findById(req.userId);
       if (!user) {
-        return res.status(404).json({ message: "User not found." });
+          return res.status(404).json({ message: "User not found." });
       }
-  
+
       let totalPrice = 0;
       const allTicketsDetails = [];
-  
+
       for (const cartItem of cartItems) {
-        const { eventId, tickets } = cartItem;
-        const event = await Event.findById(eventId);
-        if (!event) {
-          return res.status(404).json({ message: `Event ${eventId} not found.` });
-        }
-  
-        for (const [ticketId, { quantity, price }] of Object.entries(tickets)) {
-          const ticket = await Ticket.findById(ticketId);
-          if (!ticket) {
-            return res.status(404).json({ message: `Ticket ${ticketId} not found.` });
+          const { eventId, tickets } = cartItem;
+          const event = await Event.findById(eventId);
+          if (!event) {
+              return res.status(404).json({ message: `Event ${eventId} not found.` });
           }
-          if (ticket.quantityAvailable < quantity) {
-            return res.status(400).json({ message: `Not enough tickets available for ${ticketId}.` });
+
+          for (const [ticketId, { quantity }] of Object.entries(tickets)) {
+              if (quantity <= 0) {
+                  return res.status(400).json({ message: `Invalid quantity for ticket ${ticketId}.` });
+              }
+
+              const ticket = await Ticket.findById(ticketId);
+              if (!ticket) {
+                  return res.status(404).json({ message: `Ticket ${ticketId} not found.` });
+              }
+              if (ticket.quantityAvailable < quantity) {
+                  return res.status(400).json({ message: `Not enough tickets available for ${ticketId}.` });
+              }
+
+              totalPrice += ticket.price * quantity; // Use the price from the database
+              allTicketsDetails.push({ eventId, ticketId, quantity });
           }
-          totalPrice += price * quantity;
-          allTicketsDetails.push({ eventId, ticketId, quantity });
-        }
       }
-  
+      totalPrice = Math.round(totalPrice * 100); // Convert to cents and round to the nearest integer
+
       const paymentIntent = await stripe.paymentIntents.create({
-        amount: totalPrice * 100, // Convert to cents
-        currency: "usd",
-        metadata: {
-          userId: req.userId,
-          allTicketsDetails: JSON.stringify(allTicketsDetails),
-        },
+          amount: totalPrice, // Convert to cents
+          currency: "usd",
+          metadata: {
+              userId: req.userId,
+              allTicketsDetails: JSON.stringify(allTicketsDetails),
+          },
       });
-  
+
       if (!paymentIntent.client_secret) {
-        return res.status(500).json({ message: "Error creating payment intent" });
+          return res.status(500).json({ message: "Error creating payment intent" });
       }
-  
+
       res.send({
-        paymentIntentId: paymentIntent.id,
-        clientSecret: paymentIntent.client_secret,
-        totalPrice,
-        allTicketsDetails,
+          paymentIntentId: paymentIntent.id,
+          clientSecret: paymentIntent.client_secret,
+          totalPrice,
+          allTicketsDetails,
       });
-    } catch (error) {
+  } catch (error) {
       console.error("Failed to create payment intent:", error);
       return res.status(500).json({ message: "Internal server error" });
-    }
-  });
+  }
+});
   
 
 //   router.post("/bookings", verifyToken, async (req: CartRequest, res: Response) => {

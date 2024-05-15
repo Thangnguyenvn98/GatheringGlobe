@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import toast from "react-hot-toast";
 
-interface CartItem {
+export interface CartItem {
   eventId: string;
   eventName: string;
   tickets: {
