@@ -1,4 +1,4 @@
-import { Ticket } from "./ticket";
+import { TicketType } from "./ticket";
 
 export interface EventType {
   _id: string;
@@ -13,6 +13,6 @@ export interface EventType {
   categories: string[];
   artistName: string;
   imageUrls: string[];
-  tickets: Ticket[];
+  tickets: TicketType[];
   roomChatLink?: string;
 }
