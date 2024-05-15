@@ -27,8 +27,11 @@ const formSchema = z.object({
   subject: z.string().min(4),
   description: z
     .string()
-    .min(10, { message: "The description is not long enough" })
-    .max(100, { message: "The description is too long" })
+    .min(40, {
+      message:
+        "The description is not long enough, minimum 10 character required",
+    })
+    .max(350, { message: "The description is too long" })
     .trim(),
   attachments: z.object({ url: z.string() }).array(),
 });
