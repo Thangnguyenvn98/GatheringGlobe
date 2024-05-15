@@ -12,6 +12,11 @@ const EventDetail: React.FC = () => {
   const handleTicketAmountChange = (amount: number) => {
     // Ensure that ticket amount is not less than 1
     setTicketAmount((prev) => Math.max(1, prev + amount));
+    console.log(ticketAmount);
+  };
+
+  const onCheckOut = (eventData) => {
+    console.log(eventData);
   };
 
   return (
@@ -69,7 +74,10 @@ const EventDetail: React.FC = () => {
                 currency: "USD",
               }).format(parseFloat(ticketPrice))}
             </span>
-            <button className="bg-orange-500 text-white px-4 py-2 rounded-lg">
+            <button
+              onClick={() => onCheckOut(eventData)}
+              className="bg-orange-500 text-white px-4 py-2 rounded-lg"
+            >
               Add to Cart
             </button>
           </div>

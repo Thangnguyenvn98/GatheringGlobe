@@ -16,7 +16,7 @@ function SearchForm() {
   const [location, setLocation] = useState("");
   const [date, setDate] = React.useState<DateRange | undefined>();
   const [keyword, setKeyword] = useState("");
-  const apikey = import.meta.env.VITE_PUBLIC_GOOGLE_MAPS_API_KEY;
+  const apikey = import.meta.env.VITE_PUBLIC_GOOGLE_MAPS_API_KEY || "";
   const navigate = useNavigate();
 
   const onSubmit = async () => {

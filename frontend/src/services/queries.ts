@@ -1,5 +1,11 @@
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import { axiosInstance, getCurrentUser, getRoom, getRooms } from "./api";
+import {
+  axiosInstance,
+  getCurrentUser,
+  getEventById,
+  getRoom,
+  getRooms,
+} from "./api";
 import { useSocket } from "@/components/providers/socket-provider";
 
 export function useRooms() {
@@ -15,6 +21,22 @@ export function useCurrentUser() {
     queryFn: getCurrentUser,
   });
 }
+
+export const useCurrentEventDetail = (eventId: string) => {
+  return useQuery({
+    queryKey: ["event", eventId],
+    queryFn: () => getEventById(eventId),
+    enabled: !!eventId,
+  });
+};
+
+// export const usePaymentIntent = (ticketId: string, numberOfTickets: number) => {
+//   return useQuery({
+//     queryKey: ["paymentIntent"],
+//     queryFn: () => createPaymentIntent(ticketId, numberOfTickets),
+//     enabled: !!ticketId && numberOfTickets > 0,
+//   });
+// };
 
 export const useChatQuery = (roomId: string | undefined) => {
   const { isConnected } = useSocket();
