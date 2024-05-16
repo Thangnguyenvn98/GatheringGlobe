@@ -11,7 +11,7 @@ export type EventType = {
     organizerId: string;
     location: string;
     categories: string[];
-    artistName: string;
+    artistName?: string;
     imageUrls: string[];
     tickets: mongoose.Types.ObjectId[]; // Reference to ticket IDs
     roomChatLink: string;
@@ -28,7 +28,7 @@ const eventSchema = new mongoose.Schema({
     organizerId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     location: { type: String, required: true },
     categories: [{ type: String, required: true }],
-    artistName: { type: String, required: true },
+    artistName: { type: String, required: false },
     imageUrls: [{ type: String, required: true }],
     tickets: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Ticket' }], 
     roomChatLink: { type: String, required: false },

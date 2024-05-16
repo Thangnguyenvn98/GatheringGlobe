@@ -56,7 +56,7 @@ function App() {
             }
           />
           <Route
-            path="/:userId/checkout"
+            path="/checkout"
             element={
               <Layout>
                 <Booking />

@@ -24,8 +24,11 @@ interface Ticket {
   interface CartRequest extends Request {
     body: {
       cartItems: CartItem[];
+      paymentIntentId?: string;
     };
   }
+
+
 
 
 const stripe = new Stripe(process.env.STRIPE_API_KEY as string)
@@ -99,6 +102,75 @@ router.post("/bookings/payment-intent", verifyToken, async (req: CartRequest, re
       return res.status(500).json({ message: "Internal server error" });
   }
 });
+
+router.post('/bookings/update-payment-intent', verifyToken, async (req:CartRequest, res:Response) => {
+    const { cartItems, paymentIntentId } = req.body;
+  
+    if (!Array.isArray(cartItems) || cartItems.length === 0) {
+      return res.status(400).json({ message: 'No cart items provided.' });
+    }
+
+    if (!paymentIntentId) {
+        return res.status(400).json({ message: "No payment intent ID provided." });
+    }
+  
+    try {
+      const user = await User.findById(req.userId);
+      if (!user) {
+        return res.status(404).json({ message: 'User not found.' });
+      }
+  
+      let totalPrice = 0;
+      const allTicketsDetails = [];
+  
+      for (const cartItem of cartItems) {
+        const { eventId, tickets } = cartItem;
+        const event = await Event.findById(eventId);
+        if (!event) {
+          return res.status(404).json({ message: `Event ${eventId} not found.` });
+        }
+  
+        for (const [ticketId, { quantity }] of Object.entries(tickets)) {
+          if (quantity <= 0) {
+            return res.status(400).json({ message: `Invalid quantity for ticket ${ticketId}.` });
+          }
+  
+          const ticket = await Ticket.findById(ticketId);
+          if (!ticket) {
+            return res.status(404).json({ message: `Ticket ${ticketId} not found.` });
+          }
+          if (ticket.quantityAvailable < quantity) {
+            return res.status(400).json({ message: `Not enough tickets available for ${ticketId}.` });
+          }
+  
+          totalPrice += ticket.price * quantity; // Use the price from the database
+          allTicketsDetails.push({ eventId, ticketId, quantity });
+        }
+      }
+      totalPrice = Math.round(totalPrice * 100); // Convert to cents and round to the nearest integer
+  
+      const paymentIntent = await stripe.paymentIntents.update(paymentIntentId, {
+        amount: totalPrice, // Convert to cents
+        currency: 'usd',
+        metadata: {
+          userId: req.userId,
+          allTicketsDetails: JSON.stringify(allTicketsDetails),
+        },
+      });
+  
+      res.send({
+        paymentIntentId: paymentIntent.id,
+        clientSecret: paymentIntent.client_secret,
+        totalPrice,
+        allTicketsDetails,
+      });
+    } catch (error) {
+      console.error('Failed to update payment intent:', error);
+      return res.status(500).json({ message: 'Internal server error' });
+    }
+  });
+  
+  module.exports = router;
   
 
 //   router.post("/bookings", verifyToken, async (req: CartRequest, res: Response) => {

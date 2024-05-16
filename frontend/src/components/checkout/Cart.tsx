@@ -3,10 +3,14 @@ import useCart from "@/hooks/use-cart-store";
 import { Button } from "../ui/button";
 import { Trash } from "lucide-react";
 import { Separator } from "../ui/separator";
+import { useNavigate } from "react-router-dom";
+import { useCurrentUser } from "@/services/queries";
 
 const Cart: React.FC = () => {
   const { cartItems, updateCart, removeFromCart, clearCart, getTotalCost } =
     useCart();
+  const navigate = useNavigate();
+  const { data: currentUser } = useCurrentUser();
 
   const handleQuantityChange = (
     eventId: string,
@@ -22,6 +26,15 @@ const Cart: React.FC = () => {
 
   const handleClearCart = () => {
     clearCart();
+  };
+
+  const handleCheckout = () => {
+    if (!currentUser) {
+      navigate("/register", { state: { from: "/checkout" } });
+    } else {
+      navigate(`/checkout`);
+    }
+    console.log("Checkout");
   };
 
   if (cartItems.length === 0) {
@@ -97,7 +110,7 @@ const Cart: React.FC = () => {
           }).format(getTotalCost())}
         </span>
         <Button
-          onClick={handleClearCart}
+          onClick={handleCheckout}
           className="bg-green-500 text-white px-4 py-2 rounded-lg"
         >
           Check Out

@@ -10,7 +10,7 @@ import { SignInUser } from "@/services/api";
 import toast from "react-hot-toast";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { SignInFormData } from "@/types/signInFormData";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -19,6 +19,7 @@ import useAuthStore from "@/hooks/use-auth-store";
 
 const Login = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const {
     register,
     handleSubmit,
@@ -28,7 +29,9 @@ const Login = () => {
     try {
       await SignInUser(data);
       useAuthStore.getState().setAuthenticated(true);
-      navigate("/");
+      const redirectTo = location.state?.from || "/";
+      console.log("Redirecting to: ", location);
+      navigate(redirectTo);
       toast.success("Login Success");
     } catch (error) {
       const errorMessage =

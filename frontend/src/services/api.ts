@@ -78,6 +78,25 @@ export const createPaymentIntent = async (
   }
 };
 
+export const updatePaymentIntent = async (
+  cartItems: CartItem[],
+  paymentIntentId: string,
+) => {
+  try {
+    const response = await axiosInstance.post(
+      "/bookings/update-payment-intent",
+      {
+        cartItems,
+        paymentIntentId,
+      },
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Failed to update payment intent:", error);
+    throw error;
+  }
+};
+
 export const createRoom = async (data: { name: string }) => {
   const response = await axiosInstance.post("/api/room", data);
   return response.data;

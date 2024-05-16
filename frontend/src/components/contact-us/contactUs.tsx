@@ -59,12 +59,11 @@ const ContactUs = () => {
     try {
       setLoading(true);
       const response = await sendUserHelpRequest(values);
-      console.log(values);
       form.reset();
       toast.success(response.message);
       setTimeout(() => {
         navigate(0);
-      }, 2000);
+      }, 800);
     } catch (error) {
       toast.error("Something went wrong");
     } finally {
@@ -196,7 +195,7 @@ const ContactUs = () => {
                     )}
                   />
                   <div className="pt-6">
-                    <Button type="submit" size="lg">
+                    <Button type="submit" size="lg" disabled={loading}>
                       Submit
                     </Button>
                     {/* call the obSubmit defined above*/}

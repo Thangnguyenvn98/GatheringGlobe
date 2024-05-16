@@ -19,6 +19,8 @@ import {
   FormMessage,
 } from "../ui/form";
 import { Button } from "../ui/button";
+import useCartStore from "@/hooks/use-cart-store";
+import { updatePaymentIntent } from "@/services/api";
 
 // import { StripeCardElement } from "@stripe/stripe-js";
 
@@ -52,6 +54,7 @@ const BookingForm = ({ paymentIntent, currentUser }: Props) => {
   const [loading, setLoading] = useState(false);
   const stripe = useStripe();
   const elements = useElements();
+  const { paymentIntentId, getTotalCost, cartItems } = useCartStore();
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -68,7 +71,22 @@ const BookingForm = ({ paymentIntent, currentUser }: Props) => {
       return;
     }
     setLoading(true);
-    const { error } = await stripe.confirmPayment({
+    if (data.totalPrice !== getTotalCost()) {
+      try {
+        const updatedPaymentIntent = await updatePaymentIntent(
+          cartItems,
+          paymentIntentId || "",
+        );
+        data.totalPrice = updatedPaymentIntent.totalPrice;
+        data.paymentIntentId = updatedPaymentIntent.paymentIntentId;
+      } catch (error) {
+        console.error("Failed to update payment intent:", error);
+        setLoading(false);
+        return;
+      }
+    }
+
+    const { error, paymentIntent } = await stripe.confirmPayment({
       elements,
       confirmParams: {
         return_url: window.location.href,
@@ -79,17 +97,19 @@ const BookingForm = ({ paymentIntent, currentUser }: Props) => {
       console.error(error);
       setLoading(false);
       return;
+    } else if (paymentIntent.status === "succeeded") {
+      console.log("Payment Succeeded");
     }
-    console.log(data);
+    setLoading(false);
   };
   return (
     <div className="rounded-lg border border-slate-300 bg-zinc-800 p-5 flex flex-col gap-y-4">
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="flex flex-col gap-y-2"
+          className="flex flex-col gap-y-4 "
         >
-          <div className="flex items-center gap-x-4">
+          <div className="flex items-center gap-x-6">
             <FormField
               control={form.control}
               name="firstName"
@@ -134,12 +154,12 @@ const BookingForm = ({ paymentIntent, currentUser }: Props) => {
             name="lastName"
             rules={{ required: "Email is required" }}
             render={({ field }) => (
-              <FormItem className="text-white">
+              <FormItem className="text-white mb-4">
                 <FormLabel htmlFor="firstName">Email</FormLabel>
                 <FormControl>
                   <Input
                     {...field}
-                    className="text-white"
+                    className="text-white max-w-sm"
                     placeholder="* Email"
                   />
                 </FormControl>
@@ -151,10 +171,11 @@ const BookingForm = ({ paymentIntent, currentUser }: Props) => {
         </form>
       </Form>
       <PaymentElement />
+
       <Button
         disabled={loading}
         size="lg"
-        className="bg-green-400"
+        className="bg-green-400 mt-auto "
         type="submit"
       >
         {loading ? "Processing..." : "Pay"}

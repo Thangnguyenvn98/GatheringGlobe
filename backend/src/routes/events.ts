@@ -72,11 +72,7 @@ router.post("/", verifyToken, async (req: Request, res: Response) => {
   if (!user) {
     return res.status(400).json({ message: "User does not exists!" });
   }
-  if (user.role !== "organizer") {
-    return res
-      .status(403)
-      .json({ message: "Only organizers are allowed to create events." });
-  }
+
   const {
     title,
     description,
@@ -98,7 +94,6 @@ router.post("/", verifyToken, async (req: Request, res: Response) => {
     !endTime ||
     !location ||
     !categories ||
-    !artistName ||
     !imageUrls
   ) {
     return res.status(400).json({

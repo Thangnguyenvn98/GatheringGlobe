@@ -1,12 +1,15 @@
 import { CartItem } from "@/hooks/use-cart-store";
 import { Separator } from "../ui/separator";
+import { Button } from "../ui/button";
 
 const BookingDetailsSummary = ({
   cartItems,
   totalCost,
+  updateCart,
 }: {
   cartItems: CartItem[];
   totalCost: number;
+  updateCart: (eventId: string, ticketId: string, increment: number) => void;
 }) => {
   return (
     <div className=" rounded-lg p-4 shadow-sm ">
@@ -26,7 +29,26 @@ const BookingDetailsSummary = ({
                 </div>
                 <div className="flex items-center gap-x-2">
                   <span className="text-gray-400">Qty</span>
-                  <span>{ticketDetails.quantity}</span>
+                  <Button
+                    onClick={() => updateCart(item.eventId, ticketId, -1)}
+                    variant={"outline"}
+                    className="text-gray-500 focus:outline-none focus:bg-gray-300 p-2 rounded-l-md"
+                    aria-label="Decrease ticket amount"
+                  >
+                    -
+                  </Button>
+
+                  <span className="w-6 text-center">
+                    {ticketDetails.quantity}
+                  </span>
+                  <Button
+                    onClick={() => updateCart(item.eventId, ticketId, 1)}
+                    variant={"outline"}
+                    className="text-gray-500 focus:outline-none focus:bg-gray-300 p-2 rounded-l-md"
+                    aria-label="Increase ticket amount"
+                  >
+                    +
+                  </Button>
                 </div>
               </div>
             ))}
