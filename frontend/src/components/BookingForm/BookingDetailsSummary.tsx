@@ -1,4 +1,5 @@
 import { CartItem } from "@/hooks/use-cart-store";
+import { Separator } from "../ui/separator";
 
 const BookingDetailsSummary = ({
   cartItems,
@@ -8,24 +9,34 @@ const BookingDetailsSummary = ({
   totalCost: number;
 }) => {
   return (
-    <div className="border border-gray-300 rounded-lg p-4 shadow-md bg-gray-50">
-      <h2 className="text-lg font-semibold mb-4">Booking Details Summary</h2>
-      <ul>
+    <div className=" rounded-lg p-4 shadow-sm ">
+      <h3 className="text-lg font-semibold mb-4">Pay Gathering Globe</h3>
+      <h1 className="font-bold text-4xl">${totalCost.toFixed(2)}</h1>
+      <div className="flex flex-col gap-y-4">
         {cartItems.map((item, index) => (
-          <li key={index} className="mb-2">
-            <div className="font-medium">{item.eventName}</div>
+          <div key={index} className="flex flex-col gap-y-4 mt-4">
+            <div className="flex items-center">
+              <div className="font-medium text-lg ">{item.eventName}</div>
+            </div>
             {Object.entries(item.tickets).map(([ticketId, ticketDetails]) => (
-              <div key={ticketId} className="ml-4">
-                <div>Type: {ticketDetails.ticketType}</div>
-                <div>Quantity: {ticketDetails.quantity}</div>
-                <div>Price: ${ticketDetails.price}</div>
+              <div key={ticketId} className="flex flex-col">
+                <div className="flex justify-between">
+                  <div>{ticketDetails.ticketType} Ticket</div>
+                  <div className="font-semibold"> ${ticketDetails.price}</div>
+                </div>
+                <div className="flex items-center gap-x-2">
+                  <span className="text-gray-400">Qty</span>
+                  <span>{ticketDetails.quantity}</span>
+                </div>
               </div>
             ))}
-          </li>
+          </div>
         ))}
-      </ul>
-      <div className="mt-4 font-semibold text-lg">
-        Total Cost: ${totalCost.toFixed(2)}
+        <Separator className="h-[2px]" />
+        <div className="mt-4 font-semibold text-lg flex justify-between">
+          <span>Total due</span>
+          <span> ${totalCost.toFixed(2)}</span>
+        </div>
       </div>
     </div>
   );

@@ -1,8 +1,6 @@
 import Stripe from "stripe"
 import express, {Request, Response} from "express";
 import verifyToken from "../middleware/auth";
-import { ParamSchema, validationResult } from "express-validator";
-import { BookingType } from "../shared/types";
 import Event from "../models/event";
 import Order, { OrderType } from "../models/order";
 import User from "../models/user";

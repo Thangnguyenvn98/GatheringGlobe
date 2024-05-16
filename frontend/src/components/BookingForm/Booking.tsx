@@ -12,22 +12,28 @@ const Booking = () => {
   const { data: currentUser } = useCurrentUser();
   return (
     <div className="flex justify-center py-10">
-      <div className="grid grid-cols-[1fr_2fr] p-4 gap-8 border border-gray-300 rounded-lg shadow-md">
-        <BookingDetailsSummary
-          cartItems={cartItems}
-          totalCost={getTotalCost()}
-        />
-        {currentUser && paymentIntentData && (
-          <Elements
-            stripe={stripePromise}
-            options={{ clientSecret: paymentIntentData.clientSecret }}
-          >
-            <BookingForm
-              paymentIntent={paymentIntentData}
-              currentUser={currentUser}
-            />
-          </Elements>
-        )}
+      <div className="flex flex-col gap-y-4">
+        <h1 className="font-bold text-4xl">Checkout</h1>
+        <div className="grid grid-cols-[1fr_1fr] p-4 gap-8 border border-gray-300 rounded-lg shadow-md">
+          <BookingDetailsSummary
+            cartItems={cartItems}
+            totalCost={getTotalCost()}
+          />
+          {currentUser && paymentIntentData && (
+            <Elements
+              stripe={stripePromise}
+              options={{
+                clientSecret: paymentIntentData.clientSecret,
+                appearance: { theme: "night" },
+              }}
+            >
+              <BookingForm
+                paymentIntent={paymentIntentData}
+                currentUser={currentUser}
+              />
+            </Elements>
+          )}
+        </div>
       </div>
     </div>
   );
