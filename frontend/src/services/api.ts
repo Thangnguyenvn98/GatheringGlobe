@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { ContactUsFormData } from "@/types/contactUsFormData";
 import axios from "axios";
 import { PaymentIntentResponse } from "../../../backend/src/shared/types";
+import { CartItem } from "@/hooks/use-cart-store";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 export const axiosInstance = axios.create({
@@ -59,13 +60,12 @@ export const SignInUser = async (data: SignInFormData) => {
 
 // Handle payment
 export const createPaymentIntent = async (
-  ticketId: string,
-  numberOfTickets: string,
+  cartItems: CartItem[],
 ): Promise<PaymentIntentResponse> => {
   try {
     const response = await axiosInstance.post(
-      `/api/payments/${ticketId}/bookings/payment-intent`,
-      { numberOfTickets },
+      `/api/payments/bookings/payment-intent`,
+      { cartItems },
     );
 
     if (response.status >= 200 && response.status < 300) {
