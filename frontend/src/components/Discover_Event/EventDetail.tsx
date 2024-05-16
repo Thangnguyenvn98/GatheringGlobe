@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { EventType } from "@/types/event";
 import { useLocation } from "react-router-dom"; //to call props in event card to the even detail page by clicking the button "view event details"
 
 const EventDetail: React.FC = () => {
@@ -15,7 +16,7 @@ const EventDetail: React.FC = () => {
     console.log(ticketAmount);
   };
 
-  const onCheckOut = (eventData) => {
+  const onCheckOut = (eventData: EventType) => {
     console.log(eventData);
   };
 
