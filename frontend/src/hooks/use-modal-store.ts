@@ -1,10 +1,15 @@
 import { create } from "zustand";
 import { Room } from "@/types/room";
-export type ModalType = "deleteRoom" | "editRoom" | "previewImage"; // Added "deleteRoom" as an example
+export type ModalType =
+  | "deleteRoom"
+  | "editRoom"
+  | "previewImage"
+  | "orderConfirmation"; // Added "deleteRoom" as an example
 
 interface ModalData {
   room?: Room;
   imageUrl?: string;
+  orderId?: string;
   // You can add other properties here as needed
 }
 

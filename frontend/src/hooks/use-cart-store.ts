@@ -31,6 +31,7 @@ interface CartStore {
   removeFromCart: (eventId: string, ticketId: string) => void;
   clearCart: () => void;
   getTotalCost: () => number;
+  getTotalQuantity: () => number;
 }
 
 const useCart = create<CartStore>()(
@@ -111,6 +112,17 @@ const useCart = create<CartStore>()(
             total +
             Object.values(item.tickets || {}).reduce(
               (itemTotal, { quantity, price }) => itemTotal + price * quantity,
+              0,
+            )
+          );
+        }, 0);
+      },
+      getTotalQuantity: () => {
+        return get().cartItems.reduce((total, item) => {
+          return (
+            total +
+            Object.values(item.tickets || {}).reduce(
+              (itemTotal, { quantity }) => itemTotal + quantity,
               0,
             )
           );
