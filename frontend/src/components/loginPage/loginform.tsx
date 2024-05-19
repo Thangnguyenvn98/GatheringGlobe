@@ -15,7 +15,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { AxiosError } from "axios";
-import useAuthStore from "@/hooks/use-auth-store";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -28,7 +27,6 @@ const Login = () => {
   const handleSignIn: SubmitHandler<SignInFormData> = async (data) => {
     try {
       await SignInUser(data);
-      useAuthStore.getState().setAuthenticated(true);
       const redirectTo = location.state?.from || "/";
       console.log("Redirecting to: ", location);
       navigate(redirectTo);

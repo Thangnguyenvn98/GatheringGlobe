@@ -13,7 +13,6 @@ import GatheringGlobe from "../../images/GatheringGlobe.png";
 import SearchForm from "../navbar/searchbar";
 import { Link, useNavigate } from "react-router-dom";
 import { CircleUserRound, LogOut } from "lucide-react";
-import useAuthStore from "@/hooks/use-auth-store";
 import { signOutUser } from "@/services/api";
 import toast from "react-hot-toast";
 import { useCurrentUser } from "@/services/queries";
@@ -22,7 +21,6 @@ import Cart from "../checkout/Cart";
 import useCartStore from "@/hooks/use-cart-store";
 
 function Pageheader() {
-  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const { data: userData, isLoading, isError } = useCurrentUser();
   const { getTotalQuantity } = useCartStore();
   const totalQuantity = getTotalQuantity();
@@ -33,7 +31,6 @@ function Pageheader() {
       const response = await signOutUser();
       console.log(response.message);
       toast.success(response.message);
-      useAuthStore.getState().clearAuthenticated();
       navigate("/", { replace: true });
     } catch (e) {
       console.log(e);
@@ -102,7 +99,7 @@ function Pageheader() {
                 <Cart />
               </DropdownMenuContent>
             </DropdownMenu>
-            {isAuthenticated && !isLoading && !isError && (
+            {userData && !isLoading && !isError && (
               <DropdownMenu modal={false}>
                 <DropdownMenuTrigger asChild>
                   <Button variant={"profile"}>
@@ -139,7 +136,7 @@ function Pageheader() {
                 </DropdownMenuContent>
               </DropdownMenu>
             )}
-            {!isAuthenticated && (
+            {!userData && (
               <Link
                 to="/register"
                 className="bg-white text-green-800 text-lg p-4 rounded-md mr-2"

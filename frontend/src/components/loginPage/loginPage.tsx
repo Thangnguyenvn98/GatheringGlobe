@@ -4,9 +4,18 @@ import GatheringGlobe from "../../images/GatheringGlobe.png";
 import Register from "./registerform";
 import Login from "./loginform";
 import party from "../../images/party.png";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuthQuery } from "@/services/queries";
 
 const LoginPage = () => {
+  const { data, isLoading } = useAuthQuery();
+  const navigate = useNavigate();
+  if (isLoading) {
+    return <div>Loading...</div>; // Show a loading indicator while the query is fetching
+  }
+  if (data) {
+    navigate("/", { replace: true });
+  }
   return (
     <div className="flex h-screen" style={{ backgroundColor: "#cce7c9" }}>
       <div className="w-1/2 h-full">

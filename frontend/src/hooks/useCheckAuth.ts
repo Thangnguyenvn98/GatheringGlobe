@@ -1,21 +1,20 @@
 // src/hooks/useCheckAuth.ts
 import { useEffect } from "react";
-import useAuthStore from "./use-auth-store";
-import { validateToken } from "@/services/api";
+import { useAuthQuery } from "@/services/queries";
 
 const useCheckAuth = () => {
+  const { refetch } = useAuthQuery();
   useEffect(() => {
     const checkAuthentication = async () => {
       try {
-        await validateToken();
-        useAuthStore.getState().setAuthenticated(true);
+        await refetch();
       } catch (error) {
-        useAuthStore.getState().clearAuthenticated();
+        console.error("Error validating token", error);
       }
     };
 
     checkAuthentication();
-  }, []);
+  }, [refetch]);
 };
 
 export default useCheckAuth;

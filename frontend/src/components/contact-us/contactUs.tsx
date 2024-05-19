@@ -82,9 +82,7 @@ const ContactUs = () => {
         }}
         className="flex justify-center items-center min-h-[600px] w-full"
       >
-        <h1 className="font-extrabold text-centers text-8xl text-white">
-          SUBMIT A REQUEST
-        </h1>
+        <h1 className="font-extrabold text-8xl text-white">SUBMIT A REQUEST</h1>
       </div>
       <div className="bg-gray-100 max-w-[1000px] p-4 mb-10">
         <div className="grid grid-cols-2 ">

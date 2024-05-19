@@ -4,7 +4,10 @@ import { User } from "@/types/user";
 import { useQuery } from "@tanstack/react-query";
 import { ContactUsFormData } from "@/types/contactUsFormData";
 import axios from "axios";
-import { PaymentIntentResponse } from "../../../backend/src/shared/types";
+import {
+  OrderDetailsByIdResponse,
+  PaymentIntentResponse,
+} from "../../../backend/src/shared/types";
 import { CartItem } from "@/hooks/use-cart-store";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
@@ -63,12 +66,15 @@ export const createPaymentIntent = async (
   cartItems: CartItem[],
 ): Promise<PaymentIntentResponse> => {
   try {
+    const existingPaymentIntentId = localStorage.getItem("paymentIntentId");
     const response = await axiosInstance.post(
       `/api/payments/bookings/payment-intent`,
-      { cartItems },
+      { cartItems, paymentIntentId: existingPaymentIntentId },
     );
-
     if (response.status >= 200 && response.status < 300) {
+      if (!existingPaymentIntentId) {
+        localStorage.setItem("paymentIntentId", response.data.paymentIntentId);
+      }
       return response.data;
     } else {
       throw new Error(`Server responded with status: ${response.status}`);
@@ -84,7 +90,7 @@ export const updatePaymentIntent = async (
 ) => {
   try {
     const response = await axiosInstance.post(
-      "/bookings/update-payment-intent",
+      "api/payments/bookings/update-payment-intent",
       {
         cartItems,
         paymentIntentId,
@@ -93,6 +99,21 @@ export const updatePaymentIntent = async (
     return response.data;
   } catch (error) {
     console.error("Failed to update payment intent:", error);
+    throw error;
+  }
+};
+
+export const createOrderPayment = async (data: {
+  paymentIntentId: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+}) => {
+  try {
+    const response = await axiosInstance.post("/api/orders/create-order", data);
+    return response.data;
+  } catch (error) {
+    console.error("Failed to create order payment:", error);
     throw error;
   }
 };
@@ -146,6 +167,13 @@ export const signOutUser = async () => {
 
 export const getEventById = async (eventId: string) => {
   const response = await axiosInstance.get(`/api/events/${eventId}/details`);
+  return response.data;
+};
+
+export const getOrderDetailsById = async (
+  orderId: string,
+): Promise<OrderDetailsByIdResponse> => {
+  const response = await axiosInstance.get(`/api/orders/${orderId}`);
   return response.data;
 };
 

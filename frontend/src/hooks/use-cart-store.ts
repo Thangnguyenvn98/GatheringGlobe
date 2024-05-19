@@ -32,15 +32,11 @@ interface CartStore {
   clearCart: () => void;
   getTotalCost: () => number;
   getTotalQuantity: () => number;
-  paymentIntentId: string | null;
-  setPaymentIntentId: (paymentIntentId: string) => void;
-  clearPaymentIntentId: () => void;
 }
 
 const useCart = create<CartStore>()(
   persist(
     (set, get) => ({
-      paymentIntentId: null,
       cartItems: [],
       addToCart: (eventId, eventName, tickets) => {
         set((state) => {
@@ -131,12 +127,6 @@ const useCart = create<CartStore>()(
             )
           );
         }, 0);
-      },
-      setPaymentIntentId: (paymentIntentId) => {
-        set({ paymentIntentId });
-      },
-      clearPaymentIntentId: () => {
-        set({ paymentIntentId: null });
       },
     }),
     {

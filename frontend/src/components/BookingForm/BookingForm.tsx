@@ -20,7 +20,9 @@ import {
 } from "../ui/form";
 import { Button } from "../ui/button";
 import useCartStore from "@/hooks/use-cart-store";
-import { updatePaymentIntent } from "@/services/api";
+import { createOrderPayment } from "@/services/api";
+import toast from "react-hot-toast";
+import { useModal } from "@/hooks/use-modal-store";
 
 // import { StripeCardElement } from "@stripe/stripe-js";
 
@@ -43,8 +45,6 @@ const formSchema = z.object({
   firstName: z.string().min(4),
   lastName: z.string().min(4),
   email: z.string().email(),
-  ticketId: z.string(),
-  quantity: z.number().int().positive(),
   paymentIntentId: z.string(),
   totalPrice: z.number().int().positive(),
 });
@@ -54,7 +54,8 @@ const BookingForm = ({ paymentIntent, currentUser }: Props) => {
   const [loading, setLoading] = useState(false);
   const stripe = useStripe();
   const elements = useElements();
-  const { paymentIntentId, getTotalCost, cartItems } = useCartStore();
+  const { clearCart } = useCartStore();
+  const { onOpen } = useModal();
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -67,53 +68,63 @@ const BookingForm = ({ paymentIntent, currentUser }: Props) => {
   });
 
   const onSubmit = async (data: FormData) => {
+    console.log("Form submitted"); // Debugging line
     if (!stripe || !elements) {
+      console.log("Stripe or elements not loaded"); // Debugging line
       return;
     }
     setLoading(true);
-    if (data.totalPrice !== getTotalCost()) {
-      try {
-        const updatedPaymentIntent = await updatePaymentIntent(
-          cartItems,
-          paymentIntentId || "",
-        );
-        data.totalPrice = updatedPaymentIntent.totalPrice;
-        data.paymentIntentId = updatedPaymentIntent.paymentIntentId;
-      } catch (error) {
-        console.error("Failed to update payment intent:", error);
-        setLoading(false);
-        return;
-      }
-    }
 
-    const { error, paymentIntent } = await stripe.confirmPayment({
-      elements,
-      confirmParams: {
-        return_url: window.location.href,
-      },
-      redirect: "if_required",
-    });
+    const { error, paymentIntent: confirmedPaymentIntent } =
+      await stripe.confirmPayment({
+        elements,
+        confirmParams: {
+          return_url: window.location.href,
+        },
+        redirect: "if_required",
+      });
     if (error) {
-      console.error(error);
+      toast.error("Error confirming payment");
       setLoading(false);
       return;
-    } else if (paymentIntent.status === "succeeded") {
-      console.log("Payment Succeeded");
+    } else if (
+      confirmedPaymentIntent &&
+      confirmedPaymentIntent.status === "succeeded"
+    ) {
+      clearCart();
+      localStorage.removeItem("paymentIntentId");
+      form.reset();
+      try {
+        const response = await createOrderPayment({
+          paymentIntentId: confirmedPaymentIntent.id,
+          firstName: data.firstName,
+          lastName: data.lastName,
+          email: data.email,
+        });
+        if (response) {
+          console.log(response._id);
+          setLoading(false);
+          onOpen("orderConfirmation", { orderId: response });
+        }
+      } catch (error) {
+        toast.error("Failed to create order payment");
+        console.log(error);
+        setLoading(false);
+      }
     }
-    setLoading(false);
   };
+
   return (
-    <div className="rounded-lg border border-slate-300 bg-zinc-800 p-5 flex flex-col gap-y-4">
+    <div className="rounded-lg border border-slate-300 bg-zinc-800 p-5 flex flex-col gap-y-4 h-full">
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="flex flex-col gap-y-4 "
+          className="flex flex-col gap-y-4 h-full"
         >
           <div className="flex items-center gap-x-6">
             <FormField
               control={form.control}
               name="firstName"
-              rules={{ required: "First Name is required" }}
               render={({ field }) => (
                 <FormItem className="text-white">
                   <FormLabel htmlFor="firstName">First Name</FormLabel>
@@ -124,7 +135,6 @@ const BookingForm = ({ paymentIntent, currentUser }: Props) => {
                       placeholder="* First Name"
                     />
                   </FormControl>
-
                   <FormMessage />
                 </FormItem>
               )}
@@ -132,10 +142,9 @@ const BookingForm = ({ paymentIntent, currentUser }: Props) => {
             <FormField
               control={form.control}
               name="lastName"
-              rules={{ required: "Last Name is required" }}
               render={({ field }) => (
                 <FormItem className="text-white">
-                  <FormLabel htmlFor="firstName">Last Name</FormLabel>
+                  <FormLabel htmlFor="lastName">Last Name</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
@@ -143,7 +152,6 @@ const BookingForm = ({ paymentIntent, currentUser }: Props) => {
                       placeholder="* Last Name"
                     />
                   </FormControl>
-
                   <FormMessage />
                 </FormItem>
               )}
@@ -151,11 +159,10 @@ const BookingForm = ({ paymentIntent, currentUser }: Props) => {
           </div>
           <FormField
             control={form.control}
-            name="lastName"
-            rules={{ required: "Email is required" }}
+            name="email"
             render={({ field }) => (
               <FormItem className="text-white mb-4">
-                <FormLabel htmlFor="firstName">Email</FormLabel>
+                <FormLabel htmlFor="email">Email</FormLabel>
                 <FormControl>
                   <Input
                     {...field}
@@ -163,23 +170,23 @@ const BookingForm = ({ paymentIntent, currentUser }: Props) => {
                     placeholder="* Email"
                   />
                 </FormControl>
-
                 <FormMessage />
               </FormItem>
             )}
           />
+          <div className="flex-grow">
+            <PaymentElement />
+          </div>
+          <Button
+            size={"lg"}
+            disabled={loading}
+            className="bg-green-400 mt-auto"
+            type="submit"
+          >
+            {loading ? "Processing..." : "Pay"}
+          </Button>
         </form>
       </Form>
-      <PaymentElement />
-
-      <Button
-        disabled={loading}
-        size="lg"
-        className="bg-green-400 mt-auto "
-        type="submit"
-      >
-        {loading ? "Processing..." : "Pay"}
-      </Button>
     </div>
   );
 };
