@@ -1,14 +1,15 @@
 import * as React from "react";
-import SearchByKeyword from "./keywordsearch";
-import DatePickerWithRange from "./date-picker-with-two-range";
+import SearchByKeyword from "./Keywordsearch";
+import DatePickerWithRange from "./Date-picker-with-two-range";
 import { DateRange } from "react-day-picker";
-import EventLocation from "./searchlocation";
+import EventLocation from "./Searchlocation";
 import { useState } from "react";
 import { Button } from "../ui/button";
 import queryString from "query-string";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { EventType } from "@/types/event";
+import "./SearchBar.css";
 
 function SearchForm() {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
@@ -88,7 +89,7 @@ function SearchForm() {
           type="submit"
           size={"lg"}
           onClick={onSubmit}
-          className="bg-green-200  text-green-800 text-lg hover:text-black hover:bg-green-200  font-normal shadow-none "
+          className="search-button  text-green-800 text-lg hover:text-black hover:bg-green-300  font-normal shadow-none "
         >
           Search
         </Button>
