@@ -10,13 +10,15 @@ import roomRoutes from "./routes/rooms";
 import eventRoutes from './routes/events'
 import paymentRoutes from './routes/payments'
 import orderRoutes from './routes/orders'
+import livekitRoutes from './routes/livekit'
 import { Server } from "socket.io";
 import http from "http";
 import Room from "./models/room";
 import Message from "./models/message";
-import { log } from "handlebars";
+import dotenv from 'dotenv';
 
-require("dotenv").config();
+
+dotenv.config();
 
 const PORT = process.env.PORT || 5050;
 
@@ -50,6 +52,7 @@ app.use("/api/room", roomRoutes);
 app.use("/api/events", eventRoutes);
 app.use("/api/payments",paymentRoutes);
 app.use("/api/orders",orderRoutes)
+app.use("/api/livekit",livekitRoutes)
 
 
 io.on("connection", async (socket) => {
