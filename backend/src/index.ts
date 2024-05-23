@@ -50,11 +50,8 @@ app.use("/api/messages", messageRoutes);
 app.use("/api/room", roomRoutes);
 app.use("/api/events", eventRoutes);
 app.use("/api/payments",paymentRoutes);
-<<<<<<< Ba-Quan-Nguyen
 app.use("/api/authRoutes",authRoutes);
-=======
-app.use("/api/orders",orderRoutes)
->>>>>>> main
+app.use("/api/orders",orderRoutes);
 
 
 io.on("connection", async (socket) => {
