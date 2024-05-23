@@ -30,7 +30,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
@@ -118,7 +118,7 @@ const formSchema = z
 type FormData = z.infer<typeof formSchema>;
 
 const EventForm = () => {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const categoriesList = [
     "Music",
     "Movies",

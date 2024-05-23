@@ -7,7 +7,6 @@ function EventLocation({
   setLocationFromParent,
 }: {
   setLocationFromParent: (value: string) => void;
-  name: string;
 }) {
   //setlocation is the function called when the event happen
   //state of location object is what chenged
