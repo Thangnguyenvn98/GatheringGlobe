@@ -19,14 +19,12 @@ import ContactUs from "./components/contact-us/contactUs";
 import ProtectedRoute from "./utils/ProtectedRoute";
 import useCheckAuth from "./hooks/useCheckAuth";
 import ForgotPassword from "./components/loginPage/Forgotpassword";
-<<<<<<< Ba-Quan-Nguyen
 import ResetPassword from "./components/loginPage/ResetPassword";
-=======
 import EventDetailMock from "./components/testComponent/EventDetailMock";
 import Booking from "./components/BookingForm/Booking";
 import { OrderConfirmationModal } from "./components/modals/order-confirmation-modal";
 import OrderDetails from "./components/order/OrderDetails";
->>>>>>> main
+
 
 function App() {
   useCheckAuth();
