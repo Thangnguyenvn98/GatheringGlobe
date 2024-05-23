@@ -1,7 +1,7 @@
 import { useState } from "react";
 // import Event from "../../../../backend/src/models/event"
 // import Ticket from "../../../../backend/src/models/ticket"
-import { TicketType } from "@/types/ticket";
+// import {TicketType} from "@/types/ticket"
 import { useLocation } from "react-router-dom"; //to call props in event card to the even detail page by clicking the button "view event details"
 // import queryString from "query-string";
 // import axios from "axios";
@@ -9,22 +9,22 @@ import { useLocation } from "react-router-dom"; //to call props in event card to
 
 function EventDetail() {
   const location = useLocation();
-  type EventType = {
-    _id: string;
-    title: string;
-    description: string;
-    startTime: string;
-    endTime: string;
-    venueId?: string;
-    capacity?: number;
-    organizerId: string;
-    location: string;
-    categories: string[];
-    artistName: string;
-    imageUrls: string[];
-    tickets: TicketType[]; // Reference to ticket IDs
-    roomChatLink: string;
-  };
+  // type EventType = {
+  //   _id: string;
+  //   title: string;
+  //   description: string;
+  //   startTime: string;
+  //   endTime: string;
+  //   venueId?: string;
+  //   capacity?: number;
+  //   organizerId: string;
+  //   location: string;
+  //   categories: string[];
+  //   artistName: string;
+  //   imageUrls: string[];
+  //   tickets: TicketType[]; // Reference to ticket IDs
+  //   roomChatLink: string;
+  // };
   const eventData: any = location.state;
   // const eventId = [
   //   "662f1a933dba20d8d4898a1d",
@@ -186,12 +186,6 @@ function EventDetail() {
             </button>
           </div>
           <div className="flex justify-between items-center mb-4">
-            {/* <span className="text-gray-800 font-bold">
-              {new Intl.NumberFormat("en-US", {
-                style: "currency",
-                currency: "USD",
-              }).format(eventData.tickets?[0].price)}
-            </span> */}
             <button
               // onClick={() => onCheckOut(eventData)}
               className="bg-orange-500 text-white px-4 py-2 rounded-lg"
