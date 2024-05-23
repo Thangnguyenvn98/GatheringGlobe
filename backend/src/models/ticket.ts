@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 export type TicketType = {
     _id: mongoose.Types.ObjectId,
