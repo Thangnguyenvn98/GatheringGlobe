@@ -11,23 +11,27 @@ import {
 import { Button } from "../ui/button";
 import GatheringGlobe from "../../images/GatheringGlobe.png";
 import SearchForm from "../navbar/searchbar";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { CircleUserRound, LogOut } from "lucide-react";
-import useAuthStore from "@/hooks/use-auth-store";
 import { signOutUser } from "@/services/api";
 import toast from "react-hot-toast";
 import { useCurrentUser } from "@/services/queries";
+import { ShoppingCart } from "lucide-react";
+import Cart from "../checkout/Cart";
+import useCartStore from "@/hooks/use-cart-store";
 
 function Pageheader() {
-  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const { data: userData, isLoading, isError } = useCurrentUser();
+  const { getTotalQuantity } = useCartStore();
+  const totalQuantity = getTotalQuantity();
+  const navigate = useNavigate();
 
   const signOut = async () => {
     try {
       const response = await signOutUser();
       console.log(response.message);
       toast.success(response.message);
-      useAuthStore.getState().clearAuthenticated();
+      navigate("/", { replace: true });
     } catch (e) {
       console.log(e);
       toast.error("Logout failed");
@@ -79,51 +83,68 @@ function Pageheader() {
               FAQs
             </Link>
           </div>
-          {isAuthenticated && !isLoading && !isError && (
+          <div className="flex items-center gap-x-4">
             <DropdownMenu modal={false}>
               <DropdownMenuTrigger asChild>
-                <Button variant={"profile"}>
-                  <CircleUserRound />
+                <Button className="relative" variant={"outline"}>
+                  <ShoppingCart className="h-6 w-6 text-green-800 hover:text-green-500" />
+                  {totalQuantity > 0 && (
+                    <div className="absolute -top-4 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex justify-center items-center">
+                      {totalQuantity}
+                    </div>
+                  )}
                 </Button>
               </DropdownMenuTrigger>
-
-              <DropdownMenuContent align="end" className="w-72">
-                <div>
-                  <span className="ml-2 text-muted-foreground">
-                    Welcome back!
-                  </span>{" "}
-                  <DropdownMenuLabel className="text-lg">
-                    {userData?.username}
-                  </DropdownMenuLabel>
-                </div>
-                <DropdownMenuSeparator />
-                <DropdownMenuGroup>
-                  <DropdownMenuItem>My Profile</DropdownMenuItem>
-                  <DropdownMenuItem>My Tickets</DropdownMenuItem>
-                  <DropdownMenuItem>My Settings</DropdownMenuItem>
-                  <DropdownMenuItem>My Events</DropdownMenuItem>
-                </DropdownMenuGroup>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  onClick={signOut}
-                  className="text-red-500 font-bold text-lg "
-                >
-                  Sign Out
-                  <DropdownMenuShortcut className="text-red-500">
-                    <LogOut />
-                  </DropdownMenuShortcut>
-                </DropdownMenuItem>
+              <DropdownMenuContent className="w-90" align="end">
+                <Cart />
               </DropdownMenuContent>
             </DropdownMenu>
-          )}
-          {!isAuthenticated && (
-            <Link
-              to="/register"
-              className="bg-white text-green-800 text-lg p-4 rounded-md mr-2"
-            >
-              Log In/Sign up
-            </Link>
-          )}
+            {userData && !isLoading && !isError && (
+              <DropdownMenu modal={false}>
+                <DropdownMenuTrigger asChild>
+                  <Button variant={"profile"}>
+                    <CircleUserRound />
+                  </Button>
+                </DropdownMenuTrigger>
+
+                <DropdownMenuContent align="end" className="w-72">
+                  <div>
+                    <span className="ml-2 text-muted-foreground">
+                      Welcome back!
+                    </span>{" "}
+                    <DropdownMenuLabel className="text-lg">
+                      {userData?.username}
+                    </DropdownMenuLabel>
+                  </div>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuGroup>
+                    <DropdownMenuItem>My Profile</DropdownMenuItem>
+                    <DropdownMenuItem>My Tickets</DropdownMenuItem>
+                    <DropdownMenuItem>My Settings</DropdownMenuItem>
+                    <DropdownMenuItem>My Events</DropdownMenuItem>
+                  </DropdownMenuGroup>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    onClick={signOut}
+                    className="text-red-500 font-bold text-lg "
+                  >
+                    Sign Out
+                    <DropdownMenuShortcut className="text-red-500">
+                      <LogOut />
+                    </DropdownMenuShortcut>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
+            {!userData && (
+              <Link
+                to="/register"
+                className="bg-white text-green-800 text-lg p-4 rounded-md mr-2"
+              >
+                Log In/Sign up
+              </Link>
+            )}
+          </div>
         </div>
         <div className="flex justify-center pb-4">
           <SearchForm />

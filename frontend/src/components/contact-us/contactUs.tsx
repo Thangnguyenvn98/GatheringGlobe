@@ -27,8 +27,11 @@ const formSchema = z.object({
   subject: z.string().min(4),
   description: z
     .string()
-    .min(10, { message: "The description is not long enough" })
-    .max(100, { message: "The description is too long" })
+    .min(40, {
+      message:
+        "The description is not long enough, minimum 10 character required",
+    })
+    .max(350, { message: "The description is too long" })
     .trim(),
   attachments: z.object({ url: z.string() }).array(),
 });
@@ -56,12 +59,11 @@ const ContactUs = () => {
     try {
       setLoading(true);
       const response = await sendUserHelpRequest(values);
-      console.log(values);
       form.reset();
       toast.success(response.message);
       setTimeout(() => {
         navigate(0);
-      }, 2000);
+      }, 800);
     } catch (error) {
       toast.error("Something went wrong");
     } finally {
@@ -80,9 +82,7 @@ const ContactUs = () => {
         }}
         className="flex justify-center items-center min-h-[600px] w-full"
       >
-        <h1 className="font-extrabold text-centers text-8xl text-white">
-          SUBMIT A REQUEST
-        </h1>
+        <h1 className="font-extrabold text-8xl text-white">SUBMIT A REQUEST</h1>
       </div>
       <div className="bg-gray-100 max-w-[1000px] p-4 mb-10">
         <div className="grid grid-cols-2 ">
@@ -193,7 +193,7 @@ const ContactUs = () => {
                     )}
                   />
                   <div className="pt-6">
-                    <Button type="submit" size="lg">
+                    <Button type="submit" size="lg" disabled={loading}>
                       Submit
                     </Button>
                     {/* call the obSubmit defined above*/}

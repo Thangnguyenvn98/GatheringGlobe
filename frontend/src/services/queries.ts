@@ -1,6 +1,16 @@
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import { axiosInstance, getCurrentUser, getRoom, getRooms } from "./api";
+import {
+  axiosInstance,
+  createPaymentIntent,
+  getCurrentUser,
+  getEventById,
+  getOrderDetailsById,
+  getRoom,
+  getRooms,
+  validateToken,
+} from "./api";
 import { useSocket } from "@/components/providers/socket-provider";
+import { CartItem } from "@/hooks/use-cart-store";
 
 export function useRooms() {
   return useQuery({
@@ -15,6 +25,30 @@ export function useCurrentUser() {
     queryFn: getCurrentUser,
   });
 }
+
+export const useCurrentEventDetail = (eventId: string) => {
+  return useQuery({
+    queryKey: ["event", eventId],
+    queryFn: () => getEventById(eventId),
+    enabled: !!eventId,
+  });
+};
+
+export const useCurrentOrderDetail = (orderId: string) => {
+  return useQuery({
+    queryKey: ["order", orderId],
+    queryFn: () => getOrderDetailsById(orderId),
+    enabled: !!orderId,
+  });
+};
+
+export const usePaymentIntent = (cartItems: CartItem[]) => {
+  return useQuery({
+    queryKey: ["paymentIntent", cartItems],
+    queryFn: () => createPaymentIntent(cartItems),
+    enabled: cartItems.length > 0,
+  });
+};
 
 export const useChatQuery = (roomId: string | undefined) => {
   const { isConnected } = useSocket();
@@ -50,5 +84,13 @@ export const useRoom = (roomId: string | undefined) => {
     queryKey: ["room", roomId],
     queryFn: () => getRoom({ roomId }),
     enabled: !!roomId,
+  });
+};
+
+export const useAuthQuery = () => {
+  return useQuery({
+    queryKey: ["auth", validateToken],
+    queryFn: validateToken,
+    retry: false, // Do not retry on failure
   });
 };

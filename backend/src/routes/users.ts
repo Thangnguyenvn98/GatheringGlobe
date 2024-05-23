@@ -68,7 +68,6 @@ router.post("/login", [
   }
 
   const { email, password } = req.body;
-  console.log("is it running")
   try {
       let user: UserType | null = await User.findOne({ email });
 

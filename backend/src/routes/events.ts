@@ -2,6 +2,8 @@ import express, { Request, Response } from "express";
 import verifyToken from "../middleware/auth";
 import User from "../models/user";
 import Event from "../models/event"; // this is the model <-------
+import Ticket from "../models/ticket";
+import mongoose from "mongoose";
 
 const router = express.Router();
   //By using the model to find it
@@ -70,23 +72,18 @@ router.post("/", verifyToken, async (req: Request, res: Response) => {
   if (!user) {
     return res.status(400).json({ message: "User does not exists!" });
   }
-  if (user.role !== "organizer") {
-    return res
-      .status(403)
-      .json({ message: "Only organizers are allowed to create events." });
-  }
+
   const {
     title,
     description,
     startTime,
-    endDate,
+    endTime,
     venueId,
     capacity,
     location,
     categories,
     artistName,
     imageUrls,
-    ticketPriceRange,
     roomChatLink,
   } = req.body;
 
@@ -94,16 +91,14 @@ router.post("/", verifyToken, async (req: Request, res: Response) => {
     !title ||
     !description ||
     !startTime ||
-    !endDate ||
+    !endTime ||
     !location ||
     !categories ||
-    !artistName ||
-    !imageUrls ||
-    !ticketPriceRange
+    !imageUrls
   ) {
     return res.status(400).json({
       message:
-        "Missing required fields: Ensure all fields including title, description, start time, end time, location, categories, artist name, image URLs, ticket price range are provided.",
+        "Missing required fields: Ensure all fields including title, description, start time, end time, location, categories, artist name, image URLs are provided.",
     });
   }
   const existingEvent = await Event.findOne({ title, startTime, location });
@@ -119,15 +114,14 @@ router.post("/", verifyToken, async (req: Request, res: Response) => {
     title,
     description,
     startTime,
-    endDate,
-    venueId,
+    endTime,
+    venueId: venueId ? new mongoose.Types.ObjectId(venueId) : undefined,
     capacity,
-    organizerId: user.id,
+    organizerId: user._id,
     location,
     categories,
     artistName,
     imageUrls,
-    ticketPriceRange,
     roomChatLink,
   });
   try {
@@ -143,8 +137,78 @@ router.post("/", verifyToken, async (req: Request, res: Response) => {
   }
 });
 
+router.post("/:eventId/tickets", verifyToken, async (req: Request, res: Response) => {
+  const { eventId } = req.params;
+  const tickets = req.body.tickets;
+
+  if (!Array.isArray(tickets) || tickets.length === 0) {
+    return res.status(400).json({ message: "Missing required ticket details or tickets array is empty." });
+  }
+
+  try {
+    const event = await Event.findById(eventId);
+    if (!event) {
+      return res.status(404).json({ message: "Event not found." });
+    }
+
+    const createdTickets = [];
+
+    for (const ticketData of tickets) {
+      const { type, price, quantityAvailable, seatNumber, status, isFree } = ticketData;
+
+      if (!type || price == null || !quantityAvailable || !status || isFree == null) {
+        return res.status(400).json({ message: "Missing required ticket details." });
+      }
+      if (isFree && price !== 0) {
+        return res.status(400).json({ message: "Free tickets must have a price of 0." });
+      }
+
+      const ticket = new Ticket({
+        eventId,
+        type,
+        price,
+        quantityAvailable,
+        seatNumber,
+        status,
+        isFree,
+      });
+
+      await ticket.save();
+      event.tickets.push(ticket._id);
+      createdTickets.push(ticket);
+    }
+
+    await event.save();
+
+    return res.status(201).json({
+      message: "Tickets created successfully",
+      tickets: createdTickets,
+    });
+  } catch (error) {
+    console.error("Failed to create tickets:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+});
+
 router.post('/test', verifyToken, async (req: Request, res: Response) => {
   res.status(200).json({ message: "Test successful" });
 })
+
+router.get('/:eventId/details', async (req: Request, res: Response) => {
+  try {
+    const { eventId } = req.params;
+    // Populate the 'tickets' field when fetching the event
+    const event = await Event.findById(eventId).populate('tickets').exec()
+
+    if (!event) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+
+    return res.status(200).json(event);
+  } catch (error) {
+    console.error("Failed to fetch event:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+});
 
 export default router;

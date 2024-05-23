@@ -5,23 +5,21 @@ import { DateRange } from "react-day-picker";
 import EventLocation from "./searchlocation";
 import { useState } from "react";
 import { Button } from "../ui/button";
-import { APIProvider, Map } from "@vis.gl/react-google-maps";
 import queryString from "query-string";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { Event } from "@/types/event";
+import { EventType } from "@/types/event";
 
 function SearchForm() {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
   const [location, setLocation] = useState("");
   const [date, setDate] = React.useState<DateRange | undefined>();
   const [keyword, setKeyword] = useState("");
-  const apikey = import.meta.env.VITE_PUBLIC_GOOGLE_MAPS_API_KEY;
   const navigate = useNavigate();
 
   const onSubmit = async () => {
     //create a list of part of the query string with the input to join into 1 query string later, slice the string to get only the part that we need
-    let params = [];
+    const params = [];
     if (location) {
       params.push(
         "locationChosen=" +
@@ -59,7 +57,7 @@ function SearchForm() {
       );
       if (response.status === 200) {
         //if the data fetched successfully (status code === 200), navigate to another page
-        response.data.forEach((item: Event) => {
+        response.data.forEach((item: EventType) => {
           console.log(item);
         });
         navigate(`/events/search?${finalParams}`);
@@ -77,35 +75,25 @@ function SearchForm() {
     }
   };
   return (
-    //wrap this around so that everything inside have access to the api
-    <APIProvider apiKey={apikey}>
-      <div className="flex justify-center mb-2 items-center bg-white ">
-        <Map
-          defaultZoom={3}
-          defaultCenter={{ lat: 22.54992, lng: 0 }}
-          gestureHandling={"greedy"}
-          disableDefaultUI={true}
-          className="hidden"
-        />
-        <div className="border-r-black border-r-[1px] p-1">
-          <EventLocation setLocationFromParent={setLocation} />
-        </div>
-        <div className="border-r-black border-r-[1px] p-1">
-          <DatePickerWithRange setDateFromParent={setDate} />
-        </div>
-        <SearchByKeyword setKeywordFromParent={setKeyword} />
-        <div className="p-1">
-          <Button
-            type="submit"
-            size={"lg"}
-            onClick={onSubmit}
-            className="bg-green-200  text-green-800 text-lg hover:text-black hover:bg-green-200  font-normal shadow-none "
-          >
-            Search
-          </Button>
-        </div>
+    <div className="flex justify-center mb-2 items-center bg-white ">
+      <div className="border-r-black border-r-[1px] p-1">
+        <EventLocation setLocationFromParent={setLocation} />
       </div>
-    </APIProvider>
+      <div className="border-r-black border-r-[1px] p-1">
+        <DatePickerWithRange setDateFromParent={setDate} />
+      </div>
+      <SearchByKeyword setKeywordFromParent={setKeyword} />
+      <div className="p-1">
+        <Button
+          type="submit"
+          size={"lg"}
+          onClick={onSubmit}
+          className="bg-green-200  text-green-800 text-lg hover:text-black hover:bg-green-200  font-normal shadow-none "
+        >
+          Search
+        </Button>
+      </div>
+    </div>
   );
 }
 
