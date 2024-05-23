@@ -2,9 +2,17 @@ import { Calendar } from "@/components/ui/calendar";
 import { useState } from "react";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
+// import { EventType } from "@/types/event";
+// import queryString from "query-string";
+// import axios from "axios";
+// import { useNavigate } from "react-router-dom";
 
 const FilterSection = () => {
+  // const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
+  // const navigate = useNavigate();
+
   const categories = [
+    "All event categories",
     "Music",
     "Movies",
     "Books",
@@ -27,6 +35,7 @@ const FilterSection = () => {
     "Gardening",
   ];
   const eventTypes = [
+    "All event types",
     "Party",
     "Conference",
     "Concert",
@@ -68,10 +77,36 @@ const FilterSection = () => {
     "Parade",
     "Marathon",
   ];
-  const [date, setDate] = useState<Date | undefined>(new Date());
   const [showCalendar, setShowCalendar] = useState(false);
   const [showCategory, setShowCategory] = useState(false);
   const [showEventType, setShowEventType] = useState(false);
+  // const [priceMin, setPriceMin] = useState("");
+  // const [priceMax, setPriceMax] = useState("");
+  // const [eventCat, setEventCat] = useState("All event categories");
+  // const [eventType, setEventType] = useState("All event types");
+  const [date, setDate] = useState<Date | undefined>(new Date());
+  const [inputs, setInputs] = useState({
+    priceMin: "",
+    priceMax: "",
+    eventCat: "All event categories",
+    eventType: "All event types",
+    date: date,
+  });
+
+  // Handle the change in input
+  const handleInputChange = async (event: any) => {
+    const { name, value } = event.target;
+    console.log(event.target);
+    setTimeout(
+      () =>
+        setInputs({
+          ...inputs,
+          [name]: value,
+        }),
+      1000,
+    );
+    console.log(inputs);
+  };
 
   return (
     <div className="filter-section-container relative font-bold">
@@ -86,10 +121,16 @@ const FilterSection = () => {
           </Button>
           {showCategory && (
             <ScrollArea className="h-72 border-none mx-5">
-              {categories.map((cat, index) => (
+              {categories.map((cat, _) => (
                 <div>
-                  <input type="checkbox" name="date" id={String(index)} />
-                  <label className="font-bold p-2" htmlFor={String(index)}>
+                  <input
+                    type="radio"
+                    name="eventCat"
+                    id={cat}
+                    value={cat}
+                    onChange={(e) => handleInputChange(e)}
+                  />
+                  <label className="font-bold p-2" htmlFor={cat}>
                     {cat}
                   </label>
                 </div>
@@ -139,7 +180,7 @@ const FilterSection = () => {
           <div>
             <input
               type="radio"
-              name="date"
+              name="dateshow"
               id="pick-date"
               key="pick-date"
               onClick={() => setShowCalendar(!showCalendar)}
@@ -159,20 +200,29 @@ const FilterSection = () => {
             )}
           </div>
         </div>
-        <h3 className="mt-3">Price</h3>
-        <div className="mx-5">
-          <div>
-            <input type="radio" name="price" key="free" id="free" />
-            <label className="font-bold p-2" htmlFor="free">
-              Free
-            </label>
-          </div>
-          <div>
-            <input type="radio" name="price" key="paid" id="paid" />
-            <label className="font-bold p-2" htmlFor="paid">
-              Paid
-            </label>
-          </div>
+        <div>
+          <label className="font-bold p-2" htmlFor="priceMin">
+            Min Price
+          </label>
+          <input
+            type="number"
+            name="priceMin"
+            key="free"
+            id="priceMin"
+            onChange={(e) => handleInputChange(e)}
+          />
+        </div>
+        <div>
+          <label className="font-bold p-2" htmlFor="priceMax">
+            Max Price
+          </label>
+          <input
+            type="number"
+            name="priceMax"
+            key="paid"
+            id="priceMax"
+            onChange={(e) => handleInputChange(e)}
+          />
         </div>
         <div className=" top-[152px] bottom-7">
           <div className="mt-3">
@@ -184,10 +234,16 @@ const FilterSection = () => {
             </Button>
             {showEventType && (
               <ScrollArea className="h-72 border-none mx-5">
-                {eventTypes.map((type, index) => (
+                {eventTypes.map((type, _) => (
                   <div>
-                    <input type="checkbox" name="date" id={String(index)} />
-                    <label className="font-bold p-2" htmlFor={String(index)}>
+                    <input
+                      type="radio"
+                      name="eventType"
+                      id={type}
+                      value={type}
+                      onChange={(e) => handleInputChange(e)}
+                    />
+                    <label className="font-bold p-2" htmlFor={type}>
                       {type}
                     </label>
                   </div>

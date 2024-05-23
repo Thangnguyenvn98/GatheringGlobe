@@ -1,8 +1,25 @@
 import { PaymentIntentResponse } from "../../../../backend/src/shared/types";
-import { useStripe, useElements, CardElement } from "@stripe/react-stripe-js";
-import { useForm, SubmitHandler } from "react-hook-form";
+import {
+  useStripe,
+  useElements,
+  PaymentElement,
+} from "@stripe/react-stripe-js";
+import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { User } from "@/types/user";
+import * as z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Input } from "@/components/ui/input";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "../ui/form";
+import { Button } from "../ui/button";
+
 // import { StripeCardElement } from "@stripe/stripe-js";
 
 type Props = {
@@ -14,122 +31,135 @@ export type TicketBookingFormData = {
   firstName: string;
   lastName: string;
   email: string;
-  ticketId: string; // Assuming ticketId is used for identifying tickets
-  quantity: number; // Number of tickets to purchase
+  ticketId: string;
+  quantity: number;
   paymentIntentId: string;
-  totalPrice: number; // Total cost of the tickets
+  totalPrice: number;
 };
 
-const BookingForm = ({ paymentIntent }: Props) => {
-  const { register, handleSubmit } = useForm<TicketBookingFormData>();
+const formSchema = z.object({
+  firstName: z.string().min(4),
+  lastName: z.string().min(4),
+  email: z.string().email(),
+  ticketId: z.string(),
+  quantity: z.number().int().positive(),
+  paymentIntentId: z.string(),
+  totalPrice: z.number().int().positive(),
+});
+type FormData = z.infer<typeof formSchema>;
+
+const BookingForm = ({ paymentIntent, currentUser }: Props) => {
+  const [loading, setLoading] = useState(false);
   const stripe = useStripe();
   const elements = useElements();
-  const [isLoading, setIsLoading] = useState(false);
-  const onSubmit: SubmitHandler<TicketBookingFormData> = async (formData) => {
+  const form = useForm<FormData>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      firstName: currentUser.firstName || "",
+      lastName: currentUser.lastName || "",
+      email: currentUser.email,
+      paymentIntentId: paymentIntent.paymentIntentId,
+      totalPrice: paymentIntent.totalPrice,
+    },
+  });
+
+  const onSubmit = async (data: FormData) => {
     if (!stripe || !elements) {
       return;
     }
-
-    setIsLoading(true);
-    try {
-      const cardElement = elements.getElement(CardElement);
-      if (!cardElement) {
-        alert("Stripe Card Element not found.");
-        setIsLoading(false);
-        return;
-      }
-      const paymentResult = await stripe.confirmCardPayment(
-        paymentIntent.clientSecret,
-        {
-          payment_method: {
-            card: cardElement,
-            billing_details: {
-              name: `${formData.firstName} ${formData.lastName}`,
-              email: formData.email, // Assuming email is correctly set from context or props
-            },
-          },
-        },
-      );
-      if (paymentResult.error) {
-        alert(`Payment failed: ${paymentResult.error.message}`);
-      } else if (
-        paymentResult.paymentIntent &&
-        paymentResult.paymentIntent.status === "succeeded"
-      ) {
-        alert("Payment successful!");
-        // Here, you might want to send confirmation to your backend or update your UI accordingly
-      }
-    } catch (error) {
-      console.error("Error processing payment:", error);
-    } finally {
-      setIsLoading(false);
+    setLoading(true);
+    const { error } = await stripe.confirmPayment({
+      elements,
+      confirmParams: {
+        return_url: window.location.href,
+      },
+      redirect: "if_required",
+    });
+    if (error) {
+      console.error(error);
+      setLoading(false);
+      return;
     }
+    console.log(data);
   };
-
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      className="grid grid-cols-1 gap-5 rounded-lg border border-slate-300 p-5"
-    >
-      <span className="text-3xl font-bold">Confirm Your Details</span>
-      <div className="grid grid-cols-2 gap-6">
-        <label className="text-gray-700 text-sm font-bold flex-1">
-          First Name
-          <input
-            className="mt-1 border rounded w-full py-2 px-3 text-gray-700 bg-gray-200 font-normal"
-            type="text"
-            {...register("firstName", { required: true })}
-          />
-        </label>
-        <label className="text-gray-700 text-sm font-bold flex-1">
-          Last Name
-          <input
-            className="mt-1 border rounded w-full py-2 px-3 text-gray-700 bg-gray-200 font-normal"
-            type="text"
-            {...register("lastName", { required: true })}
-          />
-        </label>
-        <label className="text-gray-700 text-sm font-bold flex-1">
-          Email
-          <input
-            className="mt-1 border rounded w-full py-2 px-3 text-gray-700 bg-gray-200 font-normal"
-            type="text"
-            readOnly
-            disabled
-            {...register("email")}
-          />
-        </label>
-      </div>
-
-      <div className="space-y-2">
-        <h2 className="text-xl font-semibold">Your Price Summary</h2>
-
-        <div className="bg-blue-200 p-4 rounded-md">
-          <div className="font-semibold text-lg">
-            Total Cost: £{paymentIntent.totalPrice.toFixed(2)}
-          </div>
-          <div className="text-xs">Includes taxes and charges</div>
-        </div>
-      </div>
-
-      <div className="space-y-2">
-        <h3 className="text-xl font-semibold"> Payment Details</h3>
-        <CardElement
-          id="payment-element"
-          className="border rounded-md p-2 text-sm"
-        />
-      </div>
-
-      <div className="flex justify-end">
-        <button
-          disabled={isLoading}
-          type="submit"
-          className="bg-blue-600 text-white p-2 font-bold hover:bg-blue-500 text-md disabled:bg-gray-500"
+    <div className="rounded-lg border border-slate-300 bg-zinc-800 p-5 flex flex-col gap-y-4">
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="flex flex-col gap-y-2"
         >
-          {isLoading ? "Saving..." : "Confirm Booking"}
-        </button>
-      </div>
-    </form>
+          <div className="flex items-center gap-x-4">
+            <FormField
+              control={form.control}
+              name="firstName"
+              rules={{ required: "First Name is required" }}
+              render={({ field }) => (
+                <FormItem className="text-white">
+                  <FormLabel htmlFor="firstName">First Name</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      className="text-white"
+                      placeholder="* First Name"
+                    />
+                  </FormControl>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="lastName"
+              rules={{ required: "Last Name is required" }}
+              render={({ field }) => (
+                <FormItem className="text-white">
+                  <FormLabel htmlFor="firstName">Last Name</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      className="text-white"
+                      placeholder="* Last Name"
+                    />
+                  </FormControl>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+          <FormField
+            control={form.control}
+            name="lastName"
+            rules={{ required: "Email is required" }}
+            render={({ field }) => (
+              <FormItem className="text-white">
+                <FormLabel htmlFor="firstName">Email</FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    className="text-white"
+                    placeholder="* Email"
+                  />
+                </FormControl>
+
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </form>
+      </Form>
+      <PaymentElement />
+      <Button
+        disabled={loading}
+        size="lg"
+        className="bg-green-400"
+        type="submit"
+      >
+        {loading ? "Processing..." : "Pay"}
+      </Button>
+    </div>
   );
 };
 export default BookingForm;

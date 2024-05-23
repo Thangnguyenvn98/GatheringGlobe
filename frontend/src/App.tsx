@@ -3,7 +3,7 @@ import "./global.css";
 import DiscoverEvent from "./components/Discover_Event/DiscoverEvent";
 import EventDetail from "./components/Discover_Event/EventDetail";
 import AboutUs from "./components/aboutUs/about-us";
-import EventForm from "./components/newEventForm/EventForm";
+import EventForm from "./components/newEventForm/eventform";
 import ChatPage from "./components/chatRoom/Chat";
 import Homepage from "./components/homepage/homepage";
 import { SocketProvider } from "./components/providers/socket-provider";
@@ -15,12 +15,12 @@ import {
 } from "react-router-dom";
 import Layout from "./components/layouts/layout";
 import Faq from "./components/FAQ/faq";
-import Booking from "./pages/Booking";
-import Ticket from "./components/BookingForm/Ticket";
 import ContactUs from "./components/contact-us/contactUs";
 import ProtectedRoute from "./utils/ProtectedRoute";
 import useCheckAuth from "./hooks/useCheckAuth";
 import ForgotPassword from "./components/loginPage/Forgotpassword";
+import EventDetailMock from "./components/testComponent/EventDetailMock";
+import Booking from "./components/BookingForm/Booking";
 
 function App() {
   useCheckAuth();
@@ -54,11 +54,19 @@ function App() {
               </SocketProvider>
             }
           />
+          <Route
+            path="/:userId/checkout"
+            element={
+              <Layout>
+                <Booking />
+              </Layout>
+            }
+          />
         </Route>
 
         <Route path="*" element={<Navigate to="/" />} />
         <Route
-          path="/discover"
+          path="/discover/*"
           element={
             <Layout>
               <DiscoverEvent />
@@ -74,10 +82,10 @@ function App() {
           }
         />
         <Route
-          path="/discover/event/:eventId"
+          path="/discover/:eventName/event/:eventId"
           element={
             <Layout>
-              <EventDetail />
+              <EventDetailMock />
             </Layout>
           }
         />
@@ -97,8 +105,7 @@ function App() {
             </Layout>
           }
         />
-        <Route path="/booking/:ticketId" element={<Booking />} />
-        <Route path="/ticket" element={<Ticket />} />
+        <Route path="/booking/:ticketId" element={<EventDetail />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route
           path="/create-new-event"

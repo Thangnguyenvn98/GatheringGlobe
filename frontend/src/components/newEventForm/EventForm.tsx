@@ -1,6 +1,6 @@
-// import * as React from "react";
-import { FormData } from "@/types/formData";
-import { useForm, SubmitHandler } from "react-hook-form";
+import { useForm } from "react-hook-form";
+import { useState } from "react";
+import * as z from "zod";
 import {
   Card,
   CardHeader,
@@ -9,368 +9,463 @@ import {
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "../ui/form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-// import toast from "react-hot-toast";
-import { useMap, useMapsLibrary } from "@vis.gl/react-google-maps";
-import { FormEvent, useCallback, useEffect, useState } from "react";
-// import { DateRange } from "react-day-picker";
+import toast from "react-hot-toast";
+import EventLocation from "./eventloc";
+import ImageUpload from "../chatRoom/ImageUpload";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
+const axiosInstance = axios.create({
+  baseURL: API_BASE_URL,
+  withCredentials: true,
+});
+
 // import queryString from "query-string";
 // import axios from "axios";
-// import { useNavigate } from "react-router-dom";
 // import {number} from "zod";
 // import {get} from "http";
 // import {getDate} from "date-fns";
 
-const EventForm = () => {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [startTime, setStartTime] = useState<Date>(new Date());
-  const [endTime, setEndTime] = useState<Date>(new Date());
-  // const [venueId, setVenueId] = useState("");
-  const [capacity, setCapacity] = useState(-1);
-  const [location, setLocation] = useState("");
-  // const [categories, setCategories] = useState([]);
-  const [artistName, setArtistName] = useState("");
-  // const [imageUrls, setImageUrls] = useState([]);
-  const [ticketPriceRange, setTicketPriceRange] = useState({
-    min: -1,
-    max: -1,
+const formSchema = z
+  .object({
+    title: z
+      .string()
+      .min(3, { message: "Title must be at least 3 characters long" }),
+    description: z
+      .string()
+      .min(50, { message: "Description must be at least 50 characters long" })
+      .max(500, {
+        message: "Description must be no more than 500 characters long",
+      }),
+    startTime: z.date().refine((date) => date >= new Date(), {
+      message: "Start time must be in the future",
+    }),
+    endTime: z.date().refine((date) => date >= new Date(), {
+      message: "End time must be in the future",
+    }),
+    capacity: z
+      .number()
+      .positive({ message: "Capacity must be a positive number" })
+      .int({ message: "Capacity must be an integer" }),
+    location: z
+      .string()
+      .min(5, { message: "Location must be at least 5 characters long" }),
+    category: z
+      .string()
+      .min(0, { message: "Please select an event category to display." }),
+    eventType: z
+      .string()
+      .min(0, { message: "Please select an event type to display." }),
+    artistName: z.string().optional(),
+    imageUrls: z.object({ url: z.string() }).array(),
+    roomChatLink: z.union([
+      z.string().url({ message: "Room chat link must be a valid URL" }),
+      z.literal(""),
+    ]),
+  })
+  .superRefine((data, ctx) => {
+    if (data.endTime <= data.startTime) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "End time must be after start time",
+        path: ["endTime"],
+      });
+    }
   });
-  const [roomChatLink, setRoomChatLink] = useState("");
 
-  const reset = () => {
-    setTitle("");
-    setDescription("");
-    setStartTime(new Date());
-    setEndTime(new Date());
-    // setVenueId("")
-    setCapacity(-1);
-    setInputValue(""); //not setLocation bc of the autocomplete fucntion
-    // setCategories([])
-    setArtistName("");
-    // setImageUrls([])
-    setTicketPriceRange({
-      min: -1,
-      max: -1,
-    });
-    setRoomChatLink("");
-  };
+// const formSchema = z.object({
+//   title: z.string(),
+//   description: z
+//     .string(),
+//   startTime: z.date(),
+//   endTime: z.date(),
+//   capacity: z
+//     .number(),
+//   location: z.string(),
+//   category: z.string(),
+//   artistName: z.string().optional(),
+//   imageUrls: z.object({ url: z.string() }).array(),
+//   roomChatLink: z.union([z.string().url({ message: "Room chat link must be a valid URL" }), z.literal("")]),
+// }).superRefine((data, ctx) => {
+//   if (data.endTime <= data.startTime) {
+//     ctx.addIssue({
+//       code: z.ZodIssueCode.custom,
+//       message: "End time must be after start time",
+//       path: ["endTime"],
+//     });
+//   }
+// });
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<FormData>();
+type FormData = z.infer<typeof formSchema>;
 
-  // const handleChange = (e: any) => {
-  //   const [minStr, maxStr] = e.target.value.split('-');
-  //   const minInput = minStr ? parseInt(minStr, 10) : NaN; //the string maxStr should be parsed as a decimal number (base 10)
-  //   const maxInput = maxStr ? parseInt(maxStr, 10) : NaN;
+const EventForm = () => {
+  const navigate = useNavigate();
+  const categoriesList = [
+    "Music",
+    "Movies",
+    "Books",
+    "Sports",
+    "Technology",
+    "Travel",
+    "Food",
+    "Fashion",
+    "Art",
+    "Science",
+    "Politics",
+    "History",
+    "Education",
+    "Health",
+    "Finance",
+    "Gaming",
+    "Lifestyle",
+    "Parenting",
+    "Pets",
+    "Gardening",
+  ];
+  const eventTypesList = [
+    "Party",
+    "Conference",
+    "Concert",
+    "Festival",
+    "Seminar",
+    "Workshop",
+    "Meetup",
+    "Networking",
+    "Exhibition",
+    "Tradeshow",
+    "Convention",
+    "Summit",
+    "Gala",
+    "Fundraiser",
+    "Awards",
+    "Screening",
+    "Premiere",
+    "Launch",
+    "Fair",
+    "Expo",
+    "Charity",
+    "Sports",
+    "Competition",
+    "Tournament",
+    "Hackathon",
+    "Webinar",
+    "Virtual Event",
+    "Livestream",
+    "Auction",
+    "Sale",
+    "Open House",
+    "Tour",
+    "Tasting",
+    "Masterclass",
+    "Retreat",
+    "Camp",
+    "Cruise",
+    "Rally",
+    "Parade",
+    "Marathon",
+  ];
+  const [loading, setLoading] = useState(false);
 
-  //   if (!isNaN(minInput) && !isNaN(maxInput)) {
-  //     setTicketPriceRange({ min:minInput, max:maxInput });
-  //   }
-  // };
+  const form = useForm<FormData>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      title: "",
+      category: "",
+      eventType: "",
+      description: "",
+      startTime: new Date(),
+      endTime: new Date(),
+      imageUrls: [],
+      roomChatLink: "",
+      artistName: "",
+      capacity: 0,
+    },
+  });
 
   // const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
   // const navigate = useNavigate();
 
-  const onSubmit: SubmitHandler<FormData> = async (data) => {
-    // try {
-    //   // const [title, startTime, endTime, venueId, capacity, location, categories, artistName, imageUrls] = data.values()
-    //   console.log(data)
-    //   toast.success("Event created successfully!");
-    // } catch (error) {
-    //   console.log(error)
-    //   toast.error("Failed to create event. Please try again! (toast error frontend)");
-    // }
-    //   let params = [
-    //     "title=" + title,
-    //     "description=" + description,
-    //     // "startTime=" + startTime.toISOString(), // Convert Date to string representation
-    //     // "endTime=" + endTime.toISOString(), // Convert Date to string representation
-    //     "capacity=" + capacity.toString(),
-    //     "location=" + queryString.stringify({ location }, { encode: true }).slice(9),
-    //     "categories=" + categories.join(","),
-    //     "artistName=" + artistName,
-    //     "imageUrls=" + imageUrls.join(","),
-    //     // Assuming ticketPriceRange is an object with min and max properties
-    //     "ticketPriceRange=" + ticketPriceRange.min + "-" + ticketPriceRange.max
-    //   ];
-    //   const finalParams = params.join("&"); //join the strings into one query
-    //   console.log(`${API_BASE_URL}/?${finalParams}`);
-    //   try {
-    //     //axios.get() is a method provided by the Axios library to send a GET request to a specified URL.
-    //     const response = await axios.get(
-    //       `${API_BASE_URL}/api/events/search?${finalParams}`,
-    //     );
-    //     if (response.status === 200) {
-    //       //if the data fetched successfully (status code === 200), navigate to another page
-    //       response.data.forEach((item: Event) => {
-    //         console.log(item);
-    //       });
-    //       navigate(`/events/search?${finalParams}`);
-    //     } else if (response.status === 201) {
-    //       //if no matching event found, we dont do the navigate(...) so that there is no error
-    //       console.log("No matching event found");
-    //     }
-    //     // When you have the response navigate the page or refresh the page with the current result, etc ...
-    //     //Based on the response navigate to the site that contain the search results
-    //     //Noted that we currently do not have that page yet
-    //     //So you can test just with response.data to see if we are getting the correct result back
-    //     //You can create fake model by making a post request http://localhost:5050/api/events with the data in the events.ts file
-    //   } catch (error) {
-    //     console.error("Fail to search: ", error);
-    //   }
-    // };
+  const onSubmit = async (values: FormData) => {
+    try {
+      setLoading(true);
+      console.log(values);
+      const response = await axiosInstance.post("/api/events", values);
+      form.reset();
+      toast.success(response.data.message);
+      // setTimeout(() => {
+      //   navigate(0);
+      // }, 800);
+    } catch (error) {
+      toast.error("Something went wrong");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const map = useMap();
-
-  const places = useMapsLibrary("places");
-
-  const [sessionToken, setSessionToken] =
-    useState<google.maps.places.AutocompleteSessionToken>();
-
-  const [placesService, setPlacesService] =
-    useState<google.maps.places.PlacesService | null>(null);
-
-  const [autocompleteService, setAutocompleteService] =
-    useState<google.maps.places.AutocompleteService | null>(null);
-
-  const [predictionResults, setPredictionResults] = useState<
-    Array<google.maps.places.AutocompletePrediction>
-  >([]);
-
-  const [inputValue, setInputValue] = useState<string>("");
-
-  useEffect(() => {
-    if (!places || !map) return;
-
-    setAutocompleteService(new places.AutocompleteService());
-    setPlacesService(new places.PlacesService(map));
-    setSessionToken(new places.AutocompleteSessionToken());
-
-    return () => setAutocompleteService(null);
-  }, [map, places]);
-
-  const fetchPredictions = useCallback(
-    async (inputValue: string) => {
-      if (!autocompleteService || !inputValue) {
-        setPredictionResults([]);
-        return;
-      }
-
-      const request = { input: inputValue, sessionToken, types: ["(cities)"] };
-      const response = await autocompleteService.getPlacePredictions(request);
-      setPredictionResults(response ? response.predictions : []);
-    },
-    [autocompleteService, sessionToken],
-  );
-
-  const onInputChange = useCallback(
-    (event: FormEvent<HTMLInputElement>) => {
-      const value = (event.target as HTMLInputElement).value;
-      setInputValue(value); // Update the state
-      fetchPredictions(value);
-      setLocation(value);
-    },
-    [fetchPredictions], // removed inputValue from dependency array
-  );
-
-  const handleSuggestionClick = useCallback(
-    (placeId: string) => {
-      if (!places) return;
-
-      const detailRequestOptions = {
-        placeId,
-        fields: ["formatted_address"],
-        sessionToken,
-      };
-      const detailsRequestCallback = (
-        placeDetails: google.maps.places.PlaceResult | null,
-      ) => {
-        const formatAddress = placeDetails?.formatted_address
-          ?.split(",")
-          .splice(0, 2)
-          .join(",");
-        setPredictionResults([]);
-        setInputValue(formatAddress ?? "");
-        setSessionToken(new places.AutocompleteSessionToken());
-      };
-      // Directly use the description from the prediction result
-      placesService?.getDetails(detailRequestOptions, detailsRequestCallback);
-    },
-
-    [places, placesService, sessionToken],
-  );
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <Card className="max-w-4xl mx-auto p-5">
-        <CardHeader className="text-center">
-          <CardTitle>Create New Event</CardTitle>
-          <CardDescription>
-            Fill out the form below to schedule a new event.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-1">
-            <Label htmlFor="title">Title</Label>
-            <Input
-              id="title"
-              placeholder="Enter event title"
-              {...register("title", { required: "Title is required" })}
-              value={title}
-              onChange={(data) => setTitle(data.target.value)}
-            />
-            {errors.title && (
-              <span className="text-red-500">{errors.title.message}</span>
-            )}
-          </div>
-          <div className="space-y-1">
-            <Label htmlFor="description">Description</Label>
-            <Input
-              id="description"
-              placeholder="Enter event description"
-              {...register("description", {
-                required: "Description is required",
-              })}
-              value={description}
-              onChange={(data) => setDescription(data.target.value)}
-            />
-            {errors.description && (
-              <span className="text-red-500">{errors.description.message}</span>
-            )}
-          </div>
-          <div className="grid grid-cols-2 gap-4">
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)}>
+        <Card className="max-w-4xl mx-auto p-5">
+          <CardHeader className="text-center">
+            <CardTitle>Create New Event</CardTitle>
+            <CardDescription>
+              Fill out the form below to schedule a new event.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
             <div className="space-y-1">
-              <Label htmlFor="startTime">Start Time</Label>
-              <Input
-                id="startTime"
-                type="datetime-local"
-                {...register("startTime", {
-                  required: "Start time is required",
-                })}
-                onChange={(data) => setStartTime(new Date(data.target.value))}
-                value={startTime.toISOString().slice(0, 16)}
+              <FormField
+                control={form.control}
+                name="title"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Title*</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-              {errors.startTime && (
-                <span className="text-red-500">{errors.startTime.message}</span>
-              )}
             </div>
+
             <div className="space-y-1">
-              <Label htmlFor="endTime">End Time</Label>
-              <Input
-                id="endTime"
-                type="datetime-local"
-                {...register("endTime", { required: "End time is required" })}
-                value={endTime.toISOString().slice(0, 16)}
-                onChange={(data) => setEndTime(new Date(data.target.value))}
+              <FormField
+                control={form.control}
+                name="capacity"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Capacity* </FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        type="number"
+                        value={field.value || ""}
+                        onChange={(e) => field.onChange(Number(e.target.value))}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-              {errors.endTime && (
-                <span className="text-red-500">{errors.endTime.message}</span>
-              )}
             </div>
-          </div>
-          <div className="space-y-1">
-            <Label htmlFor="capacity">Capacity</Label>
-            <Input
-              id="capacity"
-              type="number"
-              placeholder="Enter maximum capacity"
-              {...register("capacity", { required: "Capacity is required" })}
-              value={capacity > 0 ? capacity : 0}
-              onChange={(data) => setCapacity(parseInt(data.target.value, 10))}
-            />
-            {errors.capacity && (
-              <span className="text-red-500">{errors.capacity.message}</span>
-            )}
-          </div>
-          <div className="space-y-1">
-            <Label htmlFor="location">Location</Label>
-            <Input
-              value={inputValue}
-              id="location"
-              placeholder="Enter event location"
-              required
-              {...register("location")}
-              onChange={(e) => onInputChange(e)} //place this below so that it doe snot get overwritten?
-            />
-            {predictionResults.length > 0 && (
-              <ul className="left-0 right-0 z-[100] overflow-y-hidden w-full border-solid border-2 border-black max-h-[200px] bg-solid bg-white">
-                {predictionResults.map(({ place_id, description }) => {
-                  return (
-                    <li
-                      key={place_id}
-                      className="p-2 cursor-pointer"
-                      onClick={() => handleSuggestionClick(place_id)}
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-1">
+                <FormField
+                  control={form.control}
+                  name="startTime"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Start Time* </FormLabel>
+                      <FormControl>
+                        <Input
+                          type="datetime-local"
+                          value={field.value.toISOString().slice(0, 16)}
+                          onChange={(e) =>
+                            field.onChange(new Date(e.target.value))
+                          }
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <div className="space-y-1">
+                <FormField
+                  control={form.control}
+                  name="endTime"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>End Time* </FormLabel>
+                      <FormControl>
+                        <Input
+                          type="datetime-local"
+                          value={field.value.toISOString().slice(0, 16)}
+                          onChange={(e) =>
+                            field.onChange(new Date(e.target.value))
+                          }
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
+
+            <div className="space-y-1">
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Description* </FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <div className="space-y-1">
+              <FormField
+                control={form.control}
+                name="artistName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Artist Name* </FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <div className="space-y-1">
+              <FormField
+                control={form.control}
+                name="category"
+                render={({ field }) => (
+                  <FormItem>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
                     >
-                      {description}
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
-          </div>
-          <div className="space-y-1">
-            <Label htmlFor="artistName">Artist Name</Label>
-            <Input
-              id="artistName"
-              placeholder="Enter artist name"
-              {...register("artistName", {
-                required: "Artist name is required",
-              })}
-              value={artistName}
-              onChange={(data) => setArtistName(data.target.value)}
-            />
-            {errors.artistName && (
-              <span className="text-red-500">{errors.artistName.message}</span>
-            )}
-          </div>
-          <div className="space-y-1">
-            <Label htmlFor="ticketPriceRange">Min ticket price</Label>
-            <Input
-              id="ticketPriceRange"
-              type="text"
-              placeholder="Enter min-max price range"
-              {...register("ticketPriceRange", {
-                required: {
-                  value: true,
-                  message: "input required",
-                },
-                pattern: {
-                  value: /^\d+(\.\d+)?\-\d+(\.\d+)?$/,
-                  message:
-                    "Input price range must have format min price - max price with no currency unit",
-                },
-              })}
-            />
-          </div>
-          <div className="space-y-1">
-            <Label htmlFor="roomChatLink">Room Chat Link</Label>
-            <Input
-              id="roomChatLink"
-              placeholder="Enter room chat link"
-              {...register("roomChatLink")}
-              value={roomChatLink}
-              onChange={(data) => setRoomChatLink(data.target.value)}
-            />
-          </div>
-        </CardContent>
-        <CardFooter>
-          <Button type="submit" className="">
-            Create Event
-          </Button>
-          <Button onClick={reset} className="">
-            Reset Form
-          </Button>
-        </CardFooter>
-      </Card>
-    </form>
+                      {/* <FormControl> //must wrap the form control ?*/}
+                      <SelectTrigger>
+                        <SelectValue placeholder="Event Category*" />
+                      </SelectTrigger>
+                      {/* </FormControl> */}
+                      <SelectContent>
+                        {categoriesList.map((cat, index) => (
+                          <SelectItem key={index} value={cat}>
+                            {cat}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <div className="space-y-1">
+              <FormField
+                control={form.control}
+                name="eventType"
+                render={({ field }) => (
+                  <FormItem>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      {/* <FormControl> //must wrap the form control ?*/}
+                      <SelectTrigger>
+                        <SelectValue placeholder="Event Type*" />
+                      </SelectTrigger>
+                      {/* </FormControl> */}
+                      <SelectContent>
+                        {eventTypesList.map((type, index) => (
+                          <SelectItem key={index} value={type}>
+                            {type}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <div className="space-y-1">
+              <FormField
+                control={form.control}
+                name="location"
+                render={({ field }) => (
+                  <FormItem>
+                    <EventLocation name={field.name} />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <div className="space-y-1">
+              <FormField
+                control={form.control}
+                name="imageUrls"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Event Image*</FormLabel>
+                    <FormControl>
+                      <ImageUpload
+                        disabled={loading}
+                        multiple={true}
+                        iconClassName="text-black"
+                        value={field.value.map((image) => image.url)}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <div className="space-y-1">
+              <FormField
+                control={form.control}
+                name="roomChatLink"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Room Chat Link (optional) </FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </CardContent>
+          <CardFooter>
+            <div className="flex flex-col  w-full">
+              <Button
+                type="submit"
+                className="flex bg-white hover:bg-black hover:text-white text-black w-full"
+              >
+                Create Event
+              </Button>
+            </div>
+          </CardFooter>
+        </Card>
+      </form>
+    </Form>
   );
 };
 
 export default EventForm;
-//add a clear form button using reset?

@@ -8,7 +8,6 @@ import { Button } from "../ui/button";
 import queryString from "query-string";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { Event } from "@/types/event";
 
 function SearchForm() {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
@@ -19,7 +18,7 @@ function SearchForm() {
 
   const onSubmit = async () => {
     //create a list of part of the query string with the input to join into 1 query string later, slice the string to get only the part that we need
-    let params = [];
+    const params = [];
     if (location) {
       params.push(
         "locationChosen=" +
@@ -57,10 +56,10 @@ function SearchForm() {
       );
       if (response.status === 200) {
         //if the data fetched successfully (status code === 200), navigate to another page
-        response.data.forEach((item: Event) => {
-          console.log(item);
+        console.log(response.data);
+        navigate(`/discover?${finalParams}`, {
+          state: response.data,
         });
-        navigate(`/events/search?${finalParams}`);
       } else if (response.status === 201) {
         //if no matching event found, we dont do the navigate(...) so that there is no error
         console.log("No matching event found");

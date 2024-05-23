@@ -1,19 +1,15 @@
 import { FormEvent, useCallback, useEffect, useState } from "react";
-import { Navigation } from "lucide-react";
 import { useMap, useMapsLibrary } from "@vis.gl/react-google-maps";
 import { Input } from "../ui/input";
+import { useFormContext } from "react-hook-form";
 
-function EventLocation({
-  setLocationFromParent,
-}: {
-  setLocationFromParent: (value: string) => void;
+interface EventLocationProps {
   name: string;
-}) {
-  //setlocation is the function called when the event happen
-  //state of location object is what chenged
-  //"Event Locations" is the initial value of location object
-  //locationChosen is triggered when button is click, the value locchosen in the button  is passed in
-  //it then trigger setlocation which set location object to the value of locchosen
+  onChange?: (value: string) => void;
+}
+
+function EventLocation({ name = "", onChange }: EventLocationProps) {
+  const formContext = useFormContext();
   const map = useMap();
   const places = useMapsLibrary("places");
 
@@ -23,7 +19,6 @@ function EventLocation({
   const [placesService, setPlacesService] =
     useState<google.maps.places.PlacesService | null>(null);
 
-  // https://developers.google.com/maps/documentation/javascript/reference/places-autocomplete-service
   const [autocompleteService, setAutocompleteService] =
     useState<google.maps.places.AutocompleteService | null>(null);
 
@@ -62,8 +57,11 @@ function EventLocation({
       const value = (event.target as HTMLInputElement).value;
       setInputValue(value); // Update the state
       fetchPredictions(value);
+      if (onChange) {
+        onChange(value); // Call the onChange prop if provided
+      }
     },
-    [fetchPredictions], // removed inputValue from dependency array
+    [fetchPredictions, onChange], // removed inputValue from dependency array
   );
 
   const handleSuggestionClick = useCallback(
@@ -84,24 +82,33 @@ function EventLocation({
           .join(",");
         setPredictionResults([]);
         setInputValue(formatAddress ?? "");
-        setLocationFromParent(formatAddress ?? "");
+        if (formContext) {
+          formContext.setValue(name, formatAddress ?? ""); // Update form state
+        }
+        if (onChange) {
+          onChange(formatAddress ?? ""); // Call the onChange prop if provided
+        }
         setSessionToken(new places.AutocompleteSessionToken());
       };
       // Directly use the description from the prediction result
       placesService?.getDetails(detailRequestOptions, detailsRequestCallback);
     },
 
-    [places, placesService, sessionToken],
+    [places, placesService, sessionToken, formContext, name, onChange],
   );
 
   return (
     <div className="relative">
-      <div className="flex items-center justify-between">
-        <Navigation />
+      <div className="p-0 mx-0 text-[12pt] text-black text-sm font-medium">
+        Location*
+      </div>
+      <div className="flex items-center">
         <Input
           value={inputValue}
-          onChange={(e) => onInputChange(e)}
+          // onChange={(e) => onInputChange(e)}
           placeholder="Location"
+          {...(formContext ? formContext.register(name) : {})} // Register the input with react-hook-form if within a form context
+          onChange={(e) => onInputChange(e)}
         />
       </div>
       {predictionResults.length > 0 && (
