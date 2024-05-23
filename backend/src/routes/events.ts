@@ -231,10 +231,10 @@ router.get('/filter', async (req: Request, res: Response) => {
       eventType,
     } = req.query;
 
-    if (!category){
+    if (category == "All event categories"){
       category = ""
     }
-    if (!eventType){
+    if (eventType == "All event types"){
       eventType = ""
     }
     const regexEventType = new RegExp(String(eventType), "i"); // Create a regular expression with the variable and make it case-insensitive
