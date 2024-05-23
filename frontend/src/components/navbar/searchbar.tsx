@@ -7,7 +7,6 @@ import { useState } from "react";
 import { Button } from "../ui/button";
 import queryString from "query-string";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
 import { EventType } from "@/types/event";
 
 function SearchForm() {
@@ -15,7 +14,6 @@ function SearchForm() {
   const [location, setLocation] = useState("");
   const [date, setDate] = React.useState<DateRange | undefined>();
   const [keyword, setKeyword] = useState("");
-  const navigate = useNavigate();
 
   const onSubmit = async () => {
     //create a list of part of the query string with the input to join into 1 query string later, slice the string to get only the part that we need
