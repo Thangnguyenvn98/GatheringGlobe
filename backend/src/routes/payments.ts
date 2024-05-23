@@ -2,10 +2,8 @@ import Stripe from "stripe"
 import express, {Request, Response} from "express";
 import verifyToken from "../middleware/auth";
 import Event from "../models/event";
-import Order, { OrderType } from "../models/order";
 import User from "../models/user";
 import Ticket from "../models/ticket";
-import mongoose from "mongoose";
 
 interface Ticket {
     ticketType: string;
@@ -24,8 +22,20 @@ interface Ticket {
   interface CartRequest extends Request {
     body: {
       cartItems: CartItem[];
+      paymentIntentId?: string;
     };
   }
+
+  interface CartCheckoutConfirm extends Request {
+    body: {
+      paymentIntentId: string;
+      firstName: string;
+      lastName: string;
+      email: string;
+    };
+  }
+
+
 
 
 const stripe = new Stripe(process.env.STRIPE_API_KEY as string)
@@ -34,7 +44,10 @@ const router = express.Router()
 
 
 router.post("/bookings/payment-intent", verifyToken, async (req: CartRequest, res: Response) => {
-  const { cartItems } = req.body;
+  console.log("-----------------")
+  console.log("Payment intent CREATINGGGGGG RUNNINGGGGGGGG")
+  console.log("-----------------")
+  const { cartItems, paymentIntentId } = req.body;
 
   if (!Array.isArray(cartItems) || cartItems.length === 0) {
       return res.status(400).json({ message: "No cart items provided." });
@@ -45,121 +58,91 @@ router.post("/bookings/payment-intent", verifyToken, async (req: CartRequest, re
       if (!user) {
           return res.status(404).json({ message: "User not found." });
       }
+      const eventIds = cartItems.map((item) => item.eventId);
+    const events = await Event.find({ _id: { $in: eventIds } });
 
-      let totalPrice = 0;
-      const allTicketsDetails = [];
+    if (events.length !== eventIds.length) {
+      return res.status(404).json({ error: "One or more events not found." });
+    }
 
-      for (const cartItem of cartItems) {
-          const { eventId, tickets } = cartItem;
-          const event = await Event.findById(eventId);
-          if (!event) {
-              return res.status(404).json({ message: `Event ${eventId} not found.` });
-          }
+    const eventMap = new Map(events.map((event) => [event._id.toString(), event]));
 
-          for (const [ticketId, { quantity }] of Object.entries(tickets)) {
-              if (quantity <= 0) {
-                  return res.status(400).json({ message: `Invalid quantity for ticket ${ticketId}.` });
-              }
+    let totalPrice = 0;
+    const allTicketsDetails = [];
 
-              const ticket = await Ticket.findById(ticketId);
-              if (!ticket) {
-                  return res.status(404).json({ message: `Ticket ${ticketId} not found.` });
-              }
-              if (ticket.quantityAvailable < quantity) {
-                  return res.status(400).json({ message: `Not enough tickets available for ${ticketId}.` });
-              }
+    for (const cartItem of cartItems) {
+      const { eventId, tickets } = cartItem;
+      const event = eventMap.get(eventId);
 
-              totalPrice += ticket.price * quantity; // Use the price from the database
-              allTicketsDetails.push({ eventId, ticketId, quantity });
-          }
+      if (!event) {
+        return res.status(404).json({ error: `Event ${eventId} not found.` });
       }
-      totalPrice = Math.round(totalPrice * 100); // Convert to cents and round to the nearest integer
 
-      const paymentIntent = await stripe.paymentIntents.create({
+      const ticketIds = Object.keys(tickets);
+      const ticketDocs = await Ticket.find({ _id: { $in: ticketIds } });
+
+      if (ticketDocs.length !== ticketIds.length) {
+        return res.status(404).json({ error: "One or more tickets not found." });
+      }
+
+      const ticketMap = new Map(ticketDocs.map((ticket) => [ticket._id.toString(), ticket]));
+
+      for (const [ticketId, { quantity }] of Object.entries(tickets)) {
+        if (quantity <= 0) {
+          return res.status(400).json({ error: `Invalid quantity for ticket ${ticketId}.` });
+        }
+
+        const ticket = ticketMap.get(ticketId);
+
+        if (!ticket) {
+          return res.status(404).json({ error: `Ticket ${ticketId} not found.` });
+        }
+
+        if (ticket.quantityAvailable < quantity) {
+          return res.status(400).json({ error: `Not enough tickets available for ${ticketId}.` });
+        }
+
+        totalPrice += ticket.price * quantity;
+        allTicketsDetails.push({ eventId, ticketId, quantity });
+      }
+    }
+
+    totalPrice = Math.round(totalPrice * 100); // Convert to cents and round to the nearest integer
+
+      let paymentIntent;
+      if (paymentIntentId) {
+        // Retrieve existing PaymentIntent
+        paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+        if (paymentIntent.amount !== totalPrice) {
+          // Update the PaymentIntent amount if different
+          paymentIntent = await stripe.paymentIntents.update(paymentIntentId, { amount: totalPrice });
+        }
+      } else {
+        // Create a new PaymentIntent if no ID is provided
+        paymentIntent = await stripe.paymentIntents.create({
           amount: totalPrice, // Convert to cents
           currency: "usd",
           metadata: {
-              userId: req.userId,
-              allTicketsDetails: JSON.stringify(allTicketsDetails),
+            userId: req.userId,
+            allTicketsDetails: JSON.stringify(allTicketsDetails),
           },
-      });
-
-      if (!paymentIntent.client_secret) {
-          return res.status(500).json({ message: "Error creating payment intent" });
+        });
       }
-
+  
+      if (!paymentIntent.client_secret) {
+        return res.status(500).json({ message: "Error creating payment intent" });
+      }
+  
       res.send({
-          paymentIntentId: paymentIntent.id,
-          clientSecret: paymentIntent.client_secret,
-          totalPrice,
-          allTicketsDetails,
+        paymentIntentId: paymentIntent.id,
+        clientSecret: paymentIntent.client_secret,
+        totalPrice,
+        allTicketsDetails,
       });
   } catch (error) {
       console.error("Failed to create payment intent:", error);
       return res.status(500).json({ message: "Internal server error" });
   }
 });
-  
-
-//   router.post("/bookings", verifyToken, async (req: CartRequest, res: Response) => {
-//     const { paymentIntentId, allTicketsDetails } = req.body;
-  
-//     try {
-//       const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
-//       if (!paymentIntent) {
-//         return res.status(400).json({ message: "Payment intent not found" });
-//       }
-//       if (paymentIntent.metadata.userId !== req.userId) {
-//         return res.status(400).json({ message: "Payment Intent Mismatch" });
-//       }
-//       if (paymentIntent.status !== "succeeded") {
-//         return res.status(400).json({ message: `Payment intent not succeeded. Status: ${paymentIntent.status}` });
-//       }
-  
-//       const order = {
-//         userId: new mongoose.Types.ObjectId(req.userId),
-//         events: [],
-//         totalPrice: paymentIntent.amount / 100,
-//         paymentStatus: "completed",
-//       };
-  
-//       const ticketUpdates = [];
-  
-//       for (const ticketDetail of allTicketsDetails) {
-//         const { eventId, ticketId, quantity } = ticketDetail;
-  
-//         const ticket = await Ticket.findById(new mongoose.Types.ObjectId(ticketId));
-//         if (!ticket) {
-//           return res.status(404).json({ message: `Ticket ${ticketId} not found.` });
-//         }
-//         if (ticket.quantityAvailable < quantity) {
-//           return res.status(400).json({ message: `Not enough tickets available for ${ticketId}.` });
-//         }
-  
-//         ticket.quantityAvailable -= quantity;
-//         ticketUpdates.push(ticket.save());
-  
-//         let eventOrder = order.events.find(event => event.eventId.toString() === eventId);
-//         if (!eventOrder) {
-//           eventOrder = {
-//             eventId: new mongoose.Types.ObjectId(eventId),
-//             tickets: [],
-//           };
-//           order.events.push(eventOrder);
-//         }
-//         eventOrder.tickets.push({ ticketId: new mongoose.Types.ObjectId(ticketId), quantity });
-//       }
-  
-//       await Promise.all(ticketUpdates);
-//       const newOrder = new Order(order);
-//       await newOrder.save();
-  
-//       res.status(201).json({ message: "Order created successfully", order: newOrder });
-//     } catch (error) {
-//       console.error("Failed to create order:", error);
-//       return res.status(500).json({ message: "Internal server error" });
-//     }
-//   });
-  
 
 export default router

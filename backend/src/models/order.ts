@@ -12,6 +12,11 @@ export type OrderType = {
   }[];
   totalPrice: number;
   paymentStatus: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  paymentMethodId:string;
+  paymentIntentId: string;
 };
 
 const orderSchema = new mongoose.Schema({
@@ -29,6 +34,11 @@ const orderSchema = new mongoose.Schema({
   ],
   totalPrice: { type: Number, required: true },
   paymentStatus: { type: String, required: true, enum: ['pending', 'completed', 'failed'], default: 'pending' },
+  firstName: { type: String, required: true },
+  lastName: { type: String, required: true },
+  email: { type: String, required: true },
+  paymentMethodId: { type: String, required: true },
+  paymentIntentId: { type: String, required: true },
 });
 
 const Order = mongoose.model<OrderType>("Order", orderSchema);

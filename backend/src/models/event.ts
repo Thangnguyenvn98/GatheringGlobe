@@ -5,7 +5,10 @@ export type EventType = {
     title: string;
     description: string;
     startTime: Date;
+    startTime: Date;
     endTime: Date;
+    venueId?: string;
+    capacity?: number;
     venueId?: string;
     capacity?: number;
     organizerId: string;
@@ -15,9 +18,11 @@ export type EventType = {
     artistName: string;
     imageUrls: string[];
     tickets: mongoose.Types.ObjectId[]; // Reference to ticket IDs
+    tickets: mongoose.Types.ObjectId[]; // Reference to ticket IDs
     roomChatLink: string;
 };
 
+// Update the mongoose schema for Event
 // Update the mongoose schema for Event
 const eventSchema = new mongoose.Schema({
     title: { type: String, required: true },
@@ -33,8 +38,10 @@ const eventSchema = new mongoose.Schema({
     artistName: { type: String, required: true },
     imageUrls: [{ type: String, required: true }],
     tickets: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Ticket' }], 
+    tickets: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Ticket' }], 
     roomChatLink: { type: String, required: false },
 });
 
 const Event = mongoose.model<EventType>("Event", eventSchema);
 export default Event;
+

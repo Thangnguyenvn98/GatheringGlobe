@@ -73,15 +73,12 @@ router.post("/", verifyToken, async (req: Request, res: Response) => {
   if (!user) {
     return res.status(400).json({ message: "User does not exists!" });
   }
-  if (user.role !== "organizer") {
-    return res
-      .status(403)
-      .json({ message: "Only organizers are allowed to create events." });
-  }
+
   const {
     title,
     description,
     startTime,
+    endTime,
     endTime,
     venueId,
     capacity,
@@ -97,6 +94,7 @@ router.post("/", verifyToken, async (req: Request, res: Response) => {
     !title ||
     !description ||
     !startTime ||
+    !endTime ||
     !endTime ||
     !location ||
     !category ||
@@ -143,6 +141,59 @@ router.post("/", verifyToken, async (req: Request, res: Response) => {
     return res
       .status(500)
       .json({ message: "Failed to create event due to an internal error" });
+  }
+});
+
+router.post("/:eventId/tickets", verifyToken, async (req: Request, res: Response) => {
+  const { eventId } = req.params;
+  const tickets = req.body.tickets;
+
+  if (!Array.isArray(tickets) || tickets.length === 0) {
+    return res.status(400).json({ message: "Missing required ticket details or tickets array is empty." });
+  }
+
+  try {
+    const event = await Event.findById(eventId);
+    if (!event) {
+      return res.status(404).json({ message: "Event not found." });
+    }
+
+    const createdTickets = [];
+
+    for (const ticketData of tickets) {
+      const { type, price, quantityAvailable, seatNumber, status, isFree } = ticketData;
+
+      if (!type || price == null || !quantityAvailable || !status || isFree == null) {
+        return res.status(400).json({ message: "Missing required ticket details." });
+      }
+      if (isFree && price !== 0) {
+        return res.status(400).json({ message: "Free tickets must have a price of 0." });
+      }
+
+      const ticket = new Ticket({
+        eventId,
+        type,
+        price,
+        quantityAvailable,
+        seatNumber,
+        status,
+        isFree,
+      });
+
+      await ticket.save();
+      event.tickets.push(ticket._id);
+      createdTickets.push(ticket);
+    }
+
+    await event.save();
+
+    return res.status(201).json({
+      message: "Tickets created successfully",
+      tickets: createdTickets,
+    });
+  } catch (error) {
+    console.error("Failed to create tickets:", error);
+    return res.status(500).json({ message: "Internal server error" });
   }
 });
 

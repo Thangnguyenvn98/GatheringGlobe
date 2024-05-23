@@ -4,17 +4,19 @@ import bcrypt from "bcryptjs"
 export type UserType = {
     _id: string,
     username:string,
+    firstName?: string,
+    lastName?: string,
     email: string,
     password: string,
-    role: string,
     
 }; 
 
 const userSchema = new mongoose.Schema({
     username: { type:String , required: true, unique:true},
+    firstName: {type: String, required: false},
+    lastName: {type: String, required: false},
     email: {type: String, required: true, unqiue: true},
     password: {type: String, required: true},
-    role: {type: String, required: true, enum: ['organizer', 'user']},
 });
 
 // Middleware for mongodb

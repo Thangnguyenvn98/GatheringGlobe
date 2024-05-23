@@ -8,6 +8,7 @@ import { Button } from "../ui/button";
 import queryString from "query-string";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { EventType } from "@/types/event";
 
 function SearchForm() {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
@@ -56,9 +57,8 @@ function SearchForm() {
       );
       if (response.status === 200) {
         //if the data fetched successfully (status code === 200), navigate to another page
-        console.log(response.data);
-        navigate(`/discover?${finalParams}`, {
-          state: response.data,
+        response.data.forEach((item: EventType) => {
+          console.log(item);
         });
       } else if (response.status === 201) {
         //if no matching event found, we dont do the navigate(...) so that there is no error

@@ -21,13 +21,22 @@ import useCheckAuth from "./hooks/useCheckAuth";
 import ForgotPassword from "./components/loginPage/Forgotpassword";
 import EventDetailMock from "./components/testComponent/EventDetailMock";
 import Booking from "./components/BookingForm/Booking";
+import { OrderConfirmationModal } from "./components/modals/order-confirmation-modal";
+import OrderDetails from "./components/order/OrderDetails";
 
 function App() {
   useCheckAuth();
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Homepage />} />
+        <Route
+          path="/"
+          element={
+            <Layout>
+              <Homepage />
+            </Layout>
+          }
+        />
         <Route path="/register" element={<LoginPage />} />
         <Route
           path="/about"
@@ -55,10 +64,19 @@ function App() {
             }
           />
           <Route
-            path="/:userId/checkout"
+            path="/checkout"
             element={
               <Layout>
+                <OrderConfirmationModal />
                 <Booking />
+              </Layout>
+            }
+          />
+          <Route
+            path="/your-account/order-details/:id"
+            element={
+              <Layout>
+                <OrderDetails />
               </Layout>
             }
           />

@@ -4,8 +4,10 @@ import {
   createPaymentIntent,
   getCurrentUser,
   getEventById,
+  getOrderDetailsById,
   getRoom,
   getRooms,
+  validateToken,
 } from "./api";
 import { useSocket } from "@/components/providers/socket-provider";
 import { CartItem } from "@/hooks/use-cart-store";
@@ -32,11 +34,19 @@ export const useCurrentEventDetail = (eventId: string) => {
   });
 };
 
+export const useCurrentOrderDetail = (orderId: string) => {
+  return useQuery({
+    queryKey: ["order", orderId],
+    queryFn: () => getOrderDetailsById(orderId),
+    enabled: !!orderId,
+  });
+};
+
 export const usePaymentIntent = (cartItems: CartItem[]) => {
   return useQuery({
-    queryKey: ["paymentIntent"],
+    queryKey: ["paymentIntent", cartItems],
     queryFn: () => createPaymentIntent(cartItems),
-    enabled: !!(cartItems.length > 0),
+    enabled: cartItems.length > 0,
   });
 };
 
@@ -74,5 +84,13 @@ export const useRoom = (roomId: string | undefined) => {
     queryKey: ["room", roomId],
     queryFn: () => getRoom({ roomId }),
     enabled: !!roomId,
+  });
+};
+
+export const useAuthQuery = () => {
+  return useQuery({
+    queryKey: ["auth", validateToken],
+    queryFn: validateToken,
+    retry: false, // Do not retry on failure
   });
 };
