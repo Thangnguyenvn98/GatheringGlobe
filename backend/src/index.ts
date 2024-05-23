@@ -15,6 +15,7 @@ import http from "http";
 import Room from "./models/room";
 import Message from "./models/message";
 import { log } from "handlebars";
+import authRoutes from "./routes/authRoutes";
 
 require("dotenv").config();
 
@@ -49,7 +50,11 @@ app.use("/api/messages", messageRoutes);
 app.use("/api/room", roomRoutes);
 app.use("/api/events", eventRoutes);
 app.use("/api/payments",paymentRoutes);
+<<<<<<< Ba-Quan-Nguyen
+app.use("/api/authRoutes",authRoutes);
+=======
 app.use("/api/orders",orderRoutes)
+>>>>>>> main
 
 
 io.on("connection", async (socket) => {
