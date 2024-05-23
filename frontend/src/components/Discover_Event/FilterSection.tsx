@@ -97,14 +97,10 @@ const FilterSection = () => {
   const handleInputChange = async (event: any) => {
     const { name, value } = event.target;
     console.log(event.target);
-    setTimeout(
-      () =>
-        setInputs({
-          ...inputs,
-          [name]: value,
-        }),
-      1000,
-    );
+    setInputs({
+      ...inputs,
+      [name]: value,
+    });
     console.log(inputs);
   };
 

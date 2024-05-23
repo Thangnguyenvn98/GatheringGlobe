@@ -79,7 +79,6 @@ router.post("/", verifyToken, async (req: Request, res: Response) => {
     description,
     startTime,
     endTime,
-    endTime,
     venueId,
     capacity,
     location,
