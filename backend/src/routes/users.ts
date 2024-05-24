@@ -3,7 +3,7 @@ import User, {UserType} from "../models/user";
 import jwt from "jsonwebtoken"
 import { check, validationResult } from "express-validator";
 import verifyToken from "../middleware/auth";
-import { compare } from "bcryptjs";
+import bcrypt from "bcryptjs";
 import sendEmail from "../utils/email/sendEmail";
 import { forgetPassword, resetPassword } from "../controllers/forget_reset_Password";
 
@@ -75,7 +75,7 @@ router.post("/login", [
           return res.status(400).json({ message: "Invalid credentials" });
       }
 
-      const isMatch: boolean = await compare(password, user.password);
+      const isMatch: boolean = await bcrypt.compare(password, user.password);
 
       if (!isMatch) {
           return res.status(400).json({ message: "Invalid credentials" });

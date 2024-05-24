@@ -9,6 +9,7 @@ import {
   PaymentIntentResponse,
 } from "../../../backend/src/shared/types";
 import { CartItem } from "@/hooks/use-cart-store";
+import { IngressInput } from "@/types/IngressInput";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 export const axiosInstance = axios.create({
@@ -182,6 +183,30 @@ export const sendUserHelpRequest = async (data: ContactUsFormData) => {
   return response.data;
 };
 
+export const fetchStreamerToken = async (roomName: string) => {
+  const { data } = await axiosInstance.get(
+    `/api/livekit/streamer-token?roomName=${roomName}`,
+  );
+  return data.token;
+};
+
+export const fetchViewerToken = async (roomName: string, identity: string) => {
+  const { data } = await axiosInstance.get(
+    `/api/livekit/viewer-token?roomName=${roomName}&identity=${identity}`,
+  );
+  return data.token;
+};
+
+export const fetchCreateIngress = async (
+  roomName: string,
+  ingressType: IngressInput,
+) => {
+  console.log(roomName, ingressType);
+  const { data } = await axiosInstance.get(
+    `/api/livekit/create-ingress?roomName=${roomName}&ingressType=${ingressType}`,
+  );
+  return data.ingress;
+};
 export const resetPassword = async (
   userId: string,
   token: string,

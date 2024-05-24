@@ -24,7 +24,8 @@ import EventDetailMock from "./components/testComponent/EventDetailMock";
 import Booking from "./components/BookingForm/Booking";
 import { OrderConfirmationModal } from "./components/modals/order-confirmation-modal";
 import OrderDetails from "./components/order/OrderDetails";
-
+import HostRoom from "./components/streaming/HostRoom";
+import WatchRoom from "./components/streaming/WatchRoom";
 
 function App() {
   useCheckAuth();
@@ -98,6 +99,22 @@ function App() {
           element={
             <Layout>
               <Faq />
+            </Layout>
+          }
+        />
+        <Route
+          path="/channel/:roomName/viewer"
+          element={
+            <Layout>
+              <WatchRoom />
+            </Layout>
+          }
+        />
+        <Route
+          path="/channel/:roomName/host"
+          element={
+            <Layout>
+              <HostRoom />
             </Layout>
           }
         />
