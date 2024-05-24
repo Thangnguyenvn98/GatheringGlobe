@@ -1,5 +1,5 @@
 import { useCurrentUser, useStreamerToken } from "@/services/queries";
-import { LiveKitRoom, MediaDeviceMenu } from "@livekit/components-react";
+import { LiveKitRoom } from "@livekit/components-react";
 import { jwtDecode } from "jwt-decode";
 import { useEffect, useState } from "react";
 import HostControls from "./host-control";
