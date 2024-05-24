@@ -207,3 +207,24 @@ export const fetchCreateIngress = async (
   );
   return data.ingress;
 };
+export const resetPassword = async (
+  userId: string,
+  token: string,
+  newPassword: string,
+): Promise<boolean> => {
+  try {
+    console.log("Token: ", token);
+    const response = await axios.post(
+      `${API_BASE_URL}/api/authRoutes/reset-password`,
+      {
+        userId,
+        token,
+        newPassword,
+      },
+    );
+    return response.status === 200;
+  } catch (error) {
+    console.error("Error resetting password:", error);
+    throw error;
+  }
+};

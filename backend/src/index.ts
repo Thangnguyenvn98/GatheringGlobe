@@ -16,6 +16,8 @@ import http from "http";
 import Room from "./models/room";
 import Message from "./models/message";
 import dotenv from 'dotenv';
+import { log } from "handlebars";
+import authRoutes from "./routes/authRoutes";
 
 
 dotenv.config();
@@ -53,6 +55,8 @@ app.use("/api/events", eventRoutes);
 app.use("/api/payments",paymentRoutes);
 app.use("/api/orders",orderRoutes)
 app.use("/api/livekit",livekitRoutes)
+app.use("/api/authRoutes",authRoutes);
+app.use("/api/orders",orderRoutes);
 
 
 io.on("connection", async (socket) => {
