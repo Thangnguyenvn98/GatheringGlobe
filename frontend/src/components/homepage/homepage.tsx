@@ -1,6 +1,6 @@
-import Timer from "./Timer";
+import Timer from "./timer";
 import { Separator } from "../ui/separator";
-import Testimonials from "./Testimonials";
+import Testimonials from "./testimonials";
 import Events from "./events";
 import EventList from "./EventList";
 
