@@ -48,6 +48,14 @@ function App() {
         />
         <Route element={<ProtectedRoute />}>
           <Route
+            path="/create-new-event"
+            element={
+              <Layout>
+                <EventForm />
+              </Layout>
+            }
+          />
+          <Route
             path="/messages/c/:ownerId/t/:roomId"
             element={
               <SocketProvider>
@@ -125,14 +133,6 @@ function App() {
         />
         <Route path="/booking/:ticketId" element={<EventDetail />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route
-          path="/create-new-event"
-          element={
-            <Layout>
-              <EventForm />
-            </Layout>
-          }
-        />
       </Routes>
     </Router>
   );
