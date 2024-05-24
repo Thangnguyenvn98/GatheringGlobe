@@ -280,11 +280,12 @@ router.get('/filter', async (req: Request, res: Response) => {
       category,
       eventType,
     } = req.query;
+    console.log(req.query)
 
-    if (category == "All event categories"){
+    if (category == "All event categories" || category == undefined){
       category = ""
     }
-    if (eventType == "All event types"){
+    if (eventType == "All event types" || eventType == undefined){
       eventType = ""
     }
     const regexEventType = new RegExp(String(eventType), "i"); // Create a regular expression with the variable and make it case-insensitive
@@ -320,12 +321,13 @@ router.get('/filter', async (req: Request, res: Response) => {
     const ticketPriceFilter = async (events: EventType[], priceMinPassed = priceMin, priceMaxPassed = priceMax) => {
       let eventFilteredPrice = []
       for (const event of events){
-        let ticketIds = event.tickets 
+        let ticketIds = event.tickets
         for (const ticketId of ticketIds) {
           let ticket = await Ticket.findById(ticketId).exec()
-          if (ticket?.price && (priceMaxPassed == undefined || ticket.price <= parseFloat(String(priceMaxPassed))) && (priceMinPassed == undefined || ticket.price >= parseFloat(String(priceMinPassed))))
+          if (ticket?.price != undefined && (priceMaxPassed == undefined || ticket.price <= parseFloat(String(priceMaxPassed))) && (priceMinPassed == undefined || ticket.price >= parseFloat(String(priceMinPassed))))
             {
               eventFilteredPrice.push(event)
+              break; //so that it does not push same event twice
             }
         }
       }
