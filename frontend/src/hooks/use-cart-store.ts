@@ -2,10 +2,12 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import toast from "react-hot-toast";
 
-interface CartItem {
+export interface CartItem {
   eventId: string;
+  eventName: string;
   tickets: {
     [ticketId: string]: {
+      ticketType: string;
       quantity: number;
       price: number;
     };
@@ -14,69 +16,86 @@ interface CartItem {
 
 interface CartStore {
   cartItems: CartItem[];
-  addToCart: (eventId: string, ticketId: string, price: number) => void; // Updated signature
-  removeFromCart: (eventId: string, ticketType: string) => void;
+  addToCart: (
+    eventId: string,
+    eventName: string, // Added event name
+    tickets: {
+      [ticketId: string]: {
+        ticketType: string;
+        quantity: number;
+        price: number;
+      };
+    }, // Added ticket type
+  ) => void;
+  updateCart: (eventId: string, ticketId: string, increment: number) => void;
+  removeFromCart: (eventId: string, ticketId: string) => void;
   clearCart: () => void;
   getTotalCost: () => number;
+  getTotalQuantity: () => number;
 }
 
 const useCart = create<CartStore>()(
   persist(
     (set, get) => ({
       cartItems: [],
-      addToCart: (eventId, ticketId, price) => {
+      addToCart: (eventId, eventName, tickets) => {
         set((state) => {
-          const updatedCartItems = state.cartItems.slice(); // Create a shallow copy of cart items
-          const cartItem = updatedCartItems.find(
+          const updatedCartItems = state.cartItems.slice();
+          let cartItem = updatedCartItems.find(
             (item) => item.eventId === eventId,
           );
 
-          if (cartItem) {
-            // If the cart already has this event
-            if (cartItem.tickets[ticketId]) {
-              // If the ticket already exists, increment the quantity by one
-              cartItem.tickets[ticketId].quantity += 1;
-            } else {
-              // If the ticket does not exist, add new ticket under this event with quantity set to 1
-              cartItem.tickets[ticketId] = { quantity: 1, price };
-            }
-          } else {
-            // If the event does not exist in the cart, add new event and ticket with quantity set to 1
-            updatedCartItems.push({
-              eventId,
-              tickets: {
-                [ticketId]: { quantity: 1, price },
-              },
-            });
+          if (!cartItem) {
+            cartItem = { eventId, eventName, tickets: {} };
+            updatedCartItems.push(cartItem);
           }
+
+          Object.entries(tickets).forEach(
+            ([ticketId, { ticketType, quantity, price }]) => {
+              if (cartItem!.tickets[ticketId]) {
+                cartItem!.tickets[ticketId].quantity += quantity;
+              } else {
+                cartItem!.tickets[ticketId] = { ticketType, quantity, price };
+              }
+            },
+          );
+
           return { cartItems: updatedCartItems };
         });
         toast.success("Added to cart.");
       },
-      removeFromCart: (eventId: string, ticketId: string) => {
+      updateCart: (eventId, ticketId, increment) => {
         set((state) => {
-          const updatedCartItems = state.cartItems.slice(); // Create a shallow copy of cart items
-          const cartItemIndex = updatedCartItems.findIndex(
+          const updatedCartItems = state.cartItems.slice();
+          const cartItem = updatedCartItems.find(
             (item) => item.eventId === eventId,
           );
 
-          if (cartItemIndex !== -1) {
-            const cartItem = updatedCartItems[cartItemIndex];
-            if (
-              cartItem.tickets[ticketId] &&
-              cartItem.tickets[ticketId].quantity > 0
-            ) {
-              cartItem.tickets[ticketId].quantity -= 1; // Decrement the quantity by one
-
-              // If the quantity reaches zero, delete the ticket type from the item
-              if (cartItem.tickets[ticketId].quantity === 0) {
-                delete cartItem.tickets[ticketId];
-              }
-
-              // If no more tickets left for the event, remove the event from the cart
+          if (cartItem && cartItem.tickets[ticketId]) {
+            cartItem.tickets[ticketId].quantity += increment;
+            if (cartItem.tickets[ticketId].quantity <= 0) {
+              delete cartItem.tickets[ticketId];
               if (Object.keys(cartItem.tickets).length === 0) {
-                updatedCartItems.splice(cartItemIndex, 1);
+                const index = updatedCartItems.indexOf(cartItem);
+                updatedCartItems.splice(index, 1);
               }
+            }
+          }
+          return { cartItems: updatedCartItems };
+        });
+      },
+      removeFromCart: (eventId: string, ticketId: string) => {
+        set((state) => {
+          const updatedCartItems = state.cartItems.slice();
+          const cartItem = updatedCartItems.find(
+            (item) => item.eventId === eventId,
+          );
+
+          if (cartItem && cartItem.tickets[ticketId]) {
+            delete cartItem.tickets[ticketId];
+            if (Object.keys(cartItem.tickets).length === 0) {
+              const index = updatedCartItems.indexOf(cartItem);
+              updatedCartItems.splice(index, 1);
             }
           }
           return { cartItems: updatedCartItems };
@@ -91,8 +110,19 @@ const useCart = create<CartStore>()(
         return get().cartItems.reduce((total, item) => {
           return (
             total +
-            Object.values(item.tickets).reduce(
+            Object.values(item.tickets || {}).reduce(
               (itemTotal, { quantity, price }) => itemTotal + price * quantity,
+              0,
+            )
+          );
+        }, 0);
+      },
+      getTotalQuantity: () => {
+        return get().cartItems.reduce((total, item) => {
+          return (
+            total +
+            Object.values(item.tickets || {}).reduce(
+              (itemTotal, { quantity }) => itemTotal + quantity,
               0,
             )
           );

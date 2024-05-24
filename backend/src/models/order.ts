@@ -1,41 +1,44 @@
-import mongoose, {Schema, Document} from "mongoose";
-import { BookingType } from "../shared/types";
+import mongoose from "mongoose";
 
-export type TicketType = {
-  ticketId: Schema.Types.ObjectId,
-  quantity: number,
-  price: number // Assuming each ticket has a price
+export type OrderType = {
+  _id: string;
+  userId: mongoose.Types.ObjectId;
+  events: {
+    eventId: mongoose.Types.ObjectId;
+    tickets: {
+      ticketId: mongoose.Types.ObjectId;
+      quantity: number;
+    }[];
+  }[];
+  totalPrice: number;
+  paymentStatus: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  paymentMethodId:string;
+  paymentIntentId: string;
 };
-
-export type OrderType = Document & {
-  orderId: number,
-  userId: number,
-  eventId: number,
-  purchaseDate: string,
-  tickets: TicketType[], // Array of TicketType
-  totalPrice: number,
-};
-
-const bookingSchema = new mongoose.Schema<BookingType>({
-  firstName: {type: String, required:true},
-  lastName: {type: String, required:true},
-  email: {type: String, required: true},
-  checkIn: {type: Date, required: true},
-  userId: {type: String, required: true},
-  totalPrice: {type: Number, required: true},
-
-})
 
 const orderSchema = new mongoose.Schema({
-    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-    eventId: { type: mongoose.Schema.Types.ObjectId, ref: 'Event'},
-    tickets: [{
-      ticketId: { type: mongoose.Schema.Types.ObjectId, ref: 'Ticket'},
-      quantity: { type: Number, required: true },
-      price: { type: Number, required: true }
-  }],
-    totalPrice: { type: Number, required: true },
-    bookings: [bookingSchema],
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+  events: [
+    {
+      eventId: { type: mongoose.Schema.Types.ObjectId, ref: "Event", required: true },
+      tickets: [
+        {
+          ticketId: { type: mongoose.Schema.Types.ObjectId, ref: "Ticket", required: true },
+          quantity: { type: Number, required: true },
+        },
+      ],
+    },
+  ],
+  totalPrice: { type: Number, required: true },
+  paymentStatus: { type: String, required: true, enum: ['pending', 'completed', 'failed'], default: 'pending' },
+  firstName: { type: String, required: true },
+  lastName: { type: String, required: true },
+  email: { type: String, required: true },
+  paymentMethodId: { type: String, required: true },
+  paymentIntentId: { type: String, required: true },
 });
 
 const Order = mongoose.model<OrderType>("Order", orderSchema);

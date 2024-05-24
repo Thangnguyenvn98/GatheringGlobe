@@ -29,19 +29,17 @@ const EventdataList: React.FC<eventdataListProps> = ({ displayMode }) => {
     <div style={{ padding: "20px" }}>
       <div className="grid place-items-center p-4 pb-5" style={gridStyle}>
         {eventdatas.map((eventData) => (
-          <div key={eventData.id}>
-            <EventCard
-              key={eventData.id}
-              title={eventData.title}
-              description={eventData.description}
-              startTime={eventData.startTime}
-              endTime={eventData.endTime}
-              artistName={eventData.artistName}
-              imageUrls={eventData.imageUrls}
-              location={eventData.location}
-              onClick={() => handleClick(eventData)}
-            />
-          </div>
+          <EventCard
+            key={eventData.id}
+            title={eventData.title}
+            description={eventData.description}
+            startTime={eventData.startTime}
+            endTime={eventData.endTime}
+            artistName={eventData.artistName}
+            imageUrls={eventData.imageUrls}
+            location={eventData.location}
+            onClick={() => handleClick(eventData)}
+          />
         ))}
       </div>
     </div>

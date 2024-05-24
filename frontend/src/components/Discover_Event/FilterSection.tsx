@@ -1,7 +1,7 @@
 import { Calendar } from "@/components/ui/calendar";
 import { useState } from "react";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/button";
 
 const FilterSection = () => {
   const categories = [
@@ -70,7 +70,7 @@ const FilterSection = () => {
   ];
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [showCalendar, setShowCalendar] = useState(false);
-  const [showCatergory, setShowCatergory] = useState(false);
+  const [showCategory, setShowCategory] = useState(false);
   const [showEventType, setShowEventType] = useState(false);
 
   return (
@@ -79,12 +79,12 @@ const FilterSection = () => {
       <div className=" top-[152px] bottom-7">
         <div className="">
           <Button
-            onClick={() => setShowCatergory(!showCatergory)}
+            onClick={() => setShowCategory(!showCategory)}
             className="bg-transparent border-none p-0 shadow-none hover:bg-transparent mx-0 text-[12pt] text-black font-bold"
           >
-            Catergory
+            Category
           </Button>
-          {showCatergory && (
+          {showCategory && (
             <ScrollArea className="h-72 border-none mx-5">
               {categories.map((cat, index) => (
                 <div>
