@@ -24,11 +24,13 @@ interface ImageUploadProps {
   multiple?: boolean;
   value?: string[];
   disabled?: boolean;
+  name?: string;
 }
 
 const CLOUDNAME = import.meta.env.VITE_CLOUDINARY_CLOUDNAME || "";
 const UPLOADPRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || "";
 const ImageUpload: React.FC<ImageUploadProps> = ({
+  name = "",
   onChange,
   className = "",
   iconClassName = "",
@@ -42,10 +44,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
 
   useEffect(() => {
     if (setValue && localImages.length > 0) {
-      setValue(
-        "attachments",
-        localImages.map((url) => ({ url })),
-      );
+      setValue(name, [...localImages]);
     }
   }, [localImages, setValue]);
 
@@ -57,6 +56,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
   };
 
   const handleRemoveImage = (urlToRemove: string) => {
+    console.log(localImages);
     setLocalImages((prev) => prev.filter((url) => url !== urlToRemove));
   };
 

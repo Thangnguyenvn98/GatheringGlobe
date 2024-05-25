@@ -76,7 +76,7 @@ const formSchema = z
       .string()
       .min(0, { message: "Please select an event type to display." }),
     artistName: z.string().optional(),
-    imageUrls: z.object({ url: z.string() }).array(),
+    imageUrls: z.array(z.string()),
     roomChatLink: z.union([
       z.string().url({ message: "Room chat link must be a valid URL" }),
       z.literal(""),
@@ -208,6 +208,7 @@ const EventForm = () => {
     try {
       setLoading(true);
       console.log(values);
+
       const response = await axiosInstance.post("/api/events", values);
       form.reset();
       toast.success(response.data.message);
@@ -337,7 +338,7 @@ const EventForm = () => {
                 name="artistName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Artist Name* </FormLabel>
+                    <FormLabel>Artist Name </FormLabel>
                     <FormControl>
                       <Input {...field} />
                     </FormControl>
@@ -424,10 +425,11 @@ const EventForm = () => {
                     <FormLabel>Event Image*</FormLabel>
                     <FormControl>
                       <ImageUpload
+                        name="imageUrls"
                         disabled={loading}
                         multiple={true}
                         iconClassName="text-black"
-                        value={field.value.map((image) => image.url)}
+                        value={field.value}
                       />
                     </FormControl>
                     <FormMessage />

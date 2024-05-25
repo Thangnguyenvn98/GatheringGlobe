@@ -98,7 +98,6 @@ router.post("/", verifyToken, async (req: Request, res: Response) => {
     !location ||
     !category ||
     !eventType ||
-    !artistName ||
     !imageUrls
   ) {
     return res.status(400).json({
@@ -126,7 +125,7 @@ router.post("/", verifyToken, async (req: Request, res: Response) => {
     location,
     category,
     eventType,
-    artistName,
+    artistName: artistName ? artistName : undefined,
     imageUrls,
     roomChatLink,
   });
@@ -280,7 +279,6 @@ router.get('/filter', async (req: Request, res: Response) => {
       category,
       eventType,
     } = req.query;
-    console.log(req.query)
 
     if (category == "All event categories" || category == undefined){
       category = ""
@@ -315,11 +313,13 @@ router.get('/filter', async (req: Request, res: Response) => {
             {$and:[ {startTime: {$lte: new Date(String(startTime))}},
                     {endTime: {$gte: new Date(String(endTime))}}
         ]}]}
-      ]}).populate('tickets').exec()
+      ]}).populate({path:'tickets',select: 'price type '}).exec()
 
     //the function that takes in an event array and filters by price and return a new array
     const ticketPriceFilter = async (events: EventType[], priceMinPassed = priceMin, priceMaxPassed = priceMax) => {
+
       let eventFilteredPrice = []
+
       for (const event of events){
         let ticketIds = event.tickets
         for (const ticketId of ticketIds) {
@@ -333,14 +333,14 @@ router.get('/filter', async (req: Request, res: Response) => {
       }
       return eventFilteredPrice  
     }
-    let eventMatched = await ticketPriceFilter(eventFiltered);
+    let eventMatchedPrice = await ticketPriceFilter(eventFiltered);
 
     //if no matching event found
-    if (eventMatched.length===0) {
+    if (eventMatchedPrice.length===0) {
       //set the response and return so that it will set the status and would not run the part after the if statement
       return res.status(201).json({ message: "No event matches" }); //not sure when this message is used
     }
-    res.status(200).json(eventMatched);
+    res.status(200).json(eventMatchedPrice);
   } catch (error) {
     console.error("Failed to fetch event:", error);
     res.status(500).json({ message: "Internal server error" });

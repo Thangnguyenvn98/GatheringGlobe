@@ -31,7 +31,7 @@ const eventSchema = new mongoose.Schema({
     location: { type: String, required: true },
     category: { type: String, required: true },
     eventType: { type: String, required: true },
-    artistName: { type: String, required: true },
+    artistName: { type: String, required: false },
     imageUrls: [{ type: String, required: true }],
     tickets: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Ticket' }], 
     roomChatLink: { type: String, required: false },
