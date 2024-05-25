@@ -7,13 +7,14 @@ import { useState } from "react";
 import { Button } from "../ui/button";
 import queryString from "query-string";
 import axios from "axios";
-import { EventType } from "@/types/event";
+import { useNavigate } from "react-router-dom";
 
 function SearchForm() {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
   const [location, setLocation] = useState("");
   const [date, setDate] = React.useState<DateRange | undefined>();
   const [keyword, setKeyword] = useState("");
+  const navigate = useNavigate();
 
   const onSubmit = async () => {
     //create a list of part of the query string with the input to join into 1 query string later, slice the string to get only the part that we need
@@ -47,7 +48,6 @@ function SearchForm() {
       );
     }
     const finalParams = params.join("&"); //join the strings into one query
-    console.log(`${API_BASE_URL}/?${finalParams}`);
     try {
       //axios.get() is a method provided by the Axios library to send a GET request to a specified URL.
       const response = await axios.get(
@@ -55,8 +55,8 @@ function SearchForm() {
       );
       if (response.status === 200) {
         //if the data fetched successfully (status code === 200), navigate to another page
-        response.data.forEach((item: EventType) => {
-          console.log(item);
+        navigate(`/discover/search${finalParams}`, {
+          state: response.data,
         });
       } else if (response.status === 201) {
         //if no matching event found, we dont do the navigate(...) so that there is no error
