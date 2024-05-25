@@ -39,12 +39,6 @@ const axiosInstance = axios.create({
   withCredentials: true,
 });
 
-// import queryString from "query-string";
-// import axios from "axios";
-// import {number} from "zod";
-// import {get} from "http";
-// import {getDate} from "date-fns";
-
 const formSchema = z
   .object({
     title: z
@@ -91,29 +85,6 @@ const formSchema = z
       });
     }
   });
-
-// const formSchema = z.object({
-//   title: z.string(),
-//   description: z
-//     .string(),
-//   startTime: z.date(),
-//   endTime: z.date(),
-//   capacity: z
-//     .number(),
-//   location: z.string(),
-//   category: z.string(),
-//   artistName: z.string().optional(),
-//   imageUrls: z.object({ url: z.string() }).array(),
-//   roomChatLink: z.union([z.string().url({ message: "Room chat link must be a valid URL" }), z.literal("")]),
-// }).superRefine((data, ctx) => {
-//   if (data.endTime <= data.startTime) {
-//     ctx.addIssue({
-//       code: z.ZodIssueCode.custom,
-//       message: "End time must be after start time",
-//       path: ["endTime"],
-//     });
-//   }
-// });
 
 type FormData = z.infer<typeof formSchema>;
 
