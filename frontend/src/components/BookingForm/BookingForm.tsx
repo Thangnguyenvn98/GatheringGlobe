@@ -102,7 +102,6 @@ const BookingForm = ({ paymentIntent, currentUser }: Props) => {
           email: data.email,
         });
         if (response) {
-          console.log(response._id);
           setLoading(false);
           onOpen("orderConfirmation", { orderId: response });
         }

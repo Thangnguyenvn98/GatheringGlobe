@@ -14,7 +14,7 @@ export type EventType = {
     eventType: string;
     artistName: string;
     imageUrls: string[];
-    tickets: mongoose.Types.ObjectId[]; // Reference to ticket IDs
+    tickets: mongoose.Types.ObjectId[]; 
     roomChatLink: string;
 };
 
