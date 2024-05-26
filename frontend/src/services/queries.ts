@@ -2,6 +2,9 @@ import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import {
   axiosInstance,
   createPaymentIntent,
+  fetchCreateIngress,
+  fetchStreamerToken,
+  fetchViewerToken,
   getCurrentUser,
   getEventById,
   getOrderDetailsById,
@@ -11,6 +14,7 @@ import {
 } from "./api";
 import { useSocket } from "@/components/providers/socket-provider";
 import { CartItem } from "@/hooks/use-cart-store";
+import { IngressInput } from "@/types/IngressInput";
 
 export function useRooms() {
   return useQuery({
@@ -92,5 +96,32 @@ export const useAuthQuery = () => {
     queryKey: ["auth", validateToken],
     queryFn: validateToken,
     retry: false, // Do not retry on failure
+  });
+};
+
+export const useStreamerToken = (roomName: string) => {
+  return useQuery({
+    queryKey: ["streamerToken", roomName],
+    queryFn: () => fetchStreamerToken(roomName),
+    enabled: !!roomName,
+  });
+};
+
+export const useViewerToken = (roomName: string, identity: string) => {
+  return useQuery({
+    queryKey: ["viewerToken", roomName, identity],
+    queryFn: () => fetchViewerToken(roomName, identity),
+    enabled: !!roomName && !!identity,
+  });
+};
+
+export const useCreateIngress = (
+  roomName: string,
+  ingressType: IngressInput,
+) => {
+  return useQuery({
+    queryKey: ["createIngress", roomName, ingressType],
+    queryFn: () => fetchCreateIngress(roomName, ingressType),
+    enabled: !!roomName,
   });
 };
