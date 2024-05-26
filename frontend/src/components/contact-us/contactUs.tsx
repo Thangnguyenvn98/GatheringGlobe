@@ -181,7 +181,7 @@ const ContactUs = () => {
                         <FormLabel>Attachments (optional)</FormLabel>
                         <FormControl>
                           <ImageUpload
-                            name="imageUrls"
+                            name="attachments"
                             disabled={loading}
                             multiple={true}
                             iconClassName="text-black"

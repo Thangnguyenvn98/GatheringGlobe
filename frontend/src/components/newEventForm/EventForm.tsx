@@ -1,6 +1,7 @@
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 import * as z from "zod";
+import { format } from "date-fns";
 import {
   Card,
   CardHeader,
@@ -32,6 +33,7 @@ import {
 } from "@/components/ui/select";
 // import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 const axiosInstance = axios.create({
@@ -89,7 +91,7 @@ const formSchema = z
 type FormData = z.infer<typeof formSchema>;
 
 const EventForm = () => {
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
   const categoriesList = [
     "Music",
     "Movies",
@@ -183,9 +185,9 @@ const EventForm = () => {
       const response = await axiosInstance.post("/api/events", values);
       form.reset();
       toast.success(response.data.message);
-      // setTimeout(() => {
-      //   navigate(0);
-      // }, 800);
+      setTimeout(() => {
+        navigate(0);
+      }, 800);
     } catch (error) {
       toast.error("Something went wrong");
     } finally {
@@ -252,8 +254,16 @@ const EventForm = () => {
                       <FormControl>
                         <Input
                           type="datetime-local"
-                          value={field.value.toISOString().slice(0, 16)}
+                          value={
+                            field.value
+                              ? format(
+                                  new Date(field.value),
+                                  "yyyy-MM-dd'T'HH:mm",
+                                )
+                              : format(new Date(), "yyyy-MM-dd'T'HH:mm")
+                          }
                           onChange={(e) =>
+                            // Convert the input value to Date here
                             field.onChange(new Date(e.target.value))
                           }
                         />
@@ -274,8 +284,16 @@ const EventForm = () => {
                       <FormControl>
                         <Input
                           type="datetime-local"
-                          value={field.value.toISOString().slice(0, 16)}
+                          value={
+                            field.value
+                              ? format(
+                                  new Date(field.value),
+                                  "yyyy-MM-dd'T'HH:mm",
+                                )
+                              : format(new Date(), "yyyy-MM-dd'T'HH:mm")
+                          }
                           onChange={(e) =>
+                            // Convert the input value to Date here
                             field.onChange(new Date(e.target.value))
                           }
                         />

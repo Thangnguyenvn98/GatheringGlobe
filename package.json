@@ -11,7 +11,8 @@
     "lint:frontend": "cd frontend && prettier --write .",
     "install:client": "cd frontend && npm install",
     "install:server": "cd backend && npm install",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "postmerge": "if git diff-tree -r --name-only --no-commit-id ORIG_HEAD HEAD | grep -q 'package.json'; then npm install; fi"
   },
   "lint-staged": {
     "frontend/**/*.{ts,tsx}": "npm run lint:frontend"
