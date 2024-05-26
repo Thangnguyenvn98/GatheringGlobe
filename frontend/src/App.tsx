@@ -20,10 +20,13 @@ import ContactUs from "./components/contact-us/contactUs";
 import ProtectedRoute from "./utils/ProtectedRoute";
 import useCheckAuth from "./hooks/useCheckAuth";
 import ForgotPassword from "./components/loginPage/Forgotpassword";
+import ResetPassword from "./components/loginPage/ResetPassword";
 import EventDetailMock from "./components/testComponent/EventDetailMock";
 import Booking from "./components/BookingForm/Booking";
 import { OrderConfirmationModal } from "./components/modals/order-confirmation-modal";
 import OrderDetails from "./components/order/OrderDetails";
+import HostRoom from "./components/streaming/HostRoom";
+import WatchRoom from "./components/streaming/WatchRoom";
 
 function App() {
   useCheckAuth();
@@ -109,6 +112,22 @@ function App() {
           }
         />
         <Route
+          path="/channel/:roomName/viewer"
+          element={
+            <Layout>
+              <WatchRoom />
+            </Layout>
+          }
+        />
+        <Route
+          path="/channel/:roomName/host"
+          element={
+            <Layout>
+              <HostRoom />
+            </Layout>
+          }
+        />
+        <Route
           path="/discover/:eventName/event/:eventId"
           element={
             <Layout>
@@ -134,6 +153,16 @@ function App() {
         />
         <Route path="/booking/:ticketId" element={<EventDetail />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+
+        <Route
+          path="/create-new-event"
+          element={
+            <Layout>
+              <EventForm />
+            </Layout>
+          }
+        />
       </Routes>
     </Router>
   );
