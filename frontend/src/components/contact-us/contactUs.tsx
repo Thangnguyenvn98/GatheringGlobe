@@ -22,8 +22,8 @@ import { useNavigate } from "react-router-dom";
 
 const formSchema = z.object({
   email: z.string().email(),
-  firstName: z.string().min(4),
-  lastName: z.string().min(4),
+  firstName: z.string().min(1),
+  lastName: z.string().min(1),
   subject: z.string().min(4),
   description: z
     .string()
@@ -33,7 +33,7 @@ const formSchema = z.object({
     })
     .max(350, { message: "The description is too long" })
     .trim(),
-  attachments: z.object({ url: z.string() }).array(),
+  attachments: z.array(z.string()),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -181,10 +181,11 @@ const ContactUs = () => {
                         <FormLabel>Attachments (optional)</FormLabel>
                         <FormControl>
                           <ImageUpload
+                            name="attachments"
                             disabled={loading}
                             multiple={true}
                             iconClassName="text-black"
-                            value={field.value.map((image) => image.url)}
+                            value={field.value}
                           />
                         </FormControl>
 

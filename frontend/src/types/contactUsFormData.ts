@@ -4,7 +4,5 @@ export interface ContactUsFormData {
   lastName: string;
   subject: string;
   description: string;
-  attachments: {
-    url: string;
-  }[];
+  attachments: string[];
 }

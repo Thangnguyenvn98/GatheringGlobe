@@ -123,7 +123,6 @@ router.post("/help/contact-us", async (req:Request,res:Response) => {
 
           return res.status(400).json({ message: "All fields are required" });
       }
-      console.log(req.body)
 
       await sendEmail(undefined,undefined,`Request Support From ${email}`,{email,firstName,lastName,subject,description,attachments},"./template/contactUsSupport.handlebars");
       return res.json({message:"Message been sent sucessfully!"});

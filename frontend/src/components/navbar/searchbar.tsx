@@ -8,7 +8,6 @@ import { Button } from "../ui/button";
 import queryString from "query-string";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { EventType } from "@/types/event";
 
 function SearchForm() {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
@@ -49,7 +48,6 @@ function SearchForm() {
       );
     }
     const finalParams = params.join("&"); //join the strings into one query
-    console.log(`${API_BASE_URL}/?${finalParams}`);
     try {
       //axios.get() is a method provided by the Axios library to send a GET request to a specified URL.
       const response = await axios.get(
@@ -57,10 +55,9 @@ function SearchForm() {
       );
       if (response.status === 200) {
         //if the data fetched successfully (status code === 200), navigate to another page
-        response.data.forEach((item: EventType) => {
-          console.log(item);
+        navigate(`/discover/search${finalParams}`, {
+          state: response.data,
         });
-        navigate(`/events/search?${finalParams}`);
       } else if (response.status === 201) {
         //if no matching event found, we dont do the navigate(...) so that there is no error
         console.log("No matching event found");
