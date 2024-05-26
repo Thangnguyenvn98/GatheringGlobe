@@ -18,8 +18,6 @@ import Message from "./models/message";
 import dotenv from 'dotenv';
 import { log } from "handlebars";
 import authRoutes from "./routes/authRoutes";
-import { TrackSource } from "livekit-server-sdk/dist/proto/livekit_models";
-
 
 dotenv.config();
 
