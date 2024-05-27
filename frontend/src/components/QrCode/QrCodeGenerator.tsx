@@ -59,7 +59,13 @@ const QrCodeGenerator = () => {
             value={url}
             onChange={(e) => setUrl(e.target.value)}
           />
-
+          <input
+            type="email"
+            placeholder="Enter recipient's email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="mt-4"
+          />
           <button
             className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded mt-8"
             onClick={handleQrCodeGenerator}
