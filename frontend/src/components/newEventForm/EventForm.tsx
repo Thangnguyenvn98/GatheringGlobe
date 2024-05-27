@@ -1,5 +1,7 @@
-import { FormData } from "@/types/formData";
-import { useForm, SubmitHandler } from "react-hook-form";
+import { useForm } from "react-hook-form";
+import { useState } from "react";
+import * as z from "zod";
+import { format } from "date-fns";
 import {
   Card,
   CardHeader,
@@ -8,251 +10,452 @@ import {
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "../ui/form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import axios from "axios";
 import toast from "react-hot-toast";
-import { useMap, useMapsLibrary } from "@vis.gl/react-google-maps";
-import { FormEvent, useCallback, useEffect, useState } from "react";
+import EventLocation from "./eventloc";
+import ImageUpload from "../chatRoom/ImageUpload";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+// import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
+const axiosInstance = axios.create({
+  baseURL: API_BASE_URL,
+  withCredentials: true,
+});
+
+const formSchema = z
+  .object({
+    title: z
+      .string()
+      .min(3, { message: "Title must be at least 3 characters long" }),
+    description: z
+      .string()
+      .min(50, { message: "Description must be at least 50 characters long" })
+      .max(500, {
+        message: "Description must be no more than 500 characters long",
+      }),
+    startTime: z.date().refine((date) => date >= new Date(), {
+      message: "Start time must be in the future",
+    }),
+    endTime: z.date().refine((date) => date >= new Date(), {
+      message: "End time must be in the future",
+    }),
+    capacity: z
+      .number()
+      .positive({ message: "Capacity must be a positive number" })
+      .int({ message: "Capacity must be an integer" }),
+    location: z
+      .string()
+      .min(5, { message: "Location must be at least 5 characters long" }),
+    category: z
+      .string()
+      .min(0, { message: "Please select an event category to display." }),
+    eventType: z
+      .string()
+      .min(0, { message: "Please select an event type to display." }),
+    artistName: z.string().optional(),
+    imageUrls: z.array(z.string()),
+    roomChatLink: z.union([
+      z.string().url({ message: "Room chat link must be a valid URL" }),
+      z.literal(""),
+    ]),
+  })
+  .superRefine((data, ctx) => {
+    if (data.endTime <= data.startTime) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "End time must be after start time",
+        path: ["endTime"],
+      });
+    }
+  });
+
+type FormData = z.infer<typeof formSchema>;
 
 const EventForm = () => {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<FormData>();
-  const onSubmit: SubmitHandler<FormData> = async (data) => {
+  const navigate = useNavigate();
+  const categoriesList = [
+    "Music",
+    "Movies",
+    "Books",
+    "Sports",
+    "Technology",
+    "Travel",
+    "Food",
+    "Fashion",
+    "Art",
+    "Science",
+    "Politics",
+    "History",
+    "Education",
+    "Health",
+    "Finance",
+    "Gaming",
+    "Lifestyle",
+    "Parenting",
+    "Pets",
+    "Gardening",
+  ];
+  const eventTypesList = [
+    "Party",
+    "Conference",
+    "Concert",
+    "Festival",
+    "Seminar",
+    "Workshop",
+    "Meetup",
+    "Networking",
+    "Exhibition",
+    "Tradeshow",
+    "Convention",
+    "Summit",
+    "Gala",
+    "Fundraiser",
+    "Awards",
+    "Screening",
+    "Premiere",
+    "Launch",
+    "Fair",
+    "Expo",
+    "Charity",
+    "Sports",
+    "Competition",
+    "Tournament",
+    "Hackathon",
+    "Webinar",
+    "Virtual Event",
+    "Livestream",
+    "Auction",
+    "Sale",
+    "Open House",
+    "Tour",
+    "Tasting",
+    "Masterclass",
+    "Retreat",
+    "Camp",
+    "Cruise",
+    "Rally",
+    "Parade",
+    "Marathon",
+  ];
+  const [loading, setLoading] = useState(false);
+
+  const form = useForm<FormData>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      title: "",
+      category: "",
+      eventType: "",
+      description: "",
+      startTime: new Date(),
+      endTime: new Date(),
+      imageUrls: [],
+      roomChatLink: "",
+      artistName: "",
+      capacity: 0,
+    },
+  });
+
+  // const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
+  // const navigate = useNavigate();
+
+  const onSubmit = async (values: FormData) => {
     try {
-      const response = await axios.post("/events", data, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      });
-      toast.success("Event created successfully!");
-      console.log(response.data);
+      setLoading(true);
+      console.log(values);
+
+      const response = await axiosInstance.post("/api/events", values);
+      form.reset();
+      toast.success(response.data.message);
+      setTimeout(() => {
+        navigate(0);
+      }, 800);
     } catch (error) {
-      toast.error("Failed to create event. Please try again!");
+      toast.error("Something went wrong");
+    } finally {
+      setLoading(false);
     }
   };
 
-  const map = useMap();
-
-  const places = useMapsLibrary("places");
-
-  const [sessionToken, setSessionToken] =
-    useState<google.maps.places.AutocompleteSessionToken>();
-
-  const [placesService, setPlacesService] =
-    useState<google.maps.places.PlacesService | null>(null);
-
-  const [autocompleteService, setAutocompleteService] =
-    useState<google.maps.places.AutocompleteService | null>(null);
-
-  const [predictionResults, setPredictionResults] = useState<
-    Array<google.maps.places.AutocompletePrediction>
-  >([]);
-
-  const [inputValue, setInputValue] = useState<string>("");
-
-  useEffect(() => {
-    if (!places || !map) return;
-
-    setAutocompleteService(new places.AutocompleteService());
-    setPlacesService(new places.PlacesService(map));
-    setSessionToken(new places.AutocompleteSessionToken());
-
-    return () => setAutocompleteService(null);
-  }, [map, places]);
-
-  const fetchPredictions = useCallback(
-    async (inputValue: string) => {
-      if (!autocompleteService || !inputValue) {
-        setPredictionResults([]);
-        return;
-      }
-
-      const request = { input: inputValue, sessionToken, types: ["(cities)"] };
-      const response = await autocompleteService.getPlacePredictions(request);
-      setPredictionResults(response ? response.predictions : []);
-    },
-    [autocompleteService, sessionToken],
-  );
-
-  const onInputChange = useCallback(
-    (event: FormEvent<HTMLInputElement>) => {
-      const value = (event.target as HTMLInputElement).value;
-      setInputValue(value); // Update the state
-      fetchPredictions(value);
-    },
-    [fetchPredictions], // removed inputValue from dependency array
-  );
-
-  const handleSuggestionClick = useCallback(
-    (placeId: string) => {
-      if (!places) return;
-
-      const detailRequestOptions = {
-        placeId,
-        fields: ["formatted_address"],
-        sessionToken,
-      };
-      const detailsRequestCallback = (
-        placeDetails: google.maps.places.PlaceResult | null,
-      ) => {
-        const formatAddress = placeDetails?.formatted_address
-          ?.split(",")
-          .splice(0, 2)
-          .join(",");
-        setPredictionResults([]);
-        setInputValue(formatAddress ?? "");
-        setSessionToken(new places.AutocompleteSessionToken());
-      };
-      // Directly use the description from the prediction result
-      placesService?.getDetails(detailRequestOptions, detailsRequestCallback);
-    },
-
-    [places, placesService, sessionToken],
-  );
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <Card className="max-w-4xl mx-auto p-5">
-        <CardHeader className="text-center">
-          <CardTitle>Create New Event</CardTitle>
-          <CardDescription>
-            Fill out the form below to schedule a new event.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-1">
-            <Label htmlFor="title">Title</Label>
-            <Input
-              id="title"
-              placeholder="Enter event title"
-              {...register("title", { required: "Title is required" })}
-            />
-            {errors.title && (
-              <span className="text-red-500">{errors.title.message}</span>
-            )}
-          </div>
-          <div className="space-y-1">
-            <Label htmlFor="description">Description</Label>
-            <Input
-              id="description"
-              placeholder="Enter event description"
-              {...register("description", {
-                required: "Description is required",
-              })}
-            />
-            {errors.description && (
-              <span className="text-red-500">{errors.description.message}</span>
-            )}
-          </div>
-          <div className="grid grid-cols-2 gap-4">
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)}>
+        <Card className="max-w-4xl mx-auto p-5">
+          <CardHeader className="text-center">
+            <CardTitle>Create New Event</CardTitle>
+            <CardDescription>
+              Fill out the form below to schedule a new event.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
             <div className="space-y-1">
-              <Label htmlFor="startTime">Start Time</Label>
-              <Input
-                id="startTime"
-                type="datetime-local"
-                {...register("startTime", {
-                  required: "Start time is required",
-                })}
+              <FormField
+                control={form.control}
+                name="title"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Title*</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-              {errors.startTime && (
-                <span className="text-red-500">{errors.startTime.message}</span>
-              )}
             </div>
+
             <div className="space-y-1">
-              <Label htmlFor="endTime">End Time</Label>
-              <Input
-                id="endTime"
-                type="datetime-local"
-                {...register("endTime", { required: "End time is required" })}
+              <FormField
+                control={form.control}
+                name="capacity"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Capacity* </FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        type="number"
+                        value={field.value || ""}
+                        onChange={(e) => field.onChange(Number(e.target.value))}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-              {errors.endTime && (
-                <span className="text-red-500">{errors.endTime.message}</span>
-              )}
             </div>
-          </div>
-          <div className="space-y-1">
-            <Label htmlFor="capacity">Capacity</Label>
-            <Input
-              id="capacity"
-              type="number"
-              placeholder="Enter maximum capacity"
-              {...register("capacity", { required: "Capacity is required" })}
-            />
-            {errors.capacity && (
-              <span className="text-red-500">{errors.capacity.message}</span>
-            )}
-          </div>
-          <div className="space-y-1">
-            <Label htmlFor="location">Location</Label>
-            <Input
-              value={inputValue}
-              id="location"
-              placeholder="Enter event location"
-              onChange={(e) => onInputChange(e)}
-              // {...register("location", { required: "Location is required" })}
-            />
-            {predictionResults.length > 0 && (
-              <ul className="left-0 right-0 z-[100] overflow-y-hidden w-full border-solid border-2 border-black max-h-[200px] bg-solid bg-white">
-                {predictionResults.map(({ place_id, description }) => {
-                  return (
-                    <li
-                      key={place_id}
-                      className="p-2 cursor-pointer"
-                      onClick={() => handleSuggestionClick(place_id)}
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-1">
+                <FormField
+                  control={form.control}
+                  name="startTime"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Start Time* </FormLabel>
+                      <FormControl>
+                        <Input
+                          type="datetime-local"
+                          value={
+                            field.value
+                              ? format(
+                                  new Date(field.value),
+                                  "yyyy-MM-dd'T'HH:mm",
+                                )
+                              : format(new Date(), "yyyy-MM-dd'T'HH:mm")
+                          }
+                          onChange={(e) =>
+                            // Convert the input value to Date here
+                            field.onChange(new Date(e.target.value))
+                          }
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <div className="space-y-1">
+                <FormField
+                  control={form.control}
+                  name="endTime"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>End Time* </FormLabel>
+                      <FormControl>
+                        <Input
+                          type="datetime-local"
+                          value={
+                            field.value
+                              ? format(
+                                  new Date(field.value),
+                                  "yyyy-MM-dd'T'HH:mm",
+                                )
+                              : format(new Date(), "yyyy-MM-dd'T'HH:mm")
+                          }
+                          onChange={(e) =>
+                            // Convert the input value to Date here
+                            field.onChange(new Date(e.target.value))
+                          }
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
+
+            <div className="space-y-1">
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Description* </FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <div className="space-y-1">
+              <FormField
+                control={form.control}
+                name="artistName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Artist Name </FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <div className="space-y-1">
+              <FormField
+                control={form.control}
+                name="category"
+                render={({ field }) => (
+                  <FormItem>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
                     >
-                      {description}
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
-          </div>
-          <div className="space-y-1">
-            <Label htmlFor="artistName">Artist Name</Label>
-            <Input
-              id="artistName"
-              placeholder="Enter artist name"
-              {...register("artistName", {
-                required: "Artist name is required",
-              })}
-            />
-            {errors.artistName && (
-              <span className="text-red-500">{errors.artistName.message}</span>
-            )}
-          </div>
-          <div className="space-y-1">
-            <Label htmlFor="ticketPriceRange">Ticket Price Range</Label>
-            <Input
-              id="ticketPriceRange"
-              placeholder="Enter ticket price range"
-              {...register("ticketPriceRange", {
-                required: "Ticket price range is required",
-              })}
-            />
-            {errors.ticketPriceRange && (
-              <span className="text-red-500">
-                {errors.ticketPriceRange.message}
-              </span>
-            )}
-          </div>
-          <div className="space-y-1">
-            <Label htmlFor="roomChatLink">Room Chat Link</Label>
-            <Input
-              id="roomChatLink"
-              placeholder="Enter room chat link"
-              {...register("roomChatLink")}
-            />
-          </div>
-        </CardContent>
-        <CardFooter>
-          <Button type="submit" className="w-full">
-            Create Event
-          </Button>
-        </CardFooter>
-      </Card>
-    </form>
+                      {/* <FormControl> //must wrap the form control ?*/}
+                      <SelectTrigger>
+                        <SelectValue placeholder="Event Category*" />
+                      </SelectTrigger>
+                      {/* </FormControl> */}
+                      <SelectContent>
+                        {categoriesList.map((cat, index) => (
+                          <SelectItem key={index} value={cat}>
+                            {cat}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <div className="space-y-1">
+              <FormField
+                control={form.control}
+                name="eventType"
+                render={({ field }) => (
+                  <FormItem>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      {/* <FormControl> //must wrap the form control ?*/}
+                      <SelectTrigger>
+                        <SelectValue placeholder="Event Type*" />
+                      </SelectTrigger>
+                      {/* </FormControl> */}
+                      <SelectContent>
+                        {eventTypesList.map((type, index) => (
+                          <SelectItem key={index} value={type}>
+                            {type}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <div className="space-y-1">
+              <FormField
+                control={form.control}
+                name="location"
+                render={({ field }) => (
+                  <FormItem>
+                    <EventLocation name={field.name} />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <div className="space-y-1">
+              <FormField
+                control={form.control}
+                name="imageUrls"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Event Image*</FormLabel>
+                    <FormControl>
+                      <ImageUpload
+                        name="imageUrls"
+                        disabled={loading}
+                        multiple={true}
+                        iconClassName="text-black"
+                        value={field.value}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <div className="space-y-1">
+              <FormField
+                control={form.control}
+                name="roomChatLink"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Room Chat Link (optional) </FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </CardContent>
+          <CardFooter>
+            <div className="flex flex-col  w-full">
+              <Button
+                type="submit"
+                className="flex bg-white hover:bg-black hover:text-white text-black w-full"
+              >
+                Create Event
+              </Button>
+            </div>
+          </CardFooter>
+        </Card>
+      </form>
+    </Form>
   );
 };
 

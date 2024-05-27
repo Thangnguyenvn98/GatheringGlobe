@@ -16,9 +16,7 @@ import path from "path";
  */
 
 const sendEmail = async (fromEmail:string=process.env.USER_EMAIL as string, toEmail: string = process.env.PERSONAL_EMAIL as string, subject:string, payload:any, template:string): Promise<void> => {
-    console.log(process.env.USER_EMAIL)
-    console.log(fromEmail)
-    console.log(toEmail)
+
     const transporter = nodemailer.createTransport({
         host: "smtp.zohocloud.ca",
         port: 587,

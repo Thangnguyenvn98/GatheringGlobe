@@ -4,12 +4,11 @@ import { User } from "@/types/user";
 import { useQuery } from "@tanstack/react-query";
 import { ContactUsFormData } from "@/types/contactUsFormData";
 import axios from "axios";
-import {
-  OrderDetailsByIdResponse,
-  PaymentIntentResponse,
-} from "../../../backend/src/shared/types";
+import { OrderDetailsByIdResponse } from "@/types/orderDetails";
+
 import { CartItem } from "@/hooks/use-cart-store";
 import { IngressInput } from "@/types/IngressInput";
+import { PaymentIntentResponse } from "@/types/paymentIntentResponse";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 export const axiosInstance = axios.create({

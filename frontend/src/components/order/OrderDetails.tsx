@@ -22,7 +22,6 @@ const OrderDetails = () => {
   if (error || !data) return <div>No data found for this Order</div>;
   const { order, paymentMethod, created, billing_details } = data;
   const purchaseDate = format(new Date(created * 1000), "MMMM dd, yyyy");
-  console.log(order);
 
   return (
     <div className="flex flex-col items-center">
