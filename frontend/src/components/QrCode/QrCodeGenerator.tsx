@@ -1,18 +1,18 @@
 import { useState, useRef } from "react";
 import QRCode from "react-qr-code";
 import * as htmlToImage from "html-to-image";
+import emailjs from "emailjs-com";
+
 const QrCodeGenerator = () => {
   const [url, setUrl] = useState("");
+  const [email, setEmail] = useState("");
   const qrCodeRef = useRef<HTMLDivElement | null>(null);
   const [qrIsVisible] = useState(false);
   const downloadQRCode = () => {
     htmlToImage
       .toPng(qrCodeRef.current as HTMLElement)
       .then(function (dataUrl) {
-        const link = document.createElement("a");
-        link.href = dataUrl;
-        link.download = "qr-code.png";
-        link.click();
+        sendEmail(dataUrl);
       })
       .catch(function (error) {
         console.error("Error generating QR code:", error);
@@ -20,6 +20,28 @@ const QrCodeGenerator = () => {
   };
   const handleQrCodeGenerator = () => {
     downloadQRCode();
+  };
+  const sendEmail = (qrCodeUrl: any) => {
+    const templateParams = {
+      to_email: email,
+      qr_code_url: qrCodeUrl,
+    };
+
+    emailjs
+      .send(
+        "YOUR_SERVICE_ID",
+        "YOUR_TEMPLATE_ID",
+        templateParams,
+        "YOUR_USER_ID",
+      )
+      .then(
+        (response: any) => {
+          console.log("SUCCESS!", response.status, response.text);
+        },
+        (error: any) => {
+          console.error("FAILED...", error);
+        },
+      );
   };
   return (
     <div className="qrcode__container flex flex-col items-center justify-center w-full h-screen">
