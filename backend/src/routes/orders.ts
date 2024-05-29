@@ -112,7 +112,9 @@ router.post(
         userId: newOrder.userId,
         email: newOrder.email
       });
-      const qrCodeUrl = await QRCode.toDataURL(qrCodeData);
+      // const qrCodeUrl = await QRCode.toDataURL(qrCodeData);
+      const qrCodeBuffer = await QRCode.toBuffer(qrCodeData);
+
 
       // Send email with QR code
       const transporter = nodemailer.createTransport({
@@ -129,8 +131,13 @@ router.post(
         subject: 'Your Ticket',
         html: `<p>Dear ${newOrder.firstName} ${newOrder.lastName},</p>
                <p>Thank you for your order. Here is your ticket:</p>
-               <img src="${qrCodeUrl}" alt="QR Code" />
-               <p>Order ID: ${newOrder._id}</p>`,
+               <p>Order ID: ${newOrder._id}</p>
+               <p> Below is the QR Code. You can scan it now!!! </p>`,
+        attachments: [{
+                filename: 'qrcode.png',
+                content: qrCodeBuffer,
+                cid: 'qrCodeImage' 
+              }]
       };
 
       await transporter.sendMail(mailOptions);
