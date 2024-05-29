@@ -25,7 +25,6 @@ import { OrderConfirmationModal } from "./components/modals/order-confirmation-m
 import Booking from "./components/BookingForm/Booking";
 import OrderDetails from "./components/order/OrderDetails";
 import EventDetailMock from "./components/testComponent/EventDetailMock";
-import QrCodeGenerator from "./components/QrCode/QrCodeGenerator";
 import HostRoom from "./components/streaming/HostRoom";
 import WatchRoom from "./components/streaming/WatchRoom";
 
@@ -155,8 +154,6 @@ function App() {
         <Route path="/booking/:ticketId" element={<EventDetail />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
-        <Route path="/qr-code" element={<QrCodeGenerator />} />
-
         <Route
           path="/create-new-event"
           element={

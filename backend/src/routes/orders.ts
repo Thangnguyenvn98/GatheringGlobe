@@ -6,6 +6,8 @@ import Order, { OrderType } from "../models/order";
 import User from "../models/user";
 import Ticket from "../models/ticket";
 import mongoose from "mongoose";
+import QRCode from 'qrcode';
+import nodemailer from 'nodemailer';
 
 const stripe = new Stripe(process.env.STRIPE_API_KEY as string);
 
@@ -102,6 +104,36 @@ router.post(
       await Promise.all(ticketUpdates);
       const newOrder = new Order(order);
       await newOrder.save();
+
+
+      // Generate QR code
+      const qrCodeData = JSON.stringify({
+        orderId: newOrder._id,
+        userId: newOrder.userId,
+        email: newOrder.email
+      });
+      const qrCodeUrl = await QRCode.toDataURL(qrCodeData);
+
+      // Send email with QR code
+      const transporter = nodemailer.createTransport({
+        service: 'outlook', 
+        auth: {
+          user: "gatheringglobe@outlook.com", 
+          pass: "123456789ok", 
+        },
+      });
+
+      const mailOptions = {
+        from: "gatheringglobe@outlook.com",
+        to: newOrder.email,
+        subject: 'Your Ticket',
+        html: `<p>Dear ${newOrder.firstName} ${newOrder.lastName},</p>
+               <p>Thank you for your order. Here is your ticket:</p>
+               <img src="${qrCodeUrl}" alt="QR Code" />
+               <p>Order ID: ${newOrder._id}</p>`,
+      };
+
+      await transporter.sendMail(mailOptions);
 
       res.status(201).json(newOrder._id);
     } catch (error) {

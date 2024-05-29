@@ -132,7 +132,6 @@ router.post("/bookings/payment-intent", verifyToken, async (req: CartRequest, re
       if (!paymentIntent.client_secret) {
         return res.status(500).json({ message: "Error creating payment intent" });
       }
-  
       res.send({
         paymentIntentId: paymentIntent.id,
         clientSecret: paymentIntent.client_secret,

@@ -30,6 +30,7 @@
     "ncp": "^2.0.0",
     "nodemailer": "^6.9.13",
     "npc": "^0.0.1",
+    "qrcode": "^1.5.3",
     "socket.io": "^4.7.5",
     "stripe": "^14.25.0"
   },
@@ -40,6 +41,7 @@
     "@types/jsonwebtoken": "^9.0.6",
     "@types/node": "^20.11.30",
     "@types/nodemailer": "^6.4.15",
+    "@types/qrcode": "^1.5.5",
     "autoprefixer": "^10.4.19",
     "nodemon": "^3.1.0",
     "postcss": "^8.4.38",
