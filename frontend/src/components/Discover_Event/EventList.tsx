@@ -1,11 +1,8 @@
 import EventCard from "../shared/EventCard";
 import "./EventList.css";
-// import { useNavigate } from "react-router-dom";
-// import { TicketType } from "@/types/ticket";
 import { EventType } from "@/types/event";
 import { useFilterParams } from "@/services/queries";
 import { useNavigate } from "react-router-dom";
-// import { useParams } from "react-router-dom";
 
 const EventdataList = ({ paramsFromParent }: { paramsFromParent: string }) => {
   const navigate = useNavigate();
