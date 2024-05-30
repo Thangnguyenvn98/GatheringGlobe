@@ -8,13 +8,11 @@ import { Button } from "../ui/button";
 const EventDetailMock: React.FC = () => {
   const { eventId } = useParams<{ eventId: string }>();
   useParams<{ eventId: string }>();
-  console.log(eventId);
   const {
     data: eventData,
     isLoading,
     error,
   } = useCurrentEventDetail(eventId || "");
-  console.log(eventData);
   const { addToCart } = useCart();
   const [ticketQuantities, setTicketQuantities] = useState<{
     [key: string]: number;
