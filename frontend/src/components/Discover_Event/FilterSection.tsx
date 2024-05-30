@@ -101,17 +101,7 @@ const FilterSection = ({
       setDate(dateFromParams);
     }
   }
-  // if (  startTimeFromParams!== queryString
-  //         .stringify({ startDate: date?.from?.toISOString() }, { encode: true })
-  //         .slice(10) ||
-  //       endTimeFromParams !== queryString
-  //         .stringify({ endDate: date?.to?.toISOString() }, { encode: true })
-  //         .slice(8)){
 
-  //   let dateFromParams:DateRange = {from: new Date(startTimeFromParams)
-  // , to: new Date(endTimeFromParams? endTimeFromParams:startTimeFromParams)}
-  //   setDate(dateFromParams);
-  // }
   const [priceMin, setPriceMin] = useState(
     searchParams.get("priceMin") ? searchParams.get("priceMin") : "",
   );
@@ -158,16 +148,7 @@ const FilterSection = ({
     const finalParams = params.join("&");
     setParamsFromParent(finalParams);
     setSearchParams(finalParams);
-    // }, [category, eventType, priceMin, priceMax]);
   }, [category, eventType, priceMin, priceMax, date]);
-
-  useEffect(() => {
-    console.log(searchParams.get("category"));
-    console.log(searchParams.get("eventType"));
-    console.log(searchParams.get("priceMin"));
-    console.log(searchParams.get("priceMax"));
-    console.log(searchParams.get("date"));
-  }, [searchParams]);
 
   return (
     <div className="filter-section-container relative font-bold">
