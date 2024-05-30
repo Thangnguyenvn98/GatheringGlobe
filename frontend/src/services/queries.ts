@@ -11,6 +11,7 @@ import {
   getRoom,
   getRooms,
   validateToken,
+  fetchEventFiltered,
 } from "./api";
 import { useSocket } from "@/components/providers/socket-provider";
 import { CartItem } from "@/hooks/use-cart-store";
@@ -123,5 +124,12 @@ export const useCreateIngress = (
     queryKey: ["createIngress", roomName, ingressType],
     queryFn: () => fetchCreateIngress(roomName, ingressType),
     enabled: !!roomName,
+  });
+};
+
+export const useFilterParams = (params: string) => {
+  return useQuery({
+    queryKey: ["filterParams", params],
+    queryFn: () => fetchEventFiltered(params),
   });
 };

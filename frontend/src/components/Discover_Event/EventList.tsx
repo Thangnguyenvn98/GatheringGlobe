@@ -1,31 +1,30 @@
 import EventCard from "../shared/EventCard";
 import "./EventList.css";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 // import { TicketType } from "@/types/ticket";
 import { EventType } from "@/types/event";
+import { useFilterParams } from "@/services/queries";
+import { useNavigate } from "react-router-dom";
+// import { useParams } from "react-router-dom";
 
-type EventListType = EventType[];
-
-const EventdataList = ({
-  eventDataFromParent,
-}: {
-  eventDataFromParent: EventListType;
-}) => {
+const EventdataList = ({ paramsFromParent }: { paramsFromParent: string }) => {
   const navigate = useNavigate();
-  // const displayMode = "grid";
-  const eventdatas = eventDataFromParent;
-  // const gridStyle = {
-  //   display: displayMode === "grid" ? "grid" : "block",
-  //   gridTemplateColumns: displayMode === "grid" ? "repeat(3, 1fr)" : "none",
-  //   gap: displayMode === "grid" ? "20px" : "0",
-  //   paddingLeft: "50px",
-  //   paddingRight: "50px",
-  // };
+  let params = paramsFromParent;
+  console.log(params);
+  const { data, error, isLoading } = useFilterParams(params || "");
+  console.log(data);
+  if (isLoading) return <div>Loading...</div>;
+  if (error)
+    return (
+      <div>Error occurred when trying to fetch data: {String(error)} </div>
+    );
+  if (data.message != undefined)
+    return <div>No data found for this Filter</div>;
 
-  const handleClick = (eventData: unknown) => {
-    navigate("/discover-event-details", {
-      state: eventData,
-    });
+  const eventdatas = data;
+
+  const handleClick = (eventData: EventType) => {
+    navigate(`/discover/${eventData.title}/event/${eventData._id}`);
   };
 
   return (

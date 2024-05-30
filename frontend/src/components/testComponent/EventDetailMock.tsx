@@ -7,11 +7,14 @@ import { Button } from "../ui/button";
 
 const EventDetailMock: React.FC = () => {
   const { eventId } = useParams<{ eventId: string }>();
+  useParams<{ eventId: string }>();
+  console.log(eventId);
   const {
     data: eventData,
     isLoading,
     error,
   } = useCurrentEventDetail(eventId || "");
+  console.log(eventData);
   const { addToCart } = useCart();
   const [ticketQuantities, setTicketQuantities] = useState<{
     [key: string]: number;
@@ -113,7 +116,7 @@ const EventDetailMock: React.FC = () => {
           {new Date(eventData.endTime).toLocaleString()}
         </p>
         <div className="mb-4">
-          {eventData.categories.map((tag: string) => (
+          {eventData.categories?.map((tag: string) => (
             <span
               key={tag}
               className="inline-block bg-blue-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2"

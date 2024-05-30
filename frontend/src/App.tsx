@@ -4,7 +4,6 @@ import DiscoverEvent from "./components/Discover_Event/DiscoverEvent";
 import EventDetail from "./components/Discover_Event/EventDetail";
 import AboutUs from "./components/aboutUs/about-us";
 import EventForm from "./components/newEventForm/EventForm";
-
 import ChatPage from "./components/chatRoom/Chat";
 import Homepage from "./components/homepage/homepage";
 import { SocketProvider } from "./components/providers/socket-provider";
@@ -21,7 +20,7 @@ import ProtectedRoute from "./utils/ProtectedRoute";
 import useCheckAuth from "./hooks/useCheckAuth";
 import ForgotPassword from "./components/loginPage/Forgotpassword";
 import ResetPassword from "./components/loginPage/ResetPassword";
-import EventDetailMock from "./components/testComponent/EventDetailMock";
+// import EventDetailMock from "./components/Discover_Event/EventDetail";
 import Booking from "./components/BookingForm/Booking";
 import { OrderConfirmationModal } from "./components/modals/order-confirmation-modal";
 import OrderDetails from "./components/order/OrderDetails";
@@ -131,7 +130,7 @@ function App() {
           path="/discover/:eventName/event/:eventId"
           element={
             <Layout>
-              <EventDetailMock />
+              <EventDetail />
             </Layout>
           }
         />
