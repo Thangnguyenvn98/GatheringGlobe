@@ -7,18 +7,18 @@ import path from "path";
 import userRoutes from "./routes/users";
 import messageRoutes from "./routes/messages";
 import roomRoutes from "./routes/rooms";
-import eventRoutes from './routes/events'
-import paymentRoutes from './routes/payments'
-import orderRoutes from './routes/orders'
-import livekitRoutes from './routes/livekit'
+import eventRoutes from "./routes/events";
+import paymentRoutes from "./routes/payments";
+import orderRoutes from "./routes/orders";
+import livekitRoutes from "./routes/livekit";
+import allEventRoutes from "./routes/allEvents";
 import { Server } from "socket.io";
 import http from "http";
 import Room from "./models/room";
 import Message from "./models/message";
-import dotenv from 'dotenv';
+import dotenv from "dotenv";
 import { log } from "handlebars";
 import authRoutes from "./routes/authRoutes";
-
 
 dotenv.config();
 
@@ -52,12 +52,12 @@ app.use("/api/users", userRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/room", roomRoutes);
 app.use("/api/events", eventRoutes);
-app.use("/api/payments",paymentRoutes);
-app.use("/api/orders",orderRoutes)
-app.use("/api/livekit",livekitRoutes)
-app.use("/api/authRoutes",authRoutes);
-app.use("/api/orders",orderRoutes);
-
+app.use("/api/payments", paymentRoutes);
+app.use("/api/orders", orderRoutes);
+app.use("/api/livekit", livekitRoutes);
+app.use("/api/authRoutes", authRoutes);
+app.use("/api/orders", orderRoutes);
+app.use("/api/allEvents", allEventRoutes);
 
 io.on("connection", async (socket) => {
   console.log(`A user connected ${socket.id}`);
