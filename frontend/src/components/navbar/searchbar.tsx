@@ -6,8 +6,9 @@ import EventLocation from "./searchlocation";
 import { addDays } from "date-fns";
 import { useState } from "react";
 import { Button } from "../ui/button";
-
-import "./SearchBar.css";
+import queryString from "query-string";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 function SearchForm() {
   const [location, setLocation] = useState("All locations");
@@ -17,10 +18,60 @@ function SearchForm() {
   });
   const [keyword, setKeyword] = useState("");
 
-  const onSubmit = () => {
-    console.log(location);
-    console.log(date);
-    console.log(keyword);
+  const onSubmit = async () => {
+    //create a list of part of the query string with the input to join into 1 query string later, slice the string to get only the part that we need
+    const params = [];
+    if (location) {
+      params.push(
+        "locationChosen=" +
+          queryString.stringify({ location }, { encode: true }).slice(9),
+      );
+    }
+    if (date && date.from) {
+      params.push(
+        "startDate=" +
+          queryString
+            .stringify({ startDate: date.from.toISOString() }, { encode: true })
+            .slice(10),
+      );
+    }
+    if (date && date.to) {
+      params.push(
+        "endDate=" +
+          queryString
+            .stringify({ endDate: date.to.toISOString() }, { encode: true })
+            .slice(8),
+      );
+    }
+    if (keyword !== "") {
+      params.push(
+        "keyword=" +
+          queryString.stringify({ keyword }, { encode: true }).slice(8),
+      );
+    }
+    const finalParams = params.join("&"); //join the strings into one query
+    try {
+      //axios.get() is a method provided by the Axios library to send a GET request to a specified URL.
+      const response = await axios.get(
+        `${API_BASE_URL}/api/events/search?${finalParams}`,
+      );
+      if (response.status === 200) {
+        //if the data fetched successfully (status code === 200), navigate to another page
+        navigate(`/discover/search${finalParams}`, {
+          state: response.data,
+        });
+      } else if (response.status === 201) {
+        //if no matching event found, we dont do the navigate(...) so that there is no error
+        console.log("No matching event found");
+      }
+      // When you have the response navigate the page or refresh the page with the current result, etc ...
+      //Based on the response navigate to the site that contain the search results
+      //Noted that we currently do not have that page yet
+      //So you can test just with response.data to see if we are getting the correct result back
+      //You can create fake model by making a post request http://localhost:5050/api/events with the data in the events.ts file
+    } catch (error) {
+      console.error("Fail to search: ", error);
+    }
   };
   return (
     <div className="flex justify-center mb-2 items-center bg-white ">
