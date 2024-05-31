@@ -3,7 +3,6 @@ import SearchByKeyword from "./keywordsearch";
 import DatePickerWithRange from "./date-picker-with-two-range";
 import { DateRange } from "react-day-picker";
 import EventLocation from "./searchlocation";
-import { addDays } from "date-fns";
 import { useState } from "react";
 import { Button } from "../ui/button";
 import queryString from "query-string";
@@ -11,12 +10,11 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 function SearchForm() {
-  const [location, setLocation] = useState("All locations");
-  const [date, setDate] = React.useState<DateRange | undefined>({
-    from: new Date(2024, 2, 20),
-    to: addDays(new Date(2024, 4, 20), 20),
-  });
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
+  const [location, setLocation] = useState("");
+  const [date, setDate] = React.useState<DateRange | undefined>();
   const [keyword, setKeyword] = useState("");
+  const navigate = useNavigate();
 
   const onSubmit = async () => {
     //create a list of part of the query string with the input to join into 1 query string later, slice the string to get only the part that we need
@@ -87,7 +85,7 @@ function SearchForm() {
           type="submit"
           size={"lg"}
           onClick={onSubmit}
-          className="search-button  text-green-800 text-lg hover:text-black hover:bg-green-300  font-normal shadow-none "
+          className="bg-green-200  text-green-800 text-lg hover:text-black hover:bg-green-200  font-normal shadow-none "
         >
           Search
         </Button>
