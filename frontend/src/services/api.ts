@@ -4,11 +4,11 @@ import { User } from "@/types/user";
 import { useQuery } from "@tanstack/react-query";
 import { ContactUsFormData } from "@/types/contactUsFormData";
 import axios from "axios";
-import {
-  OrderDetailsByIdResponse,
-  PaymentIntentResponse,
-} from "../../../backend/src/shared/types";
+import { OrderDetailsByIdResponse } from "@/types/orderDetails";
+
 import { CartItem } from "@/hooks/use-cart-store";
+import { IngressInput } from "@/types/IngressInput";
+import { PaymentIntentResponse } from "@/types/paymentIntentResponse";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 export const axiosInstance = axios.create({
@@ -180,4 +180,50 @@ export const getOrderDetailsById = async (
 export const sendUserHelpRequest = async (data: ContactUsFormData) => {
   const response = await axiosInstance.post("api/users/help/contact-us", data);
   return response.data;
+};
+
+export const fetchStreamerToken = async (roomName: string) => {
+  const { data } = await axiosInstance.get(
+    `/api/livekit/streamer-token?roomName=${roomName}`,
+  );
+  return data.token;
+};
+
+export const fetchViewerToken = async (roomName: string, identity: string) => {
+  const { data } = await axiosInstance.get(
+    `/api/livekit/viewer-token?roomName=${roomName}&identity=${identity}`,
+  );
+  return data.token;
+};
+
+export const fetchCreateIngress = async (
+  roomName: string,
+  ingressType: IngressInput,
+) => {
+  console.log(roomName, ingressType);
+  const { data } = await axiosInstance.get(
+    `/api/livekit/create-ingress?roomName=${roomName}&ingressType=${ingressType}`,
+  );
+  return data.ingress;
+};
+export const resetPassword = async (
+  userId: string,
+  token: string,
+  newPassword: string,
+): Promise<boolean> => {
+  try {
+    console.log("Token: ", token);
+    const response = await axios.post(
+      `${API_BASE_URL}/api/authRoutes/reset-password`,
+      {
+        userId,
+        token,
+        newPassword,
+      },
+    );
+    return response.status === 200;
+  } catch (error) {
+    console.error("Error resetting password:", error);
+    throw error;
+  }
 };

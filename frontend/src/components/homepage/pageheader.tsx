@@ -70,16 +70,16 @@ function Pageheader() {
             </Link>
           </div>
           <div className="flex items-center gap-x-4 text-lg font-bold text-white">
-            <Link to="/discover" className="hover:text-green-800  text-white">
+            <Link to="/discover" className="text-green-800  hover:text-white">
               Discover
             </Link>
-            <Link to="/community" className="hover:text-green-800 ">
+            <Link to="/community" className="text-green-800  hover:text-white ">
               Community
             </Link>
-            <Link to="/about" className="   hover:text-green-800 ">
+            <Link to="/about" className="   text-green-800  hover:text-white ">
               About Us
             </Link>
-            <Link to="/help" className=" hover:text-green-800 ">
+            <Link to="/help" className=" text-green-800  hover:text-white ">
               FAQs
             </Link>
           </div>

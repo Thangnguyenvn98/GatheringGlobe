@@ -3,9 +3,9 @@ import User, {UserType} from "../models/user";
 import jwt from "jsonwebtoken"
 import { check, validationResult } from "express-validator";
 import verifyToken from "../middleware/auth";
-import { compare } from "bcryptjs";
+import bcrypt from "bcryptjs";
 import sendEmail from "../utils/email/sendEmail";
-import { forgetPassword, resetPassword } from "../controllers/forgetPassword";
+import { forgetPassword, resetPassword } from "../controllers/forget_reset_Password";
 
 const router = express.Router();
 
@@ -75,7 +75,7 @@ router.post("/login", [
           return res.status(400).json({ message: "Invalid credentials" });
       }
 
-      const isMatch: boolean = await compare(password, user.password);
+      const isMatch: boolean = await bcrypt.compare(password, user.password);
 
       if (!isMatch) {
           return res.status(400).json({ message: "Invalid credentials" });
@@ -123,7 +123,6 @@ router.post("/help/contact-us", async (req:Request,res:Response) => {
 
           return res.status(400).json({ message: "All fields are required" });
       }
-      console.log(req.body)
 
       await sendEmail(undefined,undefined,`Request Support From ${email}`,{email,firstName,lastName,subject,description,attachments},"./template/contactUsSupport.handlebars");
       return res.json({message:"Message been sent sucessfully!"});

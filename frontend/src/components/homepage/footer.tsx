@@ -132,11 +132,11 @@ const socialMedia = [
 function Footer() {
   return (
     <div className="footer-container">
-      <div className=" w-full mt-12 text-gray-300 py-4 px-6">
+      <div className=" w-full mt-12 text-gray-200 py-4 px-6">
         <div className="footer-data border-b border-gray-700 pb-6 grid grid-cols-6 gap-2 pl-6">
           {sections.map((section, index) => (
             <div className="pt-2 pl-6" key={index}>
-              <h3 className="font-bold uppercase pb-4 text-xl">
+              <h3 className="font-bold uppercase pb-4 text-black text-xl">
                 {section.title}
               </h3>
               <ul className="list-disc mx-auto">
