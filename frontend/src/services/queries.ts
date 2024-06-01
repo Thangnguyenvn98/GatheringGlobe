@@ -6,10 +6,13 @@ import {
   fetchStreamerToken,
   fetchViewerToken,
   getCurrentUser,
+  getCurrentUserById,
+  getCurrentUserByUsername,
   getEventById,
   getOrderDetailsById,
   getRoom,
   getRooms,
+  getStreamDetails,
   validateToken,
 } from "./api";
 import { useSocket } from "@/components/providers/socket-provider";
@@ -29,6 +32,30 @@ export function useCurrentUser() {
     queryFn: getCurrentUser,
   });
 }
+
+export const useCurrentUserByUsername = (username: string) => {
+  return useQuery({
+    queryKey: ["user", username],
+    queryFn: () => getCurrentUserByUsername(username),
+    enabled: !!username,
+  });
+};
+
+export function useCurrentStream(userId: string) {
+  return useQuery({
+    queryKey: ["stream", userId],
+    queryFn: () => getStreamDetails(userId),
+    enabled: !!userId,
+  });
+}
+
+export const useCurrentUserById = (userId: string) => {
+  return useQuery({
+    queryKey: ["user", userId],
+    queryFn: () => getCurrentUserById(userId),
+    enabled: !!userId,
+  });
+};
 
 export const useCurrentEventDetail = (eventId: string) => {
   return useQuery({
@@ -115,13 +142,10 @@ export const useViewerToken = (roomName: string, identity: string) => {
   });
 };
 
-export const useCreateIngress = (
-  roomName: string,
-  ingressType: IngressInput,
-) => {
+export const useCreateIngress = (ingressType: IngressInput) => {
   return useQuery({
-    queryKey: ["createIngress", roomName, ingressType],
-    queryFn: () => fetchCreateIngress(roomName, ingressType),
-    enabled: !!roomName,
+    queryKey: ["createIngress", ingressType],
+    queryFn: () => fetchCreateIngress(ingressType),
+    enabled: !!ingressType,
   });
 };

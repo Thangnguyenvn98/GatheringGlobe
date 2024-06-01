@@ -27,6 +27,9 @@ import { OrderConfirmationModal } from "./components/modals/order-confirmation-m
 import OrderDetails from "./components/order/OrderDetails";
 import HostRoom from "./components/streaming/HostRoom";
 import WatchRoom from "./components/streaming/WatchRoom";
+import KeysPage from "./components/streaming/keys/KeysPage";
+import CreatorPage from "./components/streaming/[username]/CreatorPage";
+import UploadThingComponent from "./components/testComponent/UploadThingComponent";
 
 function App() {
   useCheckAuth();
@@ -51,6 +54,7 @@ function App() {
           }
         />
         <Route element={<ProtectedRoute />}>
+          <Route path="/u/:username/keys" element={<KeysPage />} />
           <Route
             path="/create-new-event"
             element={
@@ -143,11 +147,22 @@ function App() {
             </Layout>
           }
         />
+
+        <Route path="/stream/:username" element={<CreatorPage />} />
+
         <Route
           path="/discover-event-details"
           element={
             <Layout>
               <EventDetail />
+            </Layout>
+          }
+        />
+        <Route
+          path="/test2"
+          element={
+            <Layout>
+              <UploadThingComponent />
             </Layout>
           }
         />

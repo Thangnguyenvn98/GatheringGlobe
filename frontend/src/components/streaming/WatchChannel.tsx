@@ -1,7 +1,6 @@
 import { LiveKitRoom } from "@livekit/components-react";
 import { useEffect, useState } from "react";
 import WatchingAsBar from "./watching-as-bar";
-import StreamPlayerWrapper from "./StreamPlayer";
 import ChannelInfo from "./channel-info";
 import { jwtDecode } from "jwt-decode";
 import { useCurrentUser, useViewerToken } from "@/services/queries";
@@ -44,7 +43,7 @@ const WatchChannel = ({ roomName }: { roomName: string }) => {
         </div>
         <div className="sticky hidden w-80 border-l md:block">
           <div className="absolute top-0 bottom-0 right-0 flex h-full w-full flex-col gap-2 p-2">
-            <Chat participantName={viewerName} />
+            {/* <Chat participantName={viewerName} /> */}
           </div>
         </div>
       </div>

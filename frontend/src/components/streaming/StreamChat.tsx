@@ -1,86 +1,61 @@
-import { cn } from "@/lib/utils";
-import { useChat } from "@livekit/components-react";
+import {
+  useChat,
+  useConnectionState,
+  useRemoteParticipant,
+} from "@livekit/components-react";
 import { useCallback, useMemo, useState, type KeyboardEvent } from "react";
-import { Button } from "../ui/button";
-import { Icons } from "../ui/icon";
-import { Textarea } from "../ui/textarea";
+import { ConnectionState } from "livekit-client";
 
-interface Props {
-  participantName: string;
+import StreamChatHeader from "./[username]/StreamChatHeader";
+import StreamChatForm from "./[username]/StreamChatForm";
+import { useChatSidebar } from "@/hooks/use-chat-sidebar";
+import StreamChatList from "./[username]/StreamChatList";
+
+interface ChatLiveKitProps {
+  hostName: string;
+  hostIdentity: string;
+  viewerName: string;
 }
 
-export default function Chat({ participantName }: Props) {
+export default function StreamChat({
+  hostName,
+  hostIdentity,
+  viewerName,
+}: ChatLiveKitProps) {
   const { chatMessages: messages, send } = useChat();
+  const { onExpand } = useChatSidebar((state) => state);
+  const connectionState = useConnectionState();
+  const participant = useRemoteParticipant(hostIdentity);
+  const [value, setValue] = useState("");
 
-  const reverseMessages = useMemo(
-    () => messages.sort((a, b) => b.timestamp - a.timestamp),
-    [messages],
-  );
+  const isOnline = participant && connectionState === ConnectionState.Connected;
 
-  const [message, setMessage] = useState("");
+  const isHidden = !isOnline;
 
-  const onEnter = useCallback(
-    (e: KeyboardEvent<HTMLTextAreaElement>) => {
-      if (e.key === "Enter" && !e.shiftKey) {
-        e.preventDefault();
-        if (message.trim().length > 0 && send) {
-          send(message).catch((err) => console.error(err));
-          setMessage("");
-        }
-      }
-    },
-    [message, send],
-  );
+  const reverseMessages = useMemo(() => {
+    return messages.sort((a, b) => b.timestamp - a.timestamp);
+  }, [messages]);
 
-  const onSend = useCallback(() => {
-    if (message.trim().length > 0 && send) {
-      send(message).catch((err) => console.error(err));
-      setMessage("");
-    }
-  }, [message, send]);
+  const onChange = (value: string) => {
+    setValue(value);
+  };
+
+  const onSubmit = () => {
+    if (!send) return;
+    send(value);
+    setValue("");
+  };
 
   return (
-    <>
-      <div className="flex min-h-0 flex-1 flex-col-reverse overflow-y-auto">
-        {reverseMessages.map((message) => (
-          <div key={message.timestamp} className="flex items-center gap-2 p-2">
-            <div className="flex flex-col">
-              <div className="flex items-center gap-2">
-                <div
-                  className={cn(
-                    "text-xs font-semibold",
-                    participantName === message.from?.identity &&
-                      "text-indigo-500",
-                  )}
-                >
-                  {message.from?.identity}
-                  {participantName === message.from?.identity && " (you)"}
-                </div>
-                <div className="text-xs text-gray-500">
-                  {new Date(message.timestamp).toLocaleTimeString()}
-                </div>
-              </div>
-              <div className="text-sm">{message.message}</div>
-            </div>
-          </div>
-        ))}
-      </div>
-      <div className="flex w-full gap-2">
-        <Textarea
-          value={message}
-          className="border-box h-10 bg-white dark:bg-zinc-900"
-          onChange={(e) => {
-            setMessage(e.target.value);
-          }}
-          onKeyDown={onEnter}
-          placeholder="Type a message..."
-        />
-        <Button disabled={message.trim().length === 0} onClick={onSend}>
-          <div className="flex items-center gap-2">
-            <Icons.send className="h-4 w-4" />
-          </div>
-        </Button>
-      </div>
-    </>
+    <div className="flex flex-col border-l border-b pt-0 bg-slate-900 h-[calc(100vh-110px)] ">
+      <StreamChatHeader />
+      <StreamChatList messages={reverseMessages} isHidden={isHidden} />
+      <StreamChatForm
+        value={value}
+        onSubmit={onSubmit}
+        onChange={onChange}
+        isHidden={isHidden}
+      />
+    </div>
   );
 }

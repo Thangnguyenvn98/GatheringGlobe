@@ -11,13 +11,16 @@ import eventRoutes from './routes/events'
 import paymentRoutes from './routes/payments'
 import orderRoutes from './routes/orders'
 import livekitRoutes from './routes/livekit'
+import streamRoutes from './routes/stream'
 import { Server } from "socket.io";
 import http from "http";
 import Room from "./models/room";
 import Message from "./models/message";
 import dotenv from 'dotenv';
-import { log } from "handlebars";
 import authRoutes from "./routes/authRoutes";
+import { createRouteHandler } from "uploadthing/express";
+import { uploadRouter } from "./uploadthing";
+
 
 
 dotenv.config();
@@ -57,6 +60,17 @@ app.use("/api/orders",orderRoutes)
 app.use("/api/livekit",livekitRoutes)
 app.use("/api/authRoutes",authRoutes);
 app.use("/api/orders",orderRoutes);
+app.use("/api/stream",streamRoutes)
+app.use(
+  "/api/uploadthing",
+  createRouteHandler({
+    router: uploadRouter,
+    config: { 
+      uploadthingId: process.env.UPLOADTHING_APP_ID,
+      uploadthingSecret: process.env.UPLOADTHING_SECRET,
+    },
+  }),
+);
 
 
 io.on("connection", async (socket) => {

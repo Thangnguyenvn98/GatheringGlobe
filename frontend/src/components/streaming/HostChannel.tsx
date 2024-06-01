@@ -3,7 +3,7 @@ import { LiveKitRoom } from "@livekit/components-react";
 import { jwtDecode } from "jwt-decode";
 import { useEffect, useState } from "react";
 import HostControls from "./host-control";
-import Chat from "./StreamChat";
+// import Chat from "./StreamChat";
 
 const HostChannel = ({ roomName }: { roomName: string }) => {
   const livekitWsUrl = import.meta.env.VITE_REACT_APP_LIVEKIT_WS_URL || "";
@@ -30,7 +30,7 @@ const HostChannel = ({ roomName }: { roomName: string }) => {
         </div>
         <div className="sticky hidden w-80 border-l md:block">
           <div className="absolute top-0 bottom-0 right-0 flex h-full w-full flex-col gap-2 p-2">
-            <Chat participantName={streamerName} />
+            {/* <Chat participantName={streamerName} /> */}
           </div>
         </div>
       </div>
