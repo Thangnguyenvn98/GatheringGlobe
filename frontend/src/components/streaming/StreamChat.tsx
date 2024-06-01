@@ -3,7 +3,7 @@ import {
   useConnectionState,
   useRemoteParticipant,
 } from "@livekit/components-react";
-import { useCallback, useMemo, useState, type KeyboardEvent } from "react";
+import { useMemo, useState } from "react";
 import { ConnectionState } from "livekit-client";
 
 import StreamChatHeader from "./[username]/StreamChatHeader";
