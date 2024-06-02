@@ -210,6 +210,12 @@ export const sendUserHelpRequest = async (data: ContactUsFormData) => {
   return response.data;
 };
 
+export const getAllEvents = async (page = 1) => {
+  console.log("Page: ", page);
+  const response = await axiosInstance.get(`/api/events?page=${page}&limit=12`);
+  return response.data;
+};
+
 export const fetchStreamerToken = async (roomName: string) => {
   const { data } = await axiosInstance.get(
     `/api/livekit/streamer-token?roomName=${roomName}`,

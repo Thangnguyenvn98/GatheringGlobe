@@ -26,7 +26,6 @@ import Booking from "./components/BookingForm/Booking";
 import { OrderConfirmationModal } from "./components/modals/order-confirmation-modal";
 import OrderDetails from "./components/order/OrderDetails";
 import HostRoom from "./components/streaming/HostRoom";
-import WatchRoom from "./components/streaming/WatchRoom";
 import KeysPage from "./components/streaming/keys/KeysPage";
 import CreatorPage from "./components/streaming/[username]/CreatorPage";
 import UploadThingComponent from "./components/testComponent/UploadThingComponent";
@@ -115,14 +114,7 @@ function App() {
             </Layout>
           }
         />
-        <Route
-          path="/channel/:roomName/viewer"
-          element={
-            <Layout>
-              <WatchRoom />
-            </Layout>
-          }
-        />
+
         <Route
           path="/channel/:roomName/host"
           element={

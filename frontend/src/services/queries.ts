@@ -1,10 +1,14 @@
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import {
+  keepPreviousData,
+  useInfiniteQuery,
+  useQuery,
+} from "@tanstack/react-query";
 import {
   axiosInstance,
   createPaymentIntent,
   fetchCreateIngress,
   fetchStreamerToken,
-  fetchViewerToken,
+  getAllEvents,
   getCurrentUser,
   getCurrentUserById,
   getCurrentUserByUsername,
@@ -134,18 +138,18 @@ export const useStreamerToken = (roomName: string) => {
   });
 };
 
-export const useViewerToken = (roomName: string, identity: string) => {
-  return useQuery({
-    queryKey: ["viewerToken", roomName, identity],
-    queryFn: () => fetchViewerToken(roomName, identity),
-    enabled: !!roomName && !!identity,
-  });
-};
-
 export const useCreateIngress = (ingressType: IngressInput) => {
   return useQuery({
     queryKey: ["createIngress", ingressType],
     queryFn: () => fetchCreateIngress(ingressType),
     enabled: !!ingressType,
+  });
+};
+
+export const useAllEventsPagination = (page = 1) => {
+  return useQuery({
+    queryKey: ["events", page],
+    queryFn: () => getAllEvents(page),
+    placeholderData: keepPreviousData,
   });
 };
