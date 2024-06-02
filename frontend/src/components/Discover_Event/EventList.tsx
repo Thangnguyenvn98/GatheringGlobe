@@ -4,12 +4,18 @@ import { EventType } from "@/types/event";
 import { useFilterParams } from "@/services/queries";
 import { useNavigate } from "react-router-dom";
 
-const EventdataList = ({ paramsFromParent }: { paramsFromParent: string }) => {
+const EventdataList = ({
+  paramsFromParent,
+  stateFromParent,
+}: {
+  paramsFromParent: string;
+  stateFromParent?: any;
+}) => {
   const navigate = useNavigate();
+  const state = stateFromParent;
+  console.log(state);
   let params = paramsFromParent;
-  console.log(params);
   const { data, error, isLoading } = useFilterParams(params || "");
-  console.log(data);
   if (isLoading) return <div>Loading...</div>;
   if (error)
     return (
@@ -18,7 +24,10 @@ const EventdataList = ({ paramsFromParent }: { paramsFromParent: string }) => {
   if (data.message != undefined)
     return <div>No data found for this Filter</div>;
 
-  const eventdatas = data;
+  let eventdatas = data;
+  if (state) {
+    eventdatas = state.data;
+  }
 
   const handleClick = (eventData: EventType) => {
     navigate(`/discover/${eventData.title}/event/${eventData._id}`);

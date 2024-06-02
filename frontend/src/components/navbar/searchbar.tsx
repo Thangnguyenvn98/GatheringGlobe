@@ -53,15 +53,21 @@ function SearchForm() {
       const response = await axios.get(
         `${API_BASE_URL}/api/events/search?${finalParams}`,
       );
-      if (response.status === 200) {
+      if (response.status === 200 || response.status === 201) {
         //if the data fetched successfully (status code === 200), navigate to another page
-        navigate(`/discover/search${finalParams}`, {
+        navigate(`/discover`, {
           state: response.data,
         });
-      } else if (response.status === 201) {
-        //if no matching event found, we dont do the navigate(...) so that there is no error
-        console.log("No matching event found");
       }
+      // else if (response.status === 201) {
+      //   //if no matching event found, we dont do the navigate(...) so that there is no error
+      //   navigate(`/discover`, {
+      //     state: {
+      //       data: [],
+      //       searchParams: `search?${finalParams}`,
+      //     },
+      //   });
+      // }
       // When you have the response navigate the page or refresh the page with the current result, etc ...
       //Based on the response navigate to the site that contain the search results
       //Noted that we currently do not have that page yet
