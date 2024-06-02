@@ -8,7 +8,7 @@ import { ConnectionState } from "livekit-client";
 
 import StreamChatHeader from "./[username]/StreamChatHeader";
 import StreamChatForm from "./[username]/StreamChatForm";
-import { useChatSidebar } from "@/hooks/use-chat-sidebar";
+// import { useChatSidebar } from "@/hooks/use-chat-sidebar";
 import StreamChatList from "./[username]/StreamChatList";
 
 interface ChatLiveKitProps {
@@ -23,7 +23,6 @@ export default function StreamChat({
   viewerName,
 }: ChatLiveKitProps) {
   const { chatMessages: messages, send } = useChat();
-  const { onExpand } = useChatSidebar((state) => state);
   const connectionState = useConnectionState();
   const participant = useRemoteParticipant(hostIdentity);
   const [value, setValue] = useState("");
@@ -38,6 +37,7 @@ export default function StreamChat({
 
   const onChange = (value: string) => {
     setValue(value);
+    console.log(hostName, viewerName);
   };
 
   const onSubmit = () => {

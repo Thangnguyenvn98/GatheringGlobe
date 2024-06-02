@@ -30,7 +30,7 @@ const Header = ({ imageUrl, hostIdentity, hostName, name }: HeaderProps) => {
             "z-20 h-16 w-16 rounded-full border-2 border-white bg-gray-500 dark:border-zinc-900",
             isLive && "ring-2 ring-red-600",
           )}
-          src={`https://api.dicebear.com/5.x/open-peeps/svg?seed=${hostIdentity}&size=64&face=smile,cute`}
+          src={`https://api.dicebear.com/5.x/open-peeps/svg?seed=${imageUrl}2&size=64&face=smile,cute`}
           alt={hostName}
         />
 

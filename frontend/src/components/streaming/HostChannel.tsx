@@ -16,6 +16,7 @@ const HostChannel = ({ roomName }: { roomName: string }) => {
       const payload = jwtDecode(streamerToken);
       setStreamerName(payload.jti || currentUser?.username || "");
     }
+    console.log(streamerName);
   }, [streamerToken, currentUser?.username]);
 
   if (!currentUser || !roomName) {
