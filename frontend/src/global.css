@@ -67,6 +67,13 @@
   }
 }
 
+.hidden-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+
+}
+
+
 @layer base {
   * {
     @apply border-border;

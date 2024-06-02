@@ -67,6 +67,37 @@ router.get('/search', async (req:Request, res:Response) => {
   }
 })
 
+router.get("/", async (req: Request, res: Response) => {
+  try {
+    const now = new Date();  // Gets the current date and time
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+    const skip = (page - 1) * limit;
+
+    // Count total documents for pagination metadata
+    const total = await Event.countDocuments({ startTime: { $gte: now } });
+
+    // Retrieve events sorted by startTime, starting from the current moment
+    const events = await Event.find({ startTime: { $gte: now } })
+                              .sort('startTime')
+                              .skip(skip)
+                              .limit(limit);
+
+    res.status(200).json({
+      events,
+      pagination: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit)
+      }
+    });
+  } catch (error) {
+    console.error("Failed to fetch events:", error);
+    res.status(500).json({ message: "Internal server error, unable to fetch events." });
+  }
+});
+
 
 router.post("/", verifyToken, async (req: Request, res: Response) => {
   const user = await User.findById(req.userId);

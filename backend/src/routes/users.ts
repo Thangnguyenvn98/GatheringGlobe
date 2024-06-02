@@ -115,6 +115,39 @@ router.get("/", verifyToken, async (req: Request, res: Response) => {
   }
 });
 
+router.get("/u/:username", async (req: Request, res: Response) => {
+  try {
+    const user = await User.findOne({ username: req.params.username })
+    .select("username email stream")
+    .populate("stream"); 
+  if (!user) {
+    return res.status(400).json({ message: "User does not exist!" });
+  }
+    res.status(200).json(user);
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ message: "An error occurred while fetching the user." });
+  }
+});
+
+router.put("/u/update/:userId", verifyToken, async (req: Request, res: Response) => {
+  try {
+    const user = await User.findByIdAndUpdate(req
+      .params.userId, {thumbnailUrl: req.body.thumbnailUrl}, { new: true });
+    if (!user) {
+      return res.status(400).json({ message: "User does not exist!" });
+    }
+    res.status(200).json(user);
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ message: "An error occurred while updating the user." });
+  }
+})
+
 router.post("/help/contact-us", async (req:Request,res:Response) => {
   try {
    
