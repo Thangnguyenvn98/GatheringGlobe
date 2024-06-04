@@ -31,7 +31,7 @@ const EventdataList = () => {
 
   const handleClick = (eventData: EventType) => {
     navigate(
-      `/discover/${eventData.title.replace(" ", "-")}/event/${eventData._id}`,
+      `/discover/${eventData.title.replace(/ /g, "-")}/event/${eventData._id}`,
     );
   };
 
