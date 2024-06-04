@@ -1,6 +1,7 @@
 import { useCurrentUser, useCurrentUserByUsername } from "@/services/queries";
 import { useParams } from "react-router-dom";
-import StreamPlayers from "./StreamPlayers";
+import StreamPlayers from "../Streamplayer/StreamPlayers";
+import ErrorPage from "./ErrorPage";
 
 const CreatorPage = () => {
   const { username } = useParams<{ username: string }>();
@@ -15,7 +16,7 @@ const CreatorPage = () => {
   }
 
   if (!user || user._id !== externalUser?._id || !user.stream) {
-    return <div>Unauthorized</div>;
+    return <ErrorPage />;
   }
 
   return (

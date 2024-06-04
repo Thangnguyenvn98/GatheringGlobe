@@ -72,7 +72,7 @@ const EventPaginationButton = ({
               <PaginationEllipsis />
             ) : (
               <PaginationLink
-                className="text-lg"
+                className="text-lg cursor-pointer"
                 isActive={page === currentPage}
                 onClick={() => onPageChange(page as number)}
               >

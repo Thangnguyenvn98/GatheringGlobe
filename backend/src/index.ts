@@ -12,6 +12,7 @@ import paymentRoutes from './routes/payments'
 import orderRoutes from './routes/orders'
 import livekitRoutes from './routes/livekit'
 import streamRoutes from './routes/stream'
+import blockRoutes from './routes/blocks'
 import { Server } from "socket.io";
 import http from "http";
 import Room from "./models/room";
@@ -20,6 +21,8 @@ import dotenv from 'dotenv';
 import authRoutes from "./routes/authRoutes";
 import { createRouteHandler } from "uploadthing/express";
 import { uploadRouter } from "./uploadthing";
+import bodyParser from "body-parser";
+import { WebhookReceiver } from "livekit-server-sdk";
 
 
 
@@ -33,6 +36,10 @@ mongoose
 
 const app = express();
 const server = http.createServer(app);
+const receiver = new WebhookReceiver(
+  process.env.LIVEKIT_API_KEY!,
+  process.env.LIVEKIT_API_SECRET!
+);
 
 app.use(express.json());
 app.use(cookieParser());
@@ -61,6 +68,29 @@ app.use("/api/livekit",livekitRoutes)
 app.use("/api/authRoutes",authRoutes);
 app.use("/api/orders",orderRoutes);
 app.use("/api/stream",streamRoutes)
+app.use("/api/block",blockRoutes)
+app.use('/api/webhooks/livekit',express.raw({type: 'application/webhook+json'}))
+app.post('/api/webhooks/livekit', (req, res) => {
+  try {
+    const body = req.body
+
+    const authorization = req.get('Authorization')
+    if (!authorization) {
+      return res.status(401).json({ message: "No authorization header" });
+    }
+
+    const event = receiver.receive(body, authorization);
+    console.log('Received webhook event:', event);
+
+    // Handle the event
+    // Your code to process the event, e.g., updating the database
+
+    res.status(200).send("OK");
+  } catch (error) {
+    console.error('Error processing webhook:', error);
+    res.status(500).json({ message: "Something went wrong!" });
+  }
+});
 app.use(
   "/api/uploadthing",
   createRouteHandler({

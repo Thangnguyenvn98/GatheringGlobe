@@ -3,11 +3,15 @@ import { Outlet, Navigate } from "react-router-dom";
 import { useAuthQuery } from "@/services/queries";
 
 const ProtectedRoute: React.FC = () => {
-  const { data, isLoading } = useAuthQuery();
+  const { isLoading, isSuccess, data } = useAuthQuery();
+
   if (isLoading) {
-    return <div>Loading...</div>; // Show a loading indicator while the query is fetching
+    return <div>Loading...</div>;
   }
-  return data ? <Outlet /> : <Navigate to="/register" replace />;
+
+  const isAuthenticated = isSuccess && data && !!data.userId;
+
+  return isAuthenticated ? <Outlet /> : <Navigate to="/register" replace />;
 };
 
 export default ProtectedRoute;

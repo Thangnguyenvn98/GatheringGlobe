@@ -2,6 +2,7 @@ import { Loader2, ServerCrash } from "lucide-react";
 import "./EventList.css";
 import { EventType } from "@/types/event";
 import { format, parseISO } from "date-fns";
+import { Link } from "react-router-dom";
 
 interface EventListProps {
   events: EventType[];
@@ -36,7 +37,11 @@ const EventList = ({
           </div>
         ) : (
           events?.map((event, index) => (
-            <div className="flex flex-col" key={index}>
+            <Link
+              to={`/discover/${event.title}/event/${event._id}`}
+              className="flex flex-col"
+              key={index}
+            >
               <div className="rounded-xl overflow-hidden border border-gray-200 shadow-lg">
                 <div className="h-[400px] w-auto relative">
                   <img
@@ -54,12 +59,14 @@ const EventList = ({
                     )}
                   </h3>
                   <h3 className="">{event.location}</h3>
-                  <h3></h3>
+                  <h3 className="font-semibold">
+                    From ${event.minPrice?.toFixed(2)}
+                  </h3>
 
-                  <h3 className="font-semibold ">{event.artistName}</h3>
+                  <h3 className="font-medium ">{event.artistName}</h3>
                 </div>
               </div>
-            </div>
+            </Link>
           ))
         )}
       </div>

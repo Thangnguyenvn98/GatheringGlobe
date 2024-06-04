@@ -37,28 +37,6 @@ export async function createStreamerToken(roomName: string) {
 
 const roomService = new RoomServiceClient(process.env.LIVEKIT_API_URL!,process.env.LIVEKIT_API_KEY!,process.env.LIVEKIT_API_SECRET!);
 
-// export async function createViewerToken(userId: string, hostIdentity: string) {
-//    let self;
-//     try {
-//       self = await User.findById({userId });
-//     }
-//   const token = new AccessToken(
-//     process.env.LIVEKIT_API_KEY,
-//     process.env.LIVEKIT_API_SECRET,
-//     {
-//       identity: hostIdentity,
-//     }
-//   );
-
-//   token.addGrant({
-//     room: roomName,
-//     roomJoin: true,
-//     canPublish: false,
-//     canPublishData: true,
-//   });
-
-//   return await Promise.resolve(token.toJwt());
-// }
 
 export async function createIngress(userId: string, ingressType: IngressInput,username:string) {
   await resetIngresses(userId);

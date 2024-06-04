@@ -172,7 +172,7 @@ export const validateToken = async () => {
 };
 
 export const getStreamDetails = async (userId: string) => {
-  const response = await axiosInstance.get(`/api/stream?userId=${userId}`);
+  const response = await axiosInstance.get(`/api/stream/u/${userId}`);
   return response.data;
 };
 
@@ -185,6 +185,16 @@ export const editStreamDetails = async (data: {
     `/api/stream/${data.streamId}`,
     data,
   );
+  return response.data;
+};
+
+export const blockUser = async (userId: string) => {
+  const response = await axiosInstance.post(`/api/block/user`, { id: userId });
+  return response.data;
+};
+
+export const getBlockUser = async (userId: string) => {
+  const response = await axiosInstance.get(`/api/block/${userId}`);
   return response.data;
 };
 
@@ -221,6 +231,11 @@ export const fetchStreamerToken = async (roomName: string) => {
     `/api/livekit/streamer-token?roomName=${roomName}`,
   );
   return data.token;
+};
+
+export const editUserInfo = async (data: { bio: string }) => {
+  const response = await axiosInstance.put("/api/users/u/update", data);
+  return response.data;
 };
 
 export const fetchViewerToken = async (hostIdentity: string) => {

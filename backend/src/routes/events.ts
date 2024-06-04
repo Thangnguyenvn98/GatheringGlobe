@@ -74,14 +74,46 @@ router.get("/", async (req: Request, res: Response) => {
     const limit = parseInt(req.query.limit as string) || 10;
     const skip = (page - 1) * limit;
 
+    // Define an aggregation pipeline to find and process events
+    const pipeline: mongoose.PipelineStage[] = [
+      { $match: { startTime: { $gte: now } } },
+      { $sort: { startTime: 1 } },
+      { $skip: skip },
+      { $limit: limit },
+      {
+        $lookup: {
+          from: "tickets",
+          localField: "_id",
+          foreignField: "eventId",
+          as: "tickets"
+        }
+      },
+      { $unwind: "$tickets" },
+      {
+        $group: {
+          _id: "$_id",
+          title: { $first: "$title" },
+          description: { $first: "$description" },
+          startTime: { $first: "$startTime" },
+          endTime: { $first: "$endTime" },
+          venueId: { $first: "$venueId" },
+          capacity: { $first: "$capacity" },
+          organizerId: { $first: "$organizerId" },
+          location: { $first: "$location" },
+          category: { $first: "$category" },
+          eventType: { $first: "$eventType" },
+          artistName: { $first: "$artistName" },
+          imageUrls: { $first: "$imageUrls" },
+          roomChatLink: { $first: "$roomChatLink" },
+          minPrice: { $min: "$tickets.price" }
+        }
+      }
+    ];
+
+    const events = await Event.aggregate(pipeline);
+
     // Count total documents for pagination metadata
     const total = await Event.countDocuments({ startTime: { $gte: now } });
-
-    // Retrieve events sorted by startTime, starting from the current moment
-    const events = await Event.find({ startTime: { $gte: now } })
-                              .sort('startTime')
-                              .skip(skip)
-                              .limit(limit);
 
     res.status(200).json({
       events,

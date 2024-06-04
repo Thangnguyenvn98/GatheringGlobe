@@ -5,6 +5,7 @@ import { AccessToken, IngressInput } from "livekit-server-sdk";
 import User from "../models/user";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { v4 } from "uuid";
+import Block from "../models/block";
 
 
 const router = express.Router();
@@ -34,6 +35,7 @@ router.get("/viewer-token", async (req: Request, res: Response) => {
     try {
       const decoded = jwt.verify(authToken, process.env.JWT_SECRET_KEY as string);
       req.userId = (decoded as JwtPayload).userId;
+      console.log("USER ID", req.userId)
       const viewer = await User.findById(req.userId);
       self = {
         id: viewer?._id.toString(),
@@ -54,10 +56,16 @@ router.get("/viewer-token", async (req: Request, res: Response) => {
         return res.status(400).json({ message: 'Invalid host identity' });
       }
 
-    // const isBlocked = await User.findOne({userId: req.userId, blocked: hostIdentity});
-    // if (isBlocked) {
-    //     return res.status(400).json({ message: 'User is blocked' });
-    //   }
+      if (req.userId) {
+    const isBlocked = await Block.findOne({
+      blockerId: host._id.toString(),
+      blockedById: self.id,
+    });
+
+    if (isBlocked) {
+      return res.status(400).json({ message: "User is blocked", isBlocked: true });
+    }
+  }
   
 
     const isHost = self.id === host._id.toString();
