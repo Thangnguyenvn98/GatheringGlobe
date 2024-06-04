@@ -8,6 +8,7 @@ import { OrderDetailsByIdResponse } from "@/types/orderDetails";
 import { CartItem } from "@/hooks/use-cart-store";
 import { IngressInput } from "@/types/IngressInput";
 import { PaymentIntentResponse } from "@/types/paymentIntentResponse";
+import { Stream } from "@/types/stream";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 export const axiosInstance = axios.create({
@@ -154,8 +155,35 @@ export const getCurrentUser = async () => {
   return response.data;
 };
 
+export const getCurrentUserById = async (userId: string) => {
+  const response = await axiosInstance.get<User>(`/api/users/${userId}`);
+  return response.data;
+};
+
+export const getCurrentUserByUsername = async (username: string) => {
+  const response = await axiosInstance.get<User>(`/api/users/u/${username}`);
+  return response.data;
+};
+
 export const validateToken = async () => {
   const response = await axiosInstance.get("/api/users/validate-token");
+  return response.data;
+};
+
+export const getStreamDetails = async (userId: string) => {
+  const response = await axiosInstance.get(`/api/stream?userId=${userId}`);
+  return response.data;
+};
+
+export const editStreamDetails = async (data: {
+  name?: string;
+  thumbnailUrl?: string | null;
+  streamId: string;
+}) => {
+  const response = await axiosInstance.put<Stream>(
+    `/api/stream/${data.streamId}`,
+    data,
+  );
   return response.data;
 };
 
@@ -181,6 +209,12 @@ export const sendUserHelpRequest = async (data: ContactUsFormData) => {
   return response.data;
 };
 
+export const getAllEvents = async (page = 1) => {
+  console.log("Page: ", page);
+  const response = await axiosInstance.get(`/api/events?page=${page}&limit=12`);
+  return response.data;
+};
+
 export const fetchStreamerToken = async (roomName: string) => {
   const { data } = await axiosInstance.get(
     `/api/livekit/streamer-token?roomName=${roomName}`,
@@ -188,20 +222,17 @@ export const fetchStreamerToken = async (roomName: string) => {
   return data.token;
 };
 
-export const fetchViewerToken = async (roomName: string, identity: string) => {
+export const fetchViewerToken = async (hostIdentity: string) => {
   const { data } = await axiosInstance.get(
-    `/api/livekit/viewer-token?roomName=${roomName}&identity=${identity}`,
+    `/api/livekit/viewer-token?hostIdentity=${hostIdentity}`,
   );
   return data.token;
 };
 
-export const fetchCreateIngress = async (
-  roomName: string,
-  ingressType: IngressInput,
-) => {
-  console.log(roomName, ingressType);
+export const fetchCreateIngress = async (ingressType: IngressInput) => {
+  console.log(ingressType);
   const { data } = await axiosInstance.get(
-    `/api/livekit/create-ingress?roomName=${roomName}&ingressType=${ingressType}`,
+    `/api/livekit/create-ingress?ingressType=${ingressType}`,
   );
   return data.ingress;
 };

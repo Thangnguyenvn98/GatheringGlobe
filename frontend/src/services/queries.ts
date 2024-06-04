@@ -1,15 +1,22 @@
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import {
+  keepPreviousData,
+  useInfiniteQuery,
+  useQuery,
+} from "@tanstack/react-query";
 import {
   axiosInstance,
   createPaymentIntent,
   fetchCreateIngress,
   fetchStreamerToken,
-  fetchViewerToken,
+  getAllEvents,
   getCurrentUser,
+  getCurrentUserById,
+  getCurrentUserByUsername,
   getEventById,
   getOrderDetailsById,
   getRoom,
   getRooms,
+  getStreamDetails,
   validateToken,
   fetchEventFiltered,
 } from "./api";
@@ -30,6 +37,30 @@ export function useCurrentUser() {
     queryFn: getCurrentUser,
   });
 }
+
+export const useCurrentUserByUsername = (username: string) => {
+  return useQuery({
+    queryKey: ["user", username],
+    queryFn: () => getCurrentUserByUsername(username),
+    enabled: !!username,
+  });
+};
+
+export function useCurrentStream(userId: string) {
+  return useQuery({
+    queryKey: ["stream", userId],
+    queryFn: () => getStreamDetails(userId),
+    enabled: !!userId,
+  });
+}
+
+export const useCurrentUserById = (userId: string) => {
+  return useQuery({
+    queryKey: ["user", userId],
+    queryFn: () => getCurrentUserById(userId),
+    enabled: !!userId,
+  });
+};
 
 export const useCurrentEventDetail = (eventId: string) => {
   return useQuery({
@@ -108,22 +139,19 @@ export const useStreamerToken = (roomName: string) => {
   });
 };
 
-export const useViewerToken = (roomName: string, identity: string) => {
+export const useCreateIngress = (ingressType: IngressInput) => {
   return useQuery({
-    queryKey: ["viewerToken", roomName, identity],
-    queryFn: () => fetchViewerToken(roomName, identity),
-    enabled: !!roomName && !!identity,
+    queryKey: ["createIngress", ingressType],
+    queryFn: () => fetchCreateIngress(ingressType),
+    enabled: !!ingressType,
   });
 };
 
-export const useCreateIngress = (
-  roomName: string,
-  ingressType: IngressInput,
-) => {
+export const useAllEventsPagination = (page = 1) => {
   return useQuery({
-    queryKey: ["createIngress", roomName, ingressType],
-    queryFn: () => fetchCreateIngress(roomName, ingressType),
-    enabled: !!roomName,
+    queryKey: ["events", page],
+    queryFn: () => getAllEvents(page),
+    placeholderData: keepPreviousData,
   });
 };
 

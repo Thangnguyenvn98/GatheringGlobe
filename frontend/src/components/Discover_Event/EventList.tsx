@@ -3,19 +3,23 @@ import "./EventList.css";
 import { EventType } from "@/types/event";
 import { useFilterParams } from "@/services/queries";
 import { useNavigate } from "react-router-dom";
+// import { useLocation } from "react-router-dom"
+// import { useEffect } from "react"
+import { useSearchParams } from "react-router-dom";
+import queryString from "query-string";
 
-const EventdataList = ({
-  paramsFromParent,
-  stateFromParent,
-}: {
-  paramsFromParent: string;
-  stateFromParent?: any;
-}) => {
+const EventdataList = () => {
   const navigate = useNavigate();
-  const state = stateFromParent;
-  console.log(state);
-  let params = paramsFromParent;
-  const { data, error, isLoading } = useFilterParams(params || "");
+  const [searchParams] = useSearchParams();
+  // Get all search params as an iterable object
+  const allSearchParams = queryString.stringify(
+    Object.fromEntries(searchParams),
+    { encode: true },
+  );
+  // useEffect (() => {
+  //   console.log("allSearchParams changed", allSearchParams)
+  // },[searchParams])
+  const { data, error, isLoading } = useFilterParams(allSearchParams || "");
   if (isLoading) return <div>Loading...</div>;
   if (error)
     return (
@@ -23,14 +27,12 @@ const EventdataList = ({
     );
   if (data.message != undefined)
     return <div>No data found for this Filter</div>;
-
-  let eventdatas = data;
-  if (state) {
-    eventdatas = state.data;
-  }
+  let eventdatas: EventType[] = data;
 
   const handleClick = (eventData: EventType) => {
-    navigate(`/discover/${eventData.title}/event/${eventData._id}`);
+    navigate(
+      `/discover/${eventData.title.replace(" ", "-")}/event/${eventData._id}`,
+    );
   };
 
   return (

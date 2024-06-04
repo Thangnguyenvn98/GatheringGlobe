@@ -6,9 +6,12 @@ import {
   IngressClient,
   IngressInput,
   IngressVideoEncodingPreset,
+  RoomServiceClient,
   type CreateIngressOptions,
 } from "livekit-server-sdk";
+
 import { TrackSource } from "livekit-server-sdk/dist/proto/livekit_models";
+import Stream from "../../models/stream";
 
 const ingressClient = new IngressClient(process.env.LIVEKIT_API_URL!);
 
@@ -18,6 +21,7 @@ export async function createStreamerToken(roomName: string) {
     process.env.LIVEKIT_API_SECRET,
     {
       identity: roomName,
+      name: roomName,
     }
   );
 
@@ -31,31 +35,38 @@ export async function createStreamerToken(roomName: string) {
   return await Promise.resolve(token.toJwt());
 }
 
-export async function createViewerToken(roomName: string, identity: string) {
-  const token = new AccessToken(
-    process.env.LIVEKIT_API_KEY,
-    process.env.LIVEKIT_API_SECRET,
-    {
-      identity: identity,
-    }
-  );
+const roomService = new RoomServiceClient(process.env.LIVEKIT_API_URL!,process.env.LIVEKIT_API_KEY!,process.env.LIVEKIT_API_SECRET!);
 
-  token.addGrant({
-    room: roomName,
-    roomJoin: true,
-    canPublish: false,
-    canPublishData: true,
-  });
+// export async function createViewerToken(userId: string, hostIdentity: string) {
+//    let self;
+//     try {
+//       self = await User.findById({userId });
+//     }
+//   const token = new AccessToken(
+//     process.env.LIVEKIT_API_KEY,
+//     process.env.LIVEKIT_API_SECRET,
+//     {
+//       identity: hostIdentity,
+//     }
+//   );
 
-  return await Promise.resolve(token.toJwt());
-}
+//   token.addGrant({
+//     room: roomName,
+//     roomJoin: true,
+//     canPublish: false,
+//     canPublishData: true,
+//   });
 
-export async function createIngress(roomName: string, ingressType: IngressInput) {
+//   return await Promise.resolve(token.toJwt());
+// }
+
+export async function createIngress(userId: string, ingressType: IngressInput,username:string) {
+  await resetIngresses(userId);
   const options: CreateIngressOptions = {
-    name: roomName,
-    roomName: roomName,
-    participantName: roomName,
-    participantIdentity: roomName,
+    name: username,
+    roomName: userId,
+    participantName: username,
+    participantIdentity: userId,
   };
 
   if (ingressType === IngressInput.WHIP_INPUT) {
@@ -73,14 +84,27 @@ export async function createIngress(roomName: string, ingressType: IngressInput)
   }
 
   const ingress = await ingressClient.createIngress(ingressType, options);
+  if (!ingress || !ingress.url || !ingress.streamKey) {
+    throw new Error("Failed to create ingress");
+  }
+  await Stream.findOneAndUpdate({ userId }, { serverUrl: ingress.url, streamKey: ingress.streamKey, ingressId: ingress.ingressId});
+  
   return ingress;
 }
 
-export async function resetIngresses() {
-  const ingresses = await ingressClient.listIngress({});
+export const resetIngresses = async (hostIdentity: string) => {
+  const ingresses = await ingressClient.listIngress({
+    roomName: hostIdentity,
+  });
+
+  const rooms = await roomService.listRooms([hostIdentity])
+
+  for (const room of rooms) {
+   await roomService.deleteRoom(room.name)
+  }
 
   for (const ingress of ingresses) {
-    if (ingress.ingressId) {
+    if (ingress.ingressId){
       await ingressClient.deleteIngress(ingress.ingressId);
     }
   }

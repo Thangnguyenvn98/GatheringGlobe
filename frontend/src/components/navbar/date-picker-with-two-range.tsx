@@ -20,7 +20,6 @@ function DatePickerWithRange({
   dateFromParent?: DateRange | undefined; //allow dateFromParent to be optional
 }) {
   const [date, setDate] = React.useState<DateRange | undefined>(dateFromParent);
-  console.log(date);
   const onSubmit = (data: DateRange | undefined) => {
     setDateFromParent(data);
     setDate(data);
