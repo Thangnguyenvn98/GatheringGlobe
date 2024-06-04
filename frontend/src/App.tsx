@@ -29,7 +29,6 @@ import HostRoom from "./components/streaming/HostRoom";
 import KeysPage from "./components/streaming/keys/KeysPage";
 import CreatorPage from "./components/streaming/[username]/CreatorPage";
 import UploadThingComponent from "./components/testComponent/UploadThingComponent";
-import QrScanner from "qr-scanner";
 import QrReader from "./components/QrCode/QrReader";
 
 function App() {
