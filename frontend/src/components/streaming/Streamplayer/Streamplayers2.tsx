@@ -1,28 +1,30 @@
-import { useViewerToken } from "@/hooks/use-viewer-token";
+import { useStreamerToken } from "@/hooks/use-streamer-token";
 import { Stream } from "@/types/stream";
 import { User } from "@/types/user";
 import { LiveKitRoom } from "@livekit/components-react";
 import { useChatSidebar } from "@/hooks/use-chat-sidebar";
 import { cn } from "@/lib/utils";
-import Video, { VideoSkeleton } from "./Video";
-import StreamChat from "../StreamChat";
-import StreamChatToggle from "./StreamChatToggle";
-import { ChatSkeleton } from "./StreamChatList";
-import Header from "./Header";
+import Video2 from "./Video2";
+import { VideoSkeleton } from "./Video";
+import StreamChat from "./StreamChat";
+import StreamChatToggle from "../Streamplayer/StreamChatToggle";
+import { StreamChatSkeleton } from "./StreamChat";
 import InfoCard from "./InfoCard";
+import AboutCard from "./AboutCard";
+import Header from "./Header";
 
 interface StreamPlayersProps {
   user: User;
   stream: Stream;
 }
-const StreamPlayers = ({ user, stream }: StreamPlayersProps) => {
+const StreamPlayers2 = ({ user, stream }: StreamPlayersProps) => {
   const serverUrl = import.meta.env.VITE_REACT_APP_LIVEKIT_WS_URL;
 
-  const { token, viewerName, identity } = useViewerToken(user._id);
-  //  console.log({token,viewerName,identity})
+  const { token, streamerName, identity } = useStreamerToken(user._id);
+  console.log({ token, streamerName, identity });
   const { collapsed } = useChatSidebar((state) => state);
 
-  if (!token || !viewerName || !identity) {
+  if (!token || !streamerName || !identity) {
     return (
       <div>
         <StreamPlayersSkeleton />
@@ -32,7 +34,7 @@ const StreamPlayers = ({ user, stream }: StreamPlayersProps) => {
   return (
     <>
       {collapsed && (
-        <div className="hidden lg:block fixed top-[100px] right-2 z-50">
+        <div className="hidden lg:block fixed right-2 z-50">
           <StreamChatToggle />
         </div>
       )}
@@ -45,7 +47,7 @@ const StreamPlayers = ({ user, stream }: StreamPlayersProps) => {
         )}
       >
         <div className="space-y-4 col-span-1 lg:col-span-2 xl:col-span-2 2xl:col-span-5 lg:overflow-y-auto hidden-scrollbar pb-10">
-          <Video hostName={user.username} hostIdentity={user._id} />
+          <Video2 hostName={user.username} hostIdentity={user._id} />
           <Header
             hostName={user.username}
             hostIdentity={user._id}
@@ -60,10 +62,16 @@ const StreamPlayers = ({ user, stream }: StreamPlayersProps) => {
             name={stream.name}
             thumbnailUrl={stream.thumbnailUrl || ""}
           />
+          <AboutCard
+            hostName={user.username}
+            hostIdentity={user._id}
+            viewerIdentity={identity}
+            bio={user.bio || ""}
+          />
         </div>
         <div className={cn("col-span-1", collapsed && "hidden")}>
           <StreamChat
-            viewerName={viewerName}
+            viewerName={streamerName}
             hostName={user.username}
             hostIdentity={user._id}
           />
@@ -80,10 +88,10 @@ export const StreamPlayersSkeleton = () => {
         <VideoSkeleton />
       </div>
       <div className="col-span-1">
-        <ChatSkeleton />
+        <StreamChatSkeleton />
       </div>
     </div>
   );
 };
 
-export default StreamPlayers;
+export default StreamPlayers2;

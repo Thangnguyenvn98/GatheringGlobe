@@ -2,7 +2,7 @@ import { UploadDropzone, UploadButton } from "@/lib/uploadthing";
 import React from "react";
 import { useEffect } from "react";
 
-const BACKEND_URL = "http://localhost:5050";
+const BACKEND_URL = import.meta.env.VITE_API_BASE_URL || "";
 const UploadThingComponent = () => {
   return (
     <div className="flex flex-col items-center gap-4 py-8">

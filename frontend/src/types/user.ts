@@ -8,4 +8,5 @@ export interface User {
   lastName?: string;
   stream?: Stream;
   imageUrl?: string;
+  bio?: string;
 }
