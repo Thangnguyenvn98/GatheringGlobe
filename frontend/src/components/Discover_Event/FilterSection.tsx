@@ -6,14 +6,9 @@ import DatePickerWithRange from "./date-picker-with-two-range";
 import { DateRange } from "react-day-picker";
 import { useSearchParams } from "react-router-dom";
 import queryString from "query-string";
+import { useRef } from "react";
 
-const FilterSection = ({
-  setParamsFromParent,
-}: {
-  setParamsFromParent: any;
-}) => {
-  const [searchParams, setSearchParams] = useSearchParams();
-  console.log(searchParams.get("priceMin"));
+const FilterSection = () => {
   const categories = [
     "All event categories",
     "Music",
@@ -80,6 +75,8 @@ const FilterSection = ({
     "Parade",
     "Marathon",
   ];
+  const firstUpdate = useRef(0);
+  const [searchParams, setSearchParams] = useSearchParams();
   const [showCategory, setShowCategory] = useState(false);
   const [showEventType, setShowEventType] = useState(false);
   let startTimeFromParams = searchParams.get("startTime");
@@ -96,8 +93,6 @@ const FilterSection = ({
       ),
     };
     if (String(dateFromParams) !== String(date)) {
-      console.log("dateFromParams", dateFromParams);
-      console.log("date", date);
       setDate(dateFromParams);
     }
   }
@@ -114,8 +109,11 @@ const FilterSection = ({
   const [eventType, setEventType] = useState(
     searchParams.get("eventType") ? searchParams.get("eventType") : "",
   );
-
   useEffect(() => {
+    if (firstUpdate.current < 2) {
+      firstUpdate.current = firstUpdate.current + 1;
+      return;
+    }
     let params = [];
     if (priceMin !== "") {
       params.push(queryString.stringify({ priceMin }, { encode: true }));
@@ -146,7 +144,6 @@ const FilterSection = ({
       );
     }
     const finalParams = params.join("&");
-    setParamsFromParent(finalParams);
     setSearchParams(finalParams);
   }, [category, eventType, priceMin, priceMax, date]);
 

@@ -10,7 +10,6 @@ import { useCurrentUser } from "@/services/queries";
 const EventDetail: React.FC = () => {
   const { eventId } = useParams<{ eventId: string }>();
   useParams<{ eventId: string }>();
-  console.log(eventId);
   const navigate = useNavigate();
   const { data: currentUser } = useCurrentUser();
   const {
@@ -18,7 +17,6 @@ const EventDetail: React.FC = () => {
     isLoading,
     error,
   } = useCurrentEventDetail(eventId || "");
-  console.log(eventData);
   const { addToCart } = useCart();
   const [ticketQuantities, setTicketQuantities] = useState<{
     [key: string]: number;

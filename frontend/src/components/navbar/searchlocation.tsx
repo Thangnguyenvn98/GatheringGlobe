@@ -15,7 +15,6 @@ function EventLocation({
   //it then trigger setlocation which set location object to the value of locchosen
   const map = useMap();
   const places = useMapsLibrary("places");
-
   const [sessionToken, setSessionToken] =
     useState<google.maps.places.AutocompleteSessionToken>();
 
@@ -29,8 +28,7 @@ function EventLocation({
   const [predictionResults, setPredictionResults] = useState<
     Array<google.maps.places.AutocompletePrediction>
   >([]);
-
-  const [inputValue, setInputValue] = useState<string>("");
+  const [inputValue, setInputValue] = useState("");
 
   useEffect(() => {
     if (!places || !map) return;
@@ -96,7 +94,7 @@ function EventLocation({
   return (
     <div className="relative">
       <div className="flex items-center justify-between">
-        <Navigation />
+        <Navigation className="m-2" />
         <Input
           value={inputValue}
           onChange={(e) => onInputChange(e)}

@@ -98,7 +98,7 @@ function App() {
 
         <Route path="*" element={<Navigate to="/" />} />
         <Route
-          path="/discover/*"
+          path="/discover"
           element={
             <Layout>
               <DiscoverEvent />

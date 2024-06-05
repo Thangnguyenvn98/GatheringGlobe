@@ -7,6 +7,7 @@ import {
 } from "react-icons/pi";
 import { IoGameControllerOutline, IoFastFoodOutline } from "react-icons/io5";
 import { SlBookOpen } from "react-icons/sl";
+import { useNavigate } from "react-router-dom";
 
 const categories = [
   {
@@ -44,17 +45,18 @@ const categories = [
 ];
 
 const EventCategory = () => {
-  const testClick = () => {
-    console.log("test");
+  const navigate = useNavigate();
+  const testClick = (category: string) => {
+    navigate(`/discover?category=${category}`);
   };
   return (
     <div className="mx-10">
       <div className="flex justify-center items-center gap-x-10">
         {categories.map((category, index) => (
-          <div className="flex flex-col items-center" key={index}>
+          <div key={index} className="flex flex-col items-center">
             <button
               key={index}
-              onClick={testClick}
+              onClick={() => testClick(category.title)}
               className="flex items-center justify-center w-24 h-24 border-2 border-gray-200 rounded-full p-4"
             >
               {category.icon}
