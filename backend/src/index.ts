@@ -21,7 +21,6 @@ import dotenv from "dotenv";
 import authRoutes from "./routes/authRoutes";
 import { createRouteHandler } from "uploadthing/express";
 import { uploadRouter } from "./uploadthing";
-import bodyParser from "body-parser";
 import { WebhookReceiver } from "livekit-server-sdk";
 import Stream from "./models/stream";
 
@@ -62,7 +61,6 @@ app.use("/api/messages", messageRoutes);
 app.use("/api/room", roomRoutes);
 app.use("/api/events", eventRoutes);
 app.use("/api/payments", paymentRoutes);
-app.use("/api/orders", orderRoutes);
 app.use("/api/livekit", livekitRoutes);
 app.use("/api/authRoutes", authRoutes);
 app.use("/api/orders", orderRoutes);
