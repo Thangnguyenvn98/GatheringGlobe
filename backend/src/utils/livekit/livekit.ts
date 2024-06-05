@@ -15,18 +15,18 @@ import Stream from "../../models/stream";
 
 const ingressClient = new IngressClient(process.env.LIVEKIT_API_URL!);
 
-export async function createStreamerToken(roomName: string) {
+export async function createStreamerToken(hostIdentity: string, name: string) {
   const token = new AccessToken(
     process.env.LIVEKIT_API_KEY,
     process.env.LIVEKIT_API_SECRET,
     {
-      identity: roomName,
-      name: roomName,
+      identity: hostIdentity,
+      name: name,
     }
   );
 
   token.addGrant({
-    room: roomName,
+    room: hostIdentity as string,
     roomJoin: true,
     canPublish: true,
     canPublishData: true,
@@ -35,10 +35,17 @@ export async function createStreamerToken(roomName: string) {
   return await Promise.resolve(token.toJwt());
 }
 
-const roomService = new RoomServiceClient(process.env.LIVEKIT_API_URL!,process.env.LIVEKIT_API_KEY!,process.env.LIVEKIT_API_SECRET!);
+const roomService = new RoomServiceClient(
+  process.env.LIVEKIT_API_URL!,
+  process.env.LIVEKIT_API_KEY!,
+  process.env.LIVEKIT_API_SECRET!
+);
 
-
-export async function createIngress(userId: string, ingressType: IngressInput,username:string) {
+export async function createIngress(
+  userId: string,
+  ingressType: IngressInput,
+  username: string
+) {
   await resetIngresses(userId);
   const options: CreateIngressOptions = {
     name: username,
@@ -65,8 +72,15 @@ export async function createIngress(userId: string, ingressType: IngressInput,us
   if (!ingress || !ingress.url || !ingress.streamKey) {
     throw new Error("Failed to create ingress");
   }
-  await Stream.findOneAndUpdate({ userId }, { serverUrl: ingress.url, streamKey: ingress.streamKey, ingressId: ingress.ingressId});
-  
+  await Stream.findOneAndUpdate(
+    { userId },
+    {
+      serverUrl: ingress.url,
+      streamKey: ingress.streamKey,
+      ingressId: ingress.ingressId,
+    }
+  );
+
   return ingress;
 }
 
@@ -75,15 +89,15 @@ export const resetIngresses = async (hostIdentity: string) => {
     roomName: hostIdentity,
   });
 
-  const rooms = await roomService.listRooms([hostIdentity])
+  const rooms = await roomService.listRooms([hostIdentity]);
 
   for (const room of rooms) {
-   await roomService.deleteRoom(room.name)
+    await roomService.deleteRoom(room.name);
   }
 
   for (const ingress of ingresses) {
-    if (ingress.ingressId){
+    if (ingress.ingressId) {
       await ingressClient.deleteIngress(ingress.ingressId);
     }
   }
-}
+};

@@ -1,27 +1,16 @@
-import { useCurrentUser, useCurrentUserByUsername } from "@/services/queries";
-import { useParams } from "react-router-dom";
 import StreamPlayers from "../Streamplayer/StreamPlayers";
-import ErrorPage from "./ErrorPage";
+import { User } from "@/types/user";
+import { Stream } from "@/types/stream";
 
-const CreatorPage = () => {
-  const { username } = useParams<{ username: string }>();
-  const { data: externalUser, isLoading: isLoadingExternalUser } =
-    useCurrentUser();
-  const { data: user, isLoading: isLoadingUser } = useCurrentUserByUsername(
-    username || "",
-  );
+interface CreatorPageProps {
+  user: User;
+  stream: Stream;
+}
 
-  if (isLoadingUser || isLoadingExternalUser) {
-    return <div>Loading...</div>;
-  }
-
-  if (!user || user._id !== externalUser?._id || !user.stream) {
-    return <ErrorPage />;
-  }
-
+const CreatorPage = ({ user, stream }: CreatorPageProps) => {
   return (
     <div className="h-full">
-      <StreamPlayers user={user} stream={user.stream} />
+      <StreamPlayers user={user} stream={stream} />
     </div>
   );
 };

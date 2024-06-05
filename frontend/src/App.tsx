@@ -24,11 +24,10 @@ import EventDetailMock from "./components/testComponent/EventDetailMock";
 import Booking from "./components/BookingForm/Booking";
 import { OrderConfirmationModal } from "./components/modals/order-confirmation-modal";
 import OrderDetails from "./components/order/OrderDetails";
-import HostRoom from "./components/streaming/HostRoom";
 import KeysPage from "./components/streaming/keys/KeysPage";
-import CreatorPage from "./components/streaming/[username]/CreatorPage";
 import ViewerPage from "./components/streaming/[username]/ViewerPage";
 import WatchChannelPage from "./components/streaming/[username]/WatchChannelPage";
+import CreatorPageWrapper from "./components/streaming/[username]/CreatorPageWrapper";
 
 function App() {
   return (
@@ -117,14 +116,6 @@ function App() {
         />
 
         <Route
-          path="/channel/:roomName/host"
-          element={
-            <Layout>
-              <HostRoom />
-            </Layout>
-          }
-        />
-        <Route
           path="/discover/:eventName/event/:eventId"
           element={
             <Layout>
@@ -145,7 +136,7 @@ function App() {
           path="/stream/:username"
           element={
             <Layout>
-              <CreatorPage />
+              <CreatorPageWrapper />
             </Layout>
           }
         />

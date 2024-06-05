@@ -6,15 +6,15 @@ import {
 } from "@livekit/components-react";
 import OffLineVideo from "./OffLineVideo";
 import LoadingVideo from "./LoadingVideo";
-import LiveVideo from "./LiveVideo";
 import { Skeleton } from "@/components/ui/skeleton";
+import LiveVideo from "./LiveVideo";
 
 interface VideoProps {
   hostName: string;
   hostIdentity: string;
 }
 
-const Video = ({ hostName, hostIdentity }: VideoProps) => {
+const Video2 = ({ hostName, hostIdentity }: VideoProps) => {
   const connectionState = useConnectionState();
   const participant = useRemoteParticipant(hostIdentity);
   const tracks = useTracks([
@@ -35,7 +35,7 @@ const Video = ({ hostName, hostIdentity }: VideoProps) => {
   return <div className="aspect-video border-b group relative">{content}</div>;
 };
 
-export default Video;
+export default Video2;
 
 export const VideoSkeleton = () => {
   return (

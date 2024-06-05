@@ -7,8 +7,8 @@ import {
   axiosInstance,
   createPaymentIntent,
   fetchCreateIngress,
-  fetchStreamerToken,
   getAllEvents,
+  getAllStreamDetails,
   getBlockUser,
   getCurrentUser,
   getCurrentUserById,
@@ -48,9 +48,16 @@ export const useCurrentUserByUsername = (username: string) => {
 
 export function useCurrentStream(userId: string) {
   return useQuery({
-    queryKey: ["stream"],
+    queryKey: ["stream", userId],
     queryFn: () => getStreamDetails(userId),
     enabled: !!userId,
+  });
+}
+
+export function useGetAllStreams() {
+  return useQuery({
+    queryKey: ["stream"],
+    queryFn: () => getAllStreamDetails(),
   });
 }
 
@@ -131,14 +138,6 @@ export const useAuthQuery = () => {
     refetchOnWindowFocus: false,
     refetchOnMount: false,
     refetchOnReconnect: false,
-  });
-};
-
-export const useStreamerToken = (roomName: string) => {
-  return useQuery({
-    queryKey: ["streamerToken", roomName],
-    queryFn: () => fetchStreamerToken(roomName),
-    enabled: !!roomName,
   });
 };
 

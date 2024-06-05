@@ -25,9 +25,8 @@ router.post(
     }
 
     try {
-      const paymentIntent = await stripe.paymentIntents.retrieve(
-        paymentIntentId
-      );
+      const paymentIntent =
+        await stripe.paymentIntents.retrieve(paymentIntentId);
       if (!paymentIntent) {
         return res.status(400).json({ message: "Payment intent not found" });
       }
@@ -127,7 +126,7 @@ router.get("/:id", verifyToken, async (req: Request, res: Response) => {
       .populate({
         path: "events.tickets.ticketId",
         model: "Ticket",
-        select: "type price", 
+        select: "type price",
       });
     if (!order) {
       return res.status(404).json({ message: "Order not found" });

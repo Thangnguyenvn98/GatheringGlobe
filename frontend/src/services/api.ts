@@ -176,6 +176,11 @@ export const getStreamDetails = async (userId: string) => {
   return response.data;
 };
 
+export const getAllStreamDetails = async () => {
+  const response = await axiosInstance.get("/api/stream");
+  return response.data;
+};
+
 export const editStreamDetails = async (data: {
   name?: string;
   thumbnailUrl?: string | null;
@@ -226,9 +231,9 @@ export const getAllEvents = async (page = 1) => {
   return response.data;
 };
 
-export const fetchStreamerToken = async (roomName: string) => {
+export const fetchStreamerToken = async (hostIdentity: string) => {
   const { data } = await axiosInstance.get(
-    `/api/livekit/streamer-token?roomName=${roomName}`,
+    `/api/livekit/streamer-token?hostIdentity=${hostIdentity}`,
   );
   return data.token;
 };

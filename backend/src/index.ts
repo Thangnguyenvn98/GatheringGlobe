@@ -7,24 +7,23 @@ import path from "path";
 import userRoutes from "./routes/users";
 import messageRoutes from "./routes/messages";
 import roomRoutes from "./routes/rooms";
-import eventRoutes from './routes/events'
-import paymentRoutes from './routes/payments'
-import orderRoutes from './routes/orders'
-import livekitRoutes from './routes/livekit'
-import streamRoutes from './routes/stream'
-import blockRoutes from './routes/blocks'
+import eventRoutes from "./routes/events";
+import paymentRoutes from "./routes/payments";
+import orderRoutes from "./routes/orders";
+import livekitRoutes from "./routes/livekit";
+import streamRoutes from "./routes/stream";
+import blockRoutes from "./routes/blocks";
 import { Server } from "socket.io";
 import http from "http";
 import Room from "./models/room";
 import Message from "./models/message";
-import dotenv from 'dotenv';
+import dotenv from "dotenv";
 import authRoutes from "./routes/authRoutes";
 import { createRouteHandler } from "uploadthing/express";
 import { uploadRouter } from "./uploadthing";
 import bodyParser from "body-parser";
 import { WebhookReceiver } from "livekit-server-sdk";
-
-
+import Stream from "./models/stream";
 
 dotenv.config();
 
@@ -62,32 +61,43 @@ app.use("/api/users", userRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/room", roomRoutes);
 app.use("/api/events", eventRoutes);
-app.use("/api/payments",paymentRoutes);
-app.use("/api/orders",orderRoutes)
-app.use("/api/livekit",livekitRoutes)
-app.use("/api/authRoutes",authRoutes);
-app.use("/api/orders",orderRoutes);
-app.use("/api/stream",streamRoutes)
-app.use("/api/block",blockRoutes)
-app.use('/api/webhooks/livekit',express.raw({type: 'application/webhook+json'}))
-app.post('/api/webhooks/livekit', (req, res) => {
+app.use("/api/payments", paymentRoutes);
+app.use("/api/orders", orderRoutes);
+app.use("/api/livekit", livekitRoutes);
+app.use("/api/authRoutes", authRoutes);
+app.use("/api/orders", orderRoutes);
+app.use("/api/stream", streamRoutes);
+app.use("/api/block", blockRoutes);
+app.use(
+  "/api/webhooks/livekit",
+  express.raw({ type: "application/webhook+json" })
+);
+app.post("/api/webhooks/livekit", async (req, res) => {
   try {
-    const body = req.body
+    const body = req.body;
 
-    const authorization = req.get('Authorization')
+    const authorization = req.get("Authorization");
     if (!authorization) {
-      return res.status(401).json({ message: "No authorization header" });
+      return res.status(400).json({ message: "No authorization header" });
     }
 
-    const event = receiver.receive(body, authorization);
-    console.log('Received webhook event:', event);
-
-    // Handle the event
-    // Your code to process the event, e.g., updating the database
+    const event = await receiver.receive(body, authorization);
+    if (event.event === "ingress_ended") {
+      await Stream.updateOne(
+        { ingressId: event.ingressInfo?.ingressId },
+        { $set: { isLive: false } }
+      );
+    }
+    if (event.event === "ingress_started") {
+      await Stream.updateOne(
+        { ingressId: event.ingressInfo?.ingressId },
+        { $set: { isLive: true } }
+      );
+    }
 
     res.status(200).send("OK");
   } catch (error) {
-    console.error('Error processing webhook:', error);
+    console.error("Error processing webhook:", error);
     res.status(500).json({ message: "Something went wrong!" });
   }
 });
@@ -95,13 +105,12 @@ app.use(
   "/api/uploadthing",
   createRouteHandler({
     router: uploadRouter,
-    config: { 
+    config: {
       uploadthingId: process.env.UPLOADTHING_APP_ID,
       uploadthingSecret: process.env.UPLOADTHING_SECRET,
     },
-  }),
+  })
 );
-
 
 io.on("connection", async (socket) => {
   console.log(`A user connected ${socket.id}`);

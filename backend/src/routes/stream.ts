@@ -56,12 +56,14 @@ router.get("/", verifyToken, async (req: Request, res: Response) => {
     streams = await Stream.find({
       userId: { $nin: blockingUserIds },
     })
-      .populate("userId", "username email bio imageUrl")
+      .select("name thumbnailUrl isLive ")
+      .populate("userId", "username bio imageUrl")
       .sort({ isLive: -1, updatedAt: -1 });
   } else {
     // Fetch all streams if the user is not authenticated (guest)
     streams = await Stream.find({})
-      .populate("userId", "username email bio imageUrl")
+      .select("name thumbnailUrl isLive ")
+      .populate("userId", "username bio imageUrl")
       .sort({ isLive: -1, updatedAt: -1 });
   }
   res.status(200).json({ streams });
@@ -69,7 +71,7 @@ router.get("/", verifyToken, async (req: Request, res: Response) => {
 
 router.put("/:streamId", verifyToken, async (req: Request, res: Response) => {
   const { streamId } = req.params;
-  const { name, thumbnailUrl } = req.body;
+  const { name, thumbnailUrl, usedObs } = req.body;
 
   try {
     const stream = await Stream.findById(streamId);
@@ -85,6 +87,10 @@ router.put("/:streamId", verifyToken, async (req: Request, res: Response) => {
     // Allow thumbnailUrl to be updated to null to "delete" it or any other value
     if (thumbnailUrl !== undefined) {
       stream.thumbnailUrl = thumbnailUrl;
+    }
+
+    if (usedObs !== undefined) {
+      stream.usedOBS = usedObs;
     }
 
     await stream.save();

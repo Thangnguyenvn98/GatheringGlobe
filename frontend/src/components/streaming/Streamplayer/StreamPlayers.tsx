@@ -8,9 +8,9 @@ import Video, { VideoSkeleton } from "./Video";
 import StreamChat from "./StreamChat";
 import StreamChatToggle from "../Streamplayer/StreamChatToggle";
 import { StreamChatSkeleton } from "./StreamChat";
-import Header from "../Header";
 import InfoCard from "./InfoCard";
 import AboutCard from "./AboutCard";
+import Header from "./Header";
 
 interface StreamPlayersProps {
   user: User;
@@ -33,7 +33,7 @@ const StreamPlayers = ({ user, stream }: StreamPlayersProps) => {
   return (
     <>
       {collapsed && (
-        <div className="hidden lg:block fixed  right-2 z-50">
+        <div className="hidden lg:block fixed right-2 z-50">
           <StreamChatToggle />
         </div>
       )}

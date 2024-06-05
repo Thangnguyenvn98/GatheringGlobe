@@ -10,6 +10,7 @@ export interface Stream {
   eventId?: string;
   createdAt?: Date;
   updatedAt?: Date;
+  usedOBS: boolean;
 }
 
 interface CustomUser {
