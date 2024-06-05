@@ -12,7 +12,6 @@ import { useLocation } from "react-router-dom";
 import { useSearchParams } from "react-router-dom";
 
 function SearchForm() {
-  // const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
   const loc = useLocation();
   const [_, setSearchParams] = useSearchParams();
   const [date, setDate] = React.useState<DateRange | undefined>();

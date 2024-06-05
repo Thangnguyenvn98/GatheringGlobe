@@ -57,8 +57,9 @@ function EventLocation({
   const onInputChange = useCallback(
     (event: FormEvent<HTMLInputElement>) => {
       const value = (event.target as HTMLInputElement).value;
-      setInputValue(value); // Update the state
-      fetchPredictions(value);
+      setInputValue(value); // Update the value shown in the input field
+      setLocationFromParent(value); //Update the value kept track for sending query to backend
+      fetchPredictions(value); //Update the value for suggesting location
     },
     [fetchPredictions], // removed inputValue from dependency array
   );
