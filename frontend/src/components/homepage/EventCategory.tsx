@@ -51,7 +51,7 @@ const EventCategory = () => {
     <div className="mx-10">
       <div className="flex justify-center items-center gap-x-10">
         {categories.map((category, index) => (
-          <div className="flex flex-col items-center">
+          <div className="flex flex-col items-center" key={index}>
             <button
               key={index}
               onClick={testClick}

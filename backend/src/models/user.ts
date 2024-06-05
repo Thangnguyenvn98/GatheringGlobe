@@ -10,6 +10,7 @@ export type UserType = {
     password: string,
     stream?: mongoose.Types.ObjectId,
     imageUrl?: string,
+    bio?:string,
 }; 
 
 const userSchema = new mongoose.Schema({
@@ -20,6 +21,7 @@ const userSchema = new mongoose.Schema({
     password: {type: String, required: true},
     stream: {type: mongoose.Schema.Types.ObjectId, ref: "Stream", required: false},
     imageUrl: {type: String, required: false},
+    bio: {type: String, required: false},
 });
 
 // Middleware for mongodb

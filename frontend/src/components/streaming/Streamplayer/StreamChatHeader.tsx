@@ -1,5 +1,6 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import StreamChatToggle from "./StreamChatToggle";
+import VariantToggle from "./VariantToggle";
 
 const StreamChatHeader = () => {
   return (
@@ -10,6 +11,9 @@ const StreamChatHeader = () => {
       <p className="font-semibold text-primary text-center text-white">
         Stream Chat
       </p>
+      <div className="absolute right-2 top-2">
+        <VariantToggle />
+      </div>
     </div>
   );
 };

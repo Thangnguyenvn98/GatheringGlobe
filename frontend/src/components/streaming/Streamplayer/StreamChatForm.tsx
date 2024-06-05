@@ -40,7 +40,7 @@ const StreamChatForm = ({
           value={value}
           disabled={isDisabled}
           placeholder="Send a message"
-          className={cn("border-white")}
+          className={cn("border-white text-white")}
         />
       </div>
       <div className="ml-auto">

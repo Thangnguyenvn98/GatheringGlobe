@@ -110,7 +110,7 @@ const LiveVideo = ({ participant }: LiveVideoProps) => {
         </div>
         <StartAudio
           label="Click to allow audio playback"
-          className="absolute top-0 h-full w-full bg-black bg-opacity-75 text-white"
+          className="absolute top-0 h-full w-full bg-red-500 bg-opacity-75 text-white"
         />
       </div>
     </TooltipProvider>

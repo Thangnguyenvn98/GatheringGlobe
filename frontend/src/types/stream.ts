@@ -6,8 +6,17 @@ export interface Stream {
   streamKey?: string;
   thumbnailUrl?: string;
   isLive: boolean;
-  userId: string;
+  userId: string | CustomUser;
   eventId?: string;
   createdAt?: Date;
   updatedAt?: Date;
+  usedOBS: boolean;
+}
+
+interface CustomUser {
+  _id: string;
+  username: string;
+  email: string;
+  imageUrl?: string;
+  bio?: string;
 }

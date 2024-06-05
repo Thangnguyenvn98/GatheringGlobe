@@ -29,8 +29,8 @@ const connectDB = async () => {
 
 const generate = async () => {
     try {
-        const users = await generateUsers(20); // Generate 10 users
-        const events = await generateEvents(40, users); // Generate 20 events
+        const users = await generateUsers(10); // Generate 10 users
+        const events = await generateEvents(60, users); // Generate 20 events
         const tickets = await generateTickets(events); // Generate tickets for the events
 
         console.log('----------------------');
