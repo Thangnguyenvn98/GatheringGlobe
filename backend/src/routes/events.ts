@@ -286,6 +286,7 @@ router.get("/filter", async (req: Request, res: Response) => {
             { description: { $regex: regexKeyword } },
             { title: { $regex: regexKeyword } },
             { location: { $regex: regexKeyword } },
+            { artistName: { $regex: regexKeyword } }
           ],
         },
         { location: { $regex: regexLocation } },
