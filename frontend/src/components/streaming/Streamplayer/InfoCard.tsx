@@ -20,7 +20,10 @@ const InfoCard = ({
   hostName,
 }: InfoCardProps) => {
   const hostAsViewer = `host-${hostIdentity}`;
-  const isHost = viewerIdentity === hostAsViewer;
+  console.log(hostIdentity);
+  console.log(viewerIdentity);
+  const isHost =
+    viewerIdentity === hostAsViewer || viewerIdentity === hostIdentity;
 
   if (!isHost) return null;
 

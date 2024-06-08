@@ -24,10 +24,10 @@ import EventDetailMock from "./components/testComponent/EventDetailMock";
 import Booking from "./components/BookingForm/Booking";
 import { OrderConfirmationModal } from "./components/modals/order-confirmation-modal";
 import OrderDetails from "./components/order/OrderDetails";
-import KeysPage from "./components/streaming/keys/KeysPage";
 import ViewerPage from "./components/streaming/[username]/ViewerPage";
 import WatchChannelPage from "./components/streaming/[username]/WatchChannelPage";
 import CreatorPageWrapper from "./components/streaming/[username]/CreatorPageWrapper";
+import GenerateStreamPage from "./components/streaming/keys/GenerateStreamPage.tsx";
 
 function App() {
   return (
@@ -52,7 +52,14 @@ function App() {
         />
 
         <Route element={<ProtectedRoute />}>
-          <Route path="/u/:username/keys" element={<KeysPage />} />
+          <Route
+            path="/u/:username/keys"
+            element={
+              <Layout>
+                <GenerateStreamPage />
+              </Layout>
+            }
+          />
 
           <Route
             path="/create-new-event"
@@ -149,7 +156,7 @@ function App() {
           }
         />
         <Route
-          path="/stream/channel/watch"
+          path="/stream/channel/watch/all"
           element={
             <Layout>
               <WatchChannelPage />

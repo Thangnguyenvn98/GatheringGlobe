@@ -21,7 +21,6 @@ const StreamPlayers2 = ({ user, stream }: StreamPlayersProps) => {
   const serverUrl = import.meta.env.VITE_REACT_APP_LIVEKIT_WS_URL;
 
   const { token, streamerName, identity } = useStreamerToken(user._id);
-  console.log({ token, streamerName, identity });
   const { collapsed } = useChatSidebar((state) => state);
 
   if (!token || !streamerName || !identity) {
@@ -31,6 +30,7 @@ const StreamPlayers2 = ({ user, stream }: StreamPlayersProps) => {
       </div>
     );
   }
+
   return (
     <>
       {collapsed && (
@@ -47,7 +47,7 @@ const StreamPlayers2 = ({ user, stream }: StreamPlayersProps) => {
         )}
       >
         <div className="space-y-4 col-span-1 lg:col-span-2 xl:col-span-2 2xl:col-span-5 lg:overflow-y-auto hidden-scrollbar pb-10">
-          <Video2 hostName={user.username} hostIdentity={user._id} />
+          <Video2 />
           <Header
             hostName={user.username}
             hostIdentity={user._id}

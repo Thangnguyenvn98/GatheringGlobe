@@ -20,7 +20,7 @@ export async function createStreamerToken(hostIdentity: string, name: string) {
     process.env.LIVEKIT_API_KEY,
     process.env.LIVEKIT_API_SECRET,
     {
-      identity: hostIdentity,
+      identity: `${hostIdentity}`,
       name: name,
     }
   );
