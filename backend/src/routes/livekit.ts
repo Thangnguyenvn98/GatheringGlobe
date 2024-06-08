@@ -36,7 +36,7 @@ router.get(
     }
     try {
       const token = await createStreamerToken(
-        self._id as string,
+        self._id.toString() as string,
         host.username as string
       );
       res.status(200).json({ token });

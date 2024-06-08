@@ -6,8 +6,8 @@ import Order, { OrderType } from "../models/order";
 import User from "../models/user";
 import Ticket from "../models/ticket";
 import mongoose from "mongoose";
-import QRCode from 'qrcode'
-import nodemailer from 'nodemailer'
+import QRCode from 'qrcode';
+import nodemailer from 'nodemailer';
 
 const stripe = new Stripe(process.env.STRIPE_API_KEY as string);
 
@@ -104,7 +104,18 @@ router.post(
       const newOrder = new Order(order);
       await newOrder.save();
 
+<<<<<<< HEAD
       const qrCodeData = newOrder._id.toString();
+=======
+
+      // Generate QR code
+      const qrCodeData = JSON.stringify({
+        orderId: newOrder._id,
+        userId: newOrder.userId,
+        email: newOrder.email
+      });
+      // const qrCodeUrl = await QRCode.toDataURL(qrCodeData);
+>>>>>>> main
       const qrCodeBuffer = await QRCode.toBuffer(qrCodeData);
 
 
@@ -134,7 +145,10 @@ router.post(
 
       await transporter.sendMail(mailOptions);
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> main
       res.status(201).json(newOrder._id);
     } catch (error) {
       console.error("Failed to create order:", error);
