@@ -14,7 +14,8 @@ const AboutCard = ({
   bio,
 }: AboutCardProps) => {
   const hostAsViewer = `host-${hostIdentity}`;
-  const isHost = viewerIdentity === hostAsViewer;
+  const isHost =
+    viewerIdentity === hostAsViewer || viewerIdentity === hostIdentity;
 
   return (
     <div className="px-4">

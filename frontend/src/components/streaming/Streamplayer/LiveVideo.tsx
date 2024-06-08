@@ -10,7 +10,7 @@ import {
 import { Icons } from "@/components/ui/icon";
 
 interface LiveVideoProps {
-  participant: Participant;
+  participant?: Participant;
 }
 const LiveVideo = ({ participant }: LiveVideoProps) => {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -20,7 +20,7 @@ const LiveVideo = ({ participant }: LiveVideoProps) => {
   const [isFullScreen, setIsFullScreen] = useState(false);
 
   useTracks(Object.values(Track.Source))
-    .filter((track) => track.participant.identity === participant.identity)
+    .filter((track) => track.participant.identity === participant?.identity)
     .forEach((track) => {
       if (videoRef.current) {
         track.publication.track?.attach(videoRef.current);
@@ -57,12 +57,6 @@ const LiveVideo = ({ participant }: LiveVideoProps) => {
       setIsFullScreen(true);
     }
   }, [isFullScreen]);
-
-  // useTracks([Track.Source.Camera, Track.Source.Microphone]).filter((track) => track.participant.identity === participant.identity).forEach((track) => {
-  //     if (videoRef.current) {
-  //         track.publication.track?.attach(videoRef.current)
-  //     }
-  // })
 
   return (
     <TooltipProvider delayDuration={300}>
@@ -108,6 +102,7 @@ const LiveVideo = ({ participant }: LiveVideoProps) => {
             </div>
           </div>
         </div>
+
         <StartAudio
           label="Click to allow audio playback"
           className="absolute top-0 h-full w-full bg-red-500 bg-opacity-75 text-white"

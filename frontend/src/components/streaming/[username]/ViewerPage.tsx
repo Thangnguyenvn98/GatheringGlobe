@@ -24,10 +24,10 @@ const ViewerPage = () => {
       </div>
     );
   }
+  console.log(user);
   if (blockData?.isBlocked) {
     return <ErrorPage />;
   }
-  console.log(blockData);
 
   return <StreamPlayers user={user} stream={user.stream} />;
 };
