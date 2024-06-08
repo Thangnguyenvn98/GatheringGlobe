@@ -18,18 +18,17 @@ import Layout from "./components/layouts/layout";
 import Faq from "./components/FAQ/faq";
 import ContactUs from "./components/contact-us/contactUs";
 import ProtectedRoute from "./utils/ProtectedRoute";
-import useCheckAuth from "./hooks/useCheckAuth";
 import ForgotPassword from "./components/loginPage/Forgotpassword";
 import ResetPassword from "./components/loginPage/ResetPassword";
 import { OrderConfirmationModal } from "./components/modals/order-confirmation-modal";
 import Booking from "./components/BookingForm/Booking";
 import OrderDetails from "./components/order/OrderDetails";
-import EventDetailMock from "./components/testComponent/EventDetailMock";
-import HostRoom from "./components/streaming/HostRoom";
-import WatchRoom from "./components/streaming/WatchRoom";
+import KeysPage from "./components/streaming/keys/KeysPage";
+import ViewerPage from "./components/streaming/[username]/ViewerPage";
+import WatchChannelPage from "./components/streaming/[username]/WatchChannelPage";
+import CreatorPageWrapper from "./components/streaming/[username]/CreatorPageWrapper";
 
 function App() {
-  useCheckAuth();
   return (
     <Router>
       <Routes>
@@ -50,7 +49,10 @@ function App() {
             </Layout>
           }
         />
+
         <Route element={<ProtectedRoute />}>
+          <Route path="/u/:username/keys" element={<KeysPage />} />
+
           <Route
             path="/create-new-event"
             element={
@@ -111,22 +113,7 @@ function App() {
             </Layout>
           }
         />
-        <Route
-          path="/channel/:roomName/viewer"
-          element={
-            <Layout>
-              <WatchRoom />
-            </Layout>
-          }
-        />
-        <Route
-          path="/channel/:roomName/host"
-          element={
-            <Layout>
-              <HostRoom />
-            </Layout>
-          }
-        />
+
         <Route
           path="/discover/:eventName/event/:eventId"
           element={
@@ -143,6 +130,32 @@ function App() {
             </Layout>
           }
         />
+
+        <Route
+          path="/stream/:username"
+          element={
+            <Layout>
+              <CreatorPageWrapper />
+            </Layout>
+          }
+        />
+        <Route
+          path="/stream/:username/watch"
+          element={
+            <Layout>
+              <ViewerPage />
+            </Layout>
+          }
+        />
+        <Route
+          path="/stream/channel/watch"
+          element={
+            <Layout>
+              <WatchChannelPage />
+            </Layout>
+          }
+        />
+
         <Route
           path="/discover-event-details"
           element={

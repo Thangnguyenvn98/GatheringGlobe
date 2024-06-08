@@ -67,6 +67,69 @@ router.get('/search', async (req:Request, res:Response) => {
   }
 })
 
+router.get("/", async (req: Request, res: Response) => {
+  try {
+    const now = new Date();  // Gets the current date and time
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+    const skip = (page - 1) * limit;
+
+    // Define an aggregation pipeline to find and process events
+    const pipeline: mongoose.PipelineStage[] = [
+      { $match: { startTime: { $gte: now } } },
+      { $sort: { startTime: 1 } },
+      { $skip: skip },
+      { $limit: limit },
+      {
+        $lookup: {
+          from: "tickets",
+          localField: "_id",
+          foreignField: "eventId",
+          as: "tickets"
+        }
+      },
+      { $unwind: "$tickets" },
+      {
+        $group: {
+          _id: "$_id",
+          title: { $first: "$title" },
+          description: { $first: "$description" },
+          startTime: { $first: "$startTime" },
+          endTime: { $first: "$endTime" },
+          venueId: { $first: "$venueId" },
+          capacity: { $first: "$capacity" },
+          organizerId: { $first: "$organizerId" },
+          location: { $first: "$location" },
+          category: { $first: "$category" },
+          eventType: { $first: "$eventType" },
+          artistName: { $first: "$artistName" },
+          imageUrls: { $first: "$imageUrls" },
+          roomChatLink: { $first: "$roomChatLink" },
+          minPrice: { $min: "$tickets.price" }
+        }
+      }
+    ];
+
+    const events = await Event.aggregate(pipeline);
+
+    // Count total documents for pagination metadata
+    const total = await Event.countDocuments({ startTime: { $gte: now } });
+
+    res.status(200).json({
+      events,
+      pagination: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit)
+      }
+    });
+  } catch (error) {
+    console.error("Failed to fetch events:", error);
+    res.status(500).json({ message: "Internal server error, unable to fetch events." });
+  }
+});
+
 
 router.post("/", verifyToken, async (req: Request, res: Response) => {
   const user = await User.findById(req.userId);
