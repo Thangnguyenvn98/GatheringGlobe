@@ -7,8 +7,9 @@ import {
   axiosInstance,
   createPaymentIntent,
   fetchCreateIngress,
-  fetchStreamerToken,
   getAllEvents,
+  getAllStreamDetails,
+  getBlockUser,
   getCurrentUser,
   getCurrentUserById,
   getCurrentUserByUsername,
@@ -50,6 +51,13 @@ export function useCurrentStream(userId: string) {
     queryKey: ["stream", userId],
     queryFn: () => getStreamDetails(userId),
     enabled: !!userId,
+  });
+}
+
+export function useGetAllStreams() {
+  return useQuery({
+    queryKey: ["stream"],
+    queryFn: () => getAllStreamDetails(),
   });
 }
 
@@ -124,17 +132,12 @@ export const useRoom = (roomId: string | undefined) => {
 
 export const useAuthQuery = () => {
   return useQuery({
-    queryKey: ["auth", validateToken],
+    queryKey: ["auth"],
     queryFn: validateToken,
-    retry: false, // Do not retry on failure
-  });
-};
-
-export const useStreamerToken = (roomName: string) => {
-  return useQuery({
-    queryKey: ["streamerToken", roomName],
-    queryFn: () => fetchStreamerToken(roomName),
-    enabled: !!roomName,
+    retry: false,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
   });
 };
 
@@ -151,5 +154,13 @@ export const useAllEventsPagination = (page = 1) => {
     queryKey: ["events", page],
     queryFn: () => getAllEvents(page),
     placeholderData: keepPreviousData,
+  });
+};
+
+export const useGetCurrentBlockByUserId = (userId: string) => {
+  return useQuery({
+    queryKey: ["block", userId],
+    queryFn: () => getBlockUser(userId),
+    enabled: !!userId,
   });
 };

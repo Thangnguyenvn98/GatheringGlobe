@@ -20,6 +20,7 @@ const KeysPage = () => {
   if (!stream) {
     return <div>Stream not found</div>; // Handling no stream found
   }
+  console.log("stream", stream);
   return (
     <div className="p-6">
       <div className="flex items-center justify-between mb-4">

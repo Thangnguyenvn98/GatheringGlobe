@@ -1,6 +1,6 @@
 import { Separator } from "@/components/ui/separator";
 import { Pencil } from "lucide-react";
-import InfoModal from "./info-modal";
+import InfoModal from "../../modals/info-modal";
 import { Stream } from "@/types/stream";
 
 interface InfoCardProps {

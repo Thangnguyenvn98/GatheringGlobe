@@ -6,8 +6,8 @@ import {
 } from "@livekit/components-react";
 import OffLineVideo from "./OffLineVideo";
 import LoadingVideo from "./LoadingVideo";
-import LiveVideo from "./LiveVideo";
 import { Skeleton } from "@/components/ui/skeleton";
+import LiveVideo from "./LiveVideo";
 
 interface VideoProps {
   hostName: string;
