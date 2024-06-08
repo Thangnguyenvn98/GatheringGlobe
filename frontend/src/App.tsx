@@ -4,6 +4,7 @@ import DiscoverEvent from "./components/Discover_Event/DiscoverEvent";
 import EventDetail from "./components/Discover_Event/EventDetail";
 import AboutUs from "./components/aboutUs/about-us";
 import EventForm from "./components/newEventForm/EventForm";
+import EventDetailMock from "./components/testComponent/EventDetailMock";
 
 import ChatPage from "./components/chatRoom/Chat";
 import Homepage from "./components/homepage/homepage";
