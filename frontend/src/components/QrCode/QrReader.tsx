@@ -37,8 +37,8 @@ const QrReader = () => {
       scanner?.current
         ?.start()
         .then(() => setQrOn(true))
-        .catch((error) => {
-          if (error) {
+        .catch((e) => {
+          if (e) {
             setQrOn(false);
           }
         });
