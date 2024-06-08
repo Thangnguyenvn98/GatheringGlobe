@@ -6,8 +6,8 @@ import Order, { OrderType } from "../models/order";
 import User from "../models/user";
 import Ticket from "../models/ticket";
 import mongoose from "mongoose";
-import QRCode from 'qrcode';
-import nodemailer from 'nodemailer';
+import QRCode from "qrcode";
+import nodemailer from "nodemailer";
 
 const stripe = new Stripe(process.env.STRIPE_API_KEY as string);
 
@@ -104,51 +104,43 @@ router.post(
       const newOrder = new Order(order);
       await newOrder.save();
 
-<<<<<<< HEAD
-      const qrCodeData = newOrder._id.toString();
-=======
-
       // Generate QR code
       const qrCodeData = JSON.stringify({
         orderId: newOrder._id,
         userId: newOrder.userId,
-        email: newOrder.email
+        email: newOrder.email,
       });
       // const qrCodeUrl = await QRCode.toDataURL(qrCodeData);
->>>>>>> main
       const qrCodeBuffer = await QRCode.toBuffer(qrCodeData);
-
 
       // Send email with QR code
       const transporter = nodemailer.createTransport({
-        service: 'outlook', 
+        service: "outlook",
         auth: {
-          user: "gatheringglobe@outlook.com", 
-          pass: "123456789ok", 
+          user: "gatheringglobe@outlook.com",
+          pass: "123456789ok",
         },
       });
 
       const mailOptions = {
         from: "gatheringglobe@outlook.com",
         to: newOrder.email,
-        subject: 'Your Ticket',
+        subject: "Your Ticket",
         html: `<p>Dear ${newOrder.firstName} ${newOrder.lastName},</p>
                <p>Thank you for your order. Here is your ticket:</p>
                <p>Order ID: ${newOrder._id}</p>
                <p> Below is the QR Code. You can scan it now!!! </p>`,
-        attachments: [{
-                filename: 'qrcode.png',
-                content: qrCodeBuffer,
-                cid: 'qrCodeImage' 
-              }]
+        attachments: [
+          {
+            filename: "qrcode.png",
+            content: qrCodeBuffer,
+            cid: "qrCodeImage",
+          },
+        ],
       };
 
       await transporter.sendMail(mailOptions);
 
-<<<<<<< HEAD
-
-=======
->>>>>>> main
       res.status(201).json(newOrder._id);
     } catch (error) {
       console.error("Failed to create order:", error);
