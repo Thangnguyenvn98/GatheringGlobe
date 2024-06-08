@@ -24,6 +24,7 @@ import ResetPassword from "./components/loginPage/ResetPassword";
 import { OrderConfirmationModal } from "./components/modals/order-confirmation-modal";
 import Booking from "./components/BookingForm/Booking";
 import OrderDetails from "./components/order/OrderDetails";
+import QrReader from "./components/QrCode/QrReader";
 import ViewerPage from "./components/streaming/[username]/ViewerPage";
 import WatchChannelPage from "./components/streaming/[username]/WatchChannelPage";
 import CreatorPageWrapper from "./components/streaming/[username]/CreatorPageWrapper";
@@ -175,6 +176,8 @@ function App() {
         <Route path="/booking/:ticketId" element={<EventDetail />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/qr-scanner" element={<QrReader />} />
+
         <Route
           path="/create-new-event"
           element={
