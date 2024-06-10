@@ -1,16 +1,25 @@
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import {
+  keepPreviousData,
+  useInfiniteQuery,
+  useQuery,
+} from "@tanstack/react-query";
 import {
   axiosInstance,
   createPaymentIntent,
   fetchCreateIngress,
-  fetchStreamerToken,
-  fetchViewerToken,
+  getAllEvents,
+  getAllStreamDetails,
+  getBlockUser,
   getCurrentUser,
+  getCurrentUserById,
+  getCurrentUserByUsername,
   getEventById,
   getOrderDetailsById,
   getRoom,
   getRooms,
+  getStreamDetails,
   validateToken,
+  fetchEventFiltered,
 } from "./api";
 import { useSocket } from "@/components/providers/socket-provider";
 import { CartItem } from "@/hooks/use-cart-store";
@@ -29,6 +38,37 @@ export function useCurrentUser() {
     queryFn: getCurrentUser,
   });
 }
+
+export const useCurrentUserByUsername = (username: string) => {
+  return useQuery({
+    queryKey: ["user", username],
+    queryFn: () => getCurrentUserByUsername(username),
+    enabled: !!username,
+  });
+};
+
+export function useCurrentStream(userId: string) {
+  return useQuery({
+    queryKey: ["stream", userId],
+    queryFn: () => getStreamDetails(userId),
+    enabled: !!userId,
+  });
+}
+
+export function useGetAllStreams() {
+  return useQuery({
+    queryKey: ["stream"],
+    queryFn: () => getAllStreamDetails(),
+  });
+}
+
+export const useCurrentUserById = (userId: string) => {
+  return useQuery({
+    queryKey: ["user", userId],
+    queryFn: () => getCurrentUserById(userId),
+    enabled: !!userId,
+  });
+};
 
 export const useCurrentEventDetail = (eventId: string) => {
   return useQuery({
@@ -93,35 +133,42 @@ export const useRoom = (roomId: string | undefined) => {
 
 export const useAuthQuery = () => {
   return useQuery({
-    queryKey: ["auth", validateToken],
+    queryKey: ["auth"],
     queryFn: validateToken,
-    retry: false, // Do not retry on failure
+    retry: false,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
   });
 };
 
-export const useStreamerToken = (roomName: string) => {
+export const useCreateIngress = (ingressType: IngressInput) => {
   return useQuery({
-    queryKey: ["streamerToken", roomName],
-    queryFn: () => fetchStreamerToken(roomName),
-    enabled: !!roomName,
+    queryKey: ["createIngress", ingressType],
+    queryFn: () => fetchCreateIngress(ingressType),
+    enabled: !!ingressType,
   });
 };
 
-export const useViewerToken = (roomName: string, identity: string) => {
+export const useAllEventsPagination = (page = 1) => {
   return useQuery({
-    queryKey: ["viewerToken", roomName, identity],
-    queryFn: () => fetchViewerToken(roomName, identity),
-    enabled: !!roomName && !!identity,
+    queryKey: ["events", page],
+    queryFn: () => getAllEvents(page),
+    placeholderData: keepPreviousData,
   });
 };
 
-export const useCreateIngress = (
-  roomName: string,
-  ingressType: IngressInput,
-) => {
+export const useFilterParams = (params: string) => {
   return useQuery({
-    queryKey: ["createIngress", roomName, ingressType],
-    queryFn: () => fetchCreateIngress(roomName, ingressType),
-    enabled: !!roomName,
+    queryKey: ["filterParams", params],
+    queryFn: () => fetchEventFiltered(params),
+  });
+};
+
+export const useGetCurrentBlockByUserId = (userId: string) => {
+  return useQuery({
+    queryKey: ["block", userId],
+    queryFn: () => getBlockUser(userId),
+    enabled: !!userId,
   });
 };

@@ -16,4 +16,5 @@ export interface EventType {
   imageUrls: string[];
   tickets: TicketType[];
   roomChatLink?: string;
+  minPrice?: number;
 }

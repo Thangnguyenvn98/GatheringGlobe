@@ -1,11 +1,14 @@
+import {withUt} from "uploadthing/tw"
+
+
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+module.exports = withUt({
   darkMode: "class",
   content: [
-    './pages/**/*.{ts,tsx}',
-    './components/**/*.{ts,tsx}',
-    './app/**/*.{ts,tsx}',
-    './src/**/*.{ts,tsx}',
+    "./pages/**/*.{ts,tsx}",
+    "./components/**/*.{ts,tsx}",
+    "./app/**/*.{ts,tsx}",
+    "./src/**/*.{ts,tsx}",
   ],
   prefix: "",
   theme: {
@@ -18,8 +21,9 @@ module.exports = {
     },
     extend: {
       colors: {
-        'chat':'#3a3b3c',
-        'chat-color':'#252f3b',
+        root: "#F7F5ED",
+        chat: "#3a3b3c",
+        "chat-color": "#252f3b",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -76,4 +80,4 @@ module.exports = {
     },
   },
   plugins: [require("tailwindcss-animate"), require("@tailwindcss/typography")],
-};
+});

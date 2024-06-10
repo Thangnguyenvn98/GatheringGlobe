@@ -10,82 +10,69 @@ const router = express.Router();
 //You can stack finding an event basically calling it 4 times, first by location then startTime then endDate then keyword
 //There a mongodb option to find event by date give startTime and endDate
 //After found the model return the response something like    res.status(200).json(foundEvent);
-router.get("/search", async (req: Request, res: Response) => {
+
+router.get("/", async (req: Request, res: Response) => {
   try {
-    //get all the location, startDate, endDeate, keyword sent from front end
-    let { locationChosen, startDate, endDate, keyword } = req.query;
-    if (!keyword) {
-      keyword = "";
-    }
-    if (!locationChosen) {
-      locationChosen = "";
-    }
-    const regexKeyword = new RegExp(String(keyword), "i"); // Create a regular expression with the variable and make it case-insensitive
-    const regexLocation = new RegExp(String(locationChosen), "i");
-    //find matching data
-    let event;
-    //if no given date range, we look for event that start on or after today
-    if (!startDate) {
-      let date = new Date(); //let startDate be the date today
-      startDate = date.toISOString();
-      //let endDate be really far away so that it fetch all the event we currently have from today
-      date = new Date(3000, 1, 1);
-      endDate = date.toISOString();
-    }
-    //if no endDate input, we let it be one day after startDate (so that we only search for event within the day)
-    if (!endDate) {
-      const date = new Date(String(startDate).split("T")[0]);
-      // Add one day to the Date object
-      date.setDate(date.getDate() + 1);
-      // Convert the modified Date object back to a string
-      endDate = date.toISOString();
-    }
-    //the event has to have the correct location, the wanted keyword in either the title or the description, and the time range overlapsed with the given time range
-    event = await Event.find({
-      $and: [
-        { location: { $regex: regexLocation } },
-        {
-          $or: [
-            { description: { $regex: regexKeyword } },
-            { title: { $regex: regexKeyword } },
-            { location: { $regex: regexKeyword } },
-          ],
+    const now = new Date(); // Gets the current date and time
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+    const skip = (page - 1) * limit;
+
+    // Define an aggregation pipeline to find and process events
+    const pipeline: mongoose.PipelineStage[] = [
+      { $match: { startTime: { $gte: now } } },
+      { $sort: { startTime: 1 } },
+      { $skip: skip },
+      { $limit: limit },
+      {
+        $lookup: {
+          from: "tickets",
+          localField: "_id",
+          foreignField: "eventId",
+          as: "tickets",
         },
-        {
-          $or: [
-            {
-              startTime: {
-                $gte: new Date(String(startDate)),
-                $lte: new Date(String(endDate)),
-              },
-            },
-            {
-              endTime: {
-                $gte: new Date(String(startDate)),
-                $lte: new Date(String(endDate)),
-              },
-            },
-            {
-              $and: [
-                { startTime: { $lte: new Date(String(startDate)) } },
-                { endTime: { $gte: new Date(String(endDate)) } },
-              ],
-            },
-          ],
+      },
+      { $unwind: "$tickets" },
+      {
+        $group: {
+          _id: "$_id",
+          title: { $first: "$title" },
+          description: { $first: "$description" },
+          startTime: { $first: "$startTime" },
+          endTime: { $first: "$endTime" },
+          venueId: { $first: "$venueId" },
+          capacity: { $first: "$capacity" },
+          organizerId: { $first: "$organizerId" },
+          location: { $first: "$location" },
+          category: { $first: "$category" },
+          eventType: { $first: "$eventType" },
+          artistName: { $first: "$artistName" },
+          imageUrls: { $first: "$imageUrls" },
+          roomChatLink: { $first: "$roomChatLink" },
+          minPrice: { $min: "$tickets.price" },
         },
-      ],
-    })
-      .populate("tickets")
-      .exec();
-    //if no matching event found
-    if (event.length === 0) {
-      //set the response and return so that it will set the status and would not run the part after the if statement
-      return res.status(201).json({ message: "Event not found" }); //not sure when this message is used
-    }
-    res.status(200).json(event);
+      },
+    ];
+
+    const events = await Event.aggregate(pipeline);
+
+    // Count total documents for pagination metadata
+    const total = await Event.countDocuments({ startTime: { $gte: now } });
+
+    res.status(200).json({
+      events,
+      pagination: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+    });
   } catch (error) {
-    console.error("Failed to fetch event:", error);
-    res.status(500).json({ message: "Internal server error" });
+    console.error("Failed to fetch events:", error);
+    res
+      .status(500)
+      .json({ message: "Internal server error, unable to fetch events." });
   }
 });
 
@@ -167,83 +154,9 @@ router.post(
     const tickets = req.body.tickets;
 
     if (!Array.isArray(tickets) || tickets.length === 0) {
-      return res
-        .status(400)
-        .json({
-          message: "Missing required ticket details or tickets array is empty.",
-        });
-    }
-
-    try {
-      const event = await Event.findById(eventId);
-      if (!event) {
-        return res.status(404).json({ message: "Event not found." });
-      }
-
-      const createdTickets = [];
-
-      for (const ticketData of tickets) {
-        const { type, price, quantityAvailable, seatNumber, status, isFree } =
-          ticketData;
-
-        if (
-          !type ||
-          price == null ||
-          !quantityAvailable ||
-          !status ||
-          isFree == null
-        ) {
-          return res
-            .status(400)
-            .json({ message: "Missing required ticket details." });
-        }
-        if (isFree && price !== 0) {
-          return res
-            .status(400)
-            .json({ message: "Free tickets must have a price of 0." });
-        }
-
-        const ticket = new Ticket({
-          eventId,
-          type,
-          price,
-          quantityAvailable,
-          seatNumber,
-          status,
-          isFree,
-        });
-
-        await ticket.save();
-        event.tickets.push(ticket._id);
-        createdTickets.push(ticket);
-      }
-
-      await event.save();
-
-      return res.status(201).json({
-        message: "Tickets created successfully",
-        tickets: createdTickets,
+      return res.status(400).json({
+        message: "Missing required ticket details or tickets array is empty.",
       });
-    } catch (error) {
-      console.error("Failed to create tickets:", error);
-      return res.status(500).json({ message: "Internal server error" });
-    }
-  }
-);
-
-router.post(
-  "/:eventId/tickets",
-  verifyToken,
-  async (req: Request, res: Response) => {
-    const { eventId } = req.params;
-    const tickets = req.body.tickets;
-
-    if (!Array.isArray(tickets) || tickets.length === 0) {
-      return res
-        .status(400)
-        .json({
-          message: "Missing required ticket details or tickets array is empty.",
-        });
     }
 
     try {
@@ -326,9 +239,23 @@ router.get("/:eventId/details", async (req: Request, res: Response) => {
 
 router.get("/filter", async (req: Request, res: Response) => {
   try {
-    let { startTime, endTime, priceMin, priceMax, category, eventType } =
-      req.query;
+    let {
+      location,
+      keyword,
+      startTime,
+      endTime,
+      priceMin,
+      priceMax,
+      category,
+      eventType,
+    } = req.query;
 
+    if (location == undefined) {
+      location = "";
+    }
+    if (keyword == undefined) {
+      keyword = "";
+    }
     if (category == "All event categories" || category == undefined) {
       category = "";
     }
@@ -337,6 +264,8 @@ router.get("/filter", async (req: Request, res: Response) => {
     }
     const regexEventType = new RegExp(String(eventType), "i"); // Create a regular expression with the variable and make it case-insensitive
     const regexCategory = new RegExp(String(category), "i");
+    const regexKeyword = new RegExp(String(keyword), "i");
+    const regexLocation = new RegExp(String(location), "i");
     //if no given date range, we look for event that start on or after today
     if (!startTime) {
       let date = new Date(); //let startDate be the date today
@@ -355,6 +284,15 @@ router.get("/filter", async (req: Request, res: Response) => {
     }
     let eventFiltered = await Event.find({
       $and: [
+        {
+          $or: [
+            { description: { $regex: regexKeyword } },
+            { title: { $regex: regexKeyword } },
+            { location: { $regex: regexKeyword } },
+            { artistName: { $regex: regexKeyword } },
+          ],
+        },
+        { location: { $regex: regexLocation } },
         { eventType: { $regex: regexEventType } },
         { category: { $regex: regexCategory } },
         {

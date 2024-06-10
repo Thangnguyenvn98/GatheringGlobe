@@ -8,30 +8,24 @@ const Timer = () => {
   const [minutes, setMinutes] = useState(0);
 
   useEffect(() => {
-    const target = new Date("06/01/2024 23:59:59");
-
+    const target = new Date("06/20/2024 23:59:59");
     const interval = setInterval(() => {
       const now = new Date();
       const difference = target.getTime() - now.getTime();
-
-      const mn = Math.floor(difference / (1000 * 60 * 60 * 24 * 30));
-      setMonths(mn);
-
-      const d = Math.floor(
-        (difference % (1000 * 60 * 60 * 24 * 30)) / (1000 * 60 * 60 * 24),
-      );
-      setDays(d);
-
-      const h = Math.floor(
-        (difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
-      );
-      setHours(h);
-
-      const m = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
-      setMinutes(m);
-
-      if (d <= 0 && h <= 0 && m <= 0) {
+      if (difference <= 0) {
+        clearInterval(interval);
         setEventTime(true);
+      } else {
+        setMonths(Math.floor(difference / (1000 * 60 * 60 * 24 * 30)));
+        setDays(
+          Math.floor(
+            (difference % (1000 * 60 * 60 * 24 * 30)) / (1000 * 60 * 60 * 24),
+          ),
+        );
+        setHours(
+          Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+        );
+        setMinutes(Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)));
       }
     }, 1000);
 
