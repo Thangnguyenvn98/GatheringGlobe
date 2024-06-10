@@ -46,7 +46,7 @@ const categories = [
 
 const EventCategory = () => {
   const navigate = useNavigate();
-  const testClick = (category: string) => {
+  const onSearchCategory = (category: string) => {
     navigate(`/discover?category=${category}`);
   };
   return (
@@ -56,7 +56,7 @@ const EventCategory = () => {
           <div key={index} className="flex flex-col items-center">
             <button
               key={index}
-              onClick={() => testClick(category.title)}
+              onClick={() => onSearchCategory(category.title)}
               className="flex items-center justify-center w-24 h-24 border-2 border-gray-200 rounded-full p-4"
             >
               {category.icon}
