@@ -5,7 +5,6 @@ import { useQuery } from "@tanstack/react-query";
 import { ContactUsFormData } from "@/types/contactUsFormData";
 import axios from "axios";
 import { OrderDetailsByIdResponse } from "@/types/orderDetails";
-
 import { CartItem } from "@/hooks/use-cart-store";
 import { IngressInput } from "@/types/IngressInput";
 import { PaymentIntentResponse } from "@/types/paymentIntentResponse";
@@ -278,4 +277,9 @@ export const resetPassword = async (
     console.error("Error resetting password:", error);
     throw error;
   }
+};
+
+export const fetchEventFiltered = async (params: any) => {
+  const response = await axiosInstance.get(`/api/events/filter/?${params}`);
+  return response.data;
 };

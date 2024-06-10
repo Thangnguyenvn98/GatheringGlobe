@@ -2,7 +2,6 @@ import * as React from "react";
 import { CalendarIcon } from "@radix-ui/react-icons";
 import { format } from "date-fns";
 import { DateRange } from "react-day-picker";
-
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -33,11 +32,11 @@ function DatePickerWithRange({
             variant={"outline"}
             size={"sm"}
             className={cn(
-              "w-auto justify-start text-left font-normal rounded-none bg-white text-green-800 hover:bg-white border-none",
-              !date && "text-green-800",
+              "w-auto p-0 justify-start text-left rounded-none font-bold bg-white text-text-black hover:bg-white border-none text-[12pt]",
+              !date && "text-black",
             )}
           >
-            <CalendarIcon className="mr-2 h-6 w-6 text-black" />
+            <CalendarIcon className="mr-2 h-6 w-6 ml-0 text-black" />
             {date?.from ? (
               date.to ? (
                 <>
@@ -48,7 +47,9 @@ function DatePickerWithRange({
                 format(date.from, "LLL dd, y")
               )
             ) : (
-              <span className="font-normal text-lg">All dates</span>
+              <span className="font-bold text-[12pt] hover:underline">
+                All dates
+              </span>
             )}
           </Button>
         </PopoverTrigger>

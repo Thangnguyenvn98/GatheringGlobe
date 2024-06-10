@@ -19,6 +19,7 @@ import {
   getRooms,
   getStreamDetails,
   validateToken,
+  fetchEventFiltered,
 } from "./api";
 import { useSocket } from "@/components/providers/socket-provider";
 import { CartItem } from "@/hooks/use-cart-store";
@@ -154,6 +155,13 @@ export const useAllEventsPagination = (page = 1) => {
     queryKey: ["events", page],
     queryFn: () => getAllEvents(page),
     placeholderData: keepPreviousData,
+  });
+};
+
+export const useFilterParams = (params: string) => {
+  return useQuery({
+    queryKey: ["filterParams", params],
+    queryFn: () => fetchEventFiltered(params),
   });
 };
 

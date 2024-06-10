@@ -28,7 +28,7 @@ const AboutCard = ({
           {isHost && <BioModal initialValue={bio} hostName={hostName} />}
         </div>
 
-        <p className="text-sm text-white">
+        <p className="text-sm text-white break-words">
           {bio || "This user prefers to keep an air of mystery about them."}
         </p>
       </div>

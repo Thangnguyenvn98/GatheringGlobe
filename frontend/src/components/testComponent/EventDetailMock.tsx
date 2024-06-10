@@ -7,6 +7,7 @@ import { Button } from "../ui/button";
 
 const EventDetailMock: React.FC = () => {
   const { eventId } = useParams<{ eventId: string }>();
+  useParams<{ eventId: string }>();
   const {
     data: eventData,
     isLoading,
