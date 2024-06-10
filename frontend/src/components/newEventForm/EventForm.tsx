@@ -186,6 +186,7 @@ const EventForm = () => {
       form.reset();
       toast.success(response.data.message);
       const event = response.data;
+      navigate(`/`);
       console.log(event);
     } catch (error) {
       toast.error("Something went wrong");
