@@ -137,7 +137,7 @@ router.post("/", verifyToken, async (req: Request, res: Response) => {
   });
   try {
     await event.save();
-    return res.status(201).json({ message: "Event created successfully" });
+    return res.status(200).json(event);
   } catch (error) {
     console.error("Failed to create event:", error);
     return res
