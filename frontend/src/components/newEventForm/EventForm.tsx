@@ -185,9 +185,9 @@ const EventForm = () => {
       const response = await axiosInstance.post("/api/events", values);
       form.reset();
       toast.success(response.data.message);
-      setTimeout(() => {
-        navigate(0);
-      }, 800);
+      const event = response.data;
+      navigate(`/`);
+      console.log(event);
     } catch (error) {
       toast.error("Something went wrong");
     } finally {

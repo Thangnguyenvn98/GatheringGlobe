@@ -6,6 +6,11 @@ import Ticket from "../models/ticket";
 import mongoose from "mongoose";
 
 const router = express.Router();
+//By using the model to find it
+//You can stack finding an event basically calling it 4 times, first by location then startTime then endDate then keyword
+//There a mongodb option to find event by date give startTime and endDate
+//After found the model return the response something like    res.status(200).json(foundEvent);
+
 router.get("/", async (req: Request, res: Response) => {
   try {
     const now = new Date(); // Gets the current date and time
@@ -132,7 +137,7 @@ router.post("/", verifyToken, async (req: Request, res: Response) => {
   });
   try {
     await event.save();
-    return res.status(201).json({ message: "Event created successfully" });
+    return res.status(200).json(event);
   } catch (error) {
     console.error("Failed to create event:", error);
     return res
@@ -149,11 +154,9 @@ router.post(
     const tickets = req.body.tickets;
 
     if (!Array.isArray(tickets) || tickets.length === 0) {
-      return res
-        .status(400)
-        .json({
-          message: "Missing required ticket details or tickets array is empty.",
-        });
+      return res.status(400).json({
+        message: "Missing required ticket details or tickets array is empty.",
+      });
     }
 
     try {
@@ -286,7 +289,7 @@ router.get("/filter", async (req: Request, res: Response) => {
             { description: { $regex: regexKeyword } },
             { title: { $regex: regexKeyword } },
             { location: { $regex: regexKeyword } },
-            { artistName: { $regex: regexKeyword } }
+            { artistName: { $regex: regexKeyword } },
           ],
         },
         { location: { $regex: regexLocation } },
