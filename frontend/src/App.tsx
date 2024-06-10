@@ -4,6 +4,7 @@ import DiscoverEvent from "./components/Discover_Event/DiscoverEvent";
 import EventDetail from "./components/Discover_Event/EventDetail";
 import AboutUs from "./components/aboutUs/about-us";
 import EventForm from "./components/newEventForm/EventForm";
+
 import ChatPage from "./components/chatRoom/Chat";
 import Homepage from "./components/homepage/homepage";
 import { SocketProvider } from "./components/providers/socket-provider";
@@ -19,14 +20,14 @@ import ContactUs from "./components/contact-us/contactUs";
 import ProtectedRoute from "./utils/ProtectedRoute";
 import ForgotPassword from "./components/loginPage/Forgotpassword";
 import ResetPassword from "./components/loginPage/ResetPassword";
-// import EventDetailMock from "./components/Discover_Event/EventDetail";
-import Booking from "./components/BookingForm/Booking";
 import { OrderConfirmationModal } from "./components/modals/order-confirmation-modal";
+import Booking from "./components/BookingForm/Booking";
 import OrderDetails from "./components/order/OrderDetails";
-import KeysPage from "./components/streaming/keys/KeysPage";
+import QrReader from "./components/QrCode/QrReader";
 import ViewerPage from "./components/streaming/[username]/ViewerPage";
 import WatchChannelPage from "./components/streaming/[username]/WatchChannelPage";
 import CreatorPageWrapper from "./components/streaming/[username]/CreatorPageWrapper";
+import GenerateStreamPage from "./components/streaming/keys/GenerateStreamPage.tsx";
 
 function App() {
   return (
@@ -51,7 +52,14 @@ function App() {
         />
 
         <Route element={<ProtectedRoute />}>
-          <Route path="/u/:username/keys" element={<KeysPage />} />
+          <Route
+            path="/u/:username/keys"
+            element={
+              <Layout>
+                <GenerateStreamPage />
+              </Layout>
+            }
+          />
 
           <Route
             path="/create-new-event"
@@ -148,7 +156,7 @@ function App() {
           }
         />
         <Route
-          path="/stream/channel/watch"
+          path="/stream/channel/watch/all"
           element={
             <Layout>
               <WatchChannelPage />
@@ -167,15 +175,7 @@ function App() {
         <Route path="/booking/:ticketId" element={<EventDetail />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
-
-        <Route
-          path="/create-new-event"
-          element={
-            <Layout>
-              <EventForm />
-            </Layout>
-          }
-        />
+        <Route path="/qr-scanner" element={<QrReader />} />
       </Routes>
     </Router>
   );

@@ -184,6 +184,7 @@ export const editStreamDetails = async (data: {
   name?: string;
   thumbnailUrl?: string | null;
   streamId: string;
+  usedObs?: boolean;
 }) => {
   const response = await axiosInstance.put<Stream>(
     `/api/stream/${data.streamId}`,

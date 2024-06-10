@@ -2,8 +2,21 @@ import { LiveBadge } from "../live-badge";
 import { Avatar, AvatarFallback, AvatarImage } from "./avatar";
 import { cn } from "@/lib/utils";
 import { Skeleton } from "./skeleton";
+import { VariantProps, cva } from "class-variance-authority";
 
-interface UserAvatarProps {
+const avatarSizes = cva("", {
+  variants: {
+    size: {
+      default: "h-8 w-8",
+      lg: "h-14 w-14",
+    },
+  },
+  defaultVariants: {
+    size: "default",
+  },
+});
+
+interface UserAvatarProps extends VariantProps<typeof avatarSizes> {
   username: string;
   imageUrl: string;
   isLive?: boolean;
@@ -15,6 +28,7 @@ export const UserAvatar = ({
   imageUrl,
   isLive,
   showBadge,
+  size,
 }: UserAvatarProps) => {
   const canShowBadge = showBadge && isLive;
   return (
@@ -22,6 +36,7 @@ export const UserAvatar = ({
       <Avatar
         className={cn(
           isLive && "ring-2 ring-rose-500 border border-background ",
+          avatarSizes({ size }),
         )}
       >
         <AvatarImage src={imageUrl} alt={username} className="object-cover" />
@@ -39,6 +54,8 @@ export const UserAvatar = ({
   );
 };
 
-export const UserAvatarSkeleton = () => {
-  return <Skeleton className="rounded-full" />;
+interface UserAvatarSkeletonProps extends VariantProps<typeof avatarSizes> {}
+
+export const UserAvatarSkeleton = ({ size }: UserAvatarSkeletonProps) => {
+  return <Skeleton className={cn("rounded-full", avatarSizes({ size }))} />;
 };

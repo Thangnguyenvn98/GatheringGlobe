@@ -20,7 +20,7 @@ const CreatorPageWrapper = () => {
     return <ErrorPage />;
   }
 
-  const usedOBS = user.stream?.usedOBS || false;
+  const usedOBS = user?.stream?.usedOBS;
 
   return (
     <>

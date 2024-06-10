@@ -55,7 +55,7 @@ const ConnectModal = ({ currentUser }: ConnectModalProps) => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button>Generate connection</Button>
+        <Button>Generate OBS connection</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
