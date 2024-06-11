@@ -11,8 +11,10 @@ import eventRoutes from "./routes/events";
 import paymentRoutes from "./routes/payments";
 import orderRoutes from "./routes/orders";
 import livekitRoutes from "./routes/livekit";
+import allEventRoutes from "./routes/allEvents";
 import streamRoutes from "./routes/stream";
 import blockRoutes from "./routes/blocks";
+import pdfRoutes from "./routes/pdf";
 import { Server } from "socket.io";
 import http from "http";
 import Room from "./models/room";
@@ -55,15 +57,16 @@ const io = new Server(server, {
     methods: ["GET", "POST"],
   },
 });
-
+app.use("/api/pdf", pdfRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/room", roomRoutes);
 app.use("/api/events", eventRoutes);
 app.use("/api/payments", paymentRoutes);
+app.use("/api/orders", orderRoutes);
+app.use("/api/allEvents", allEventRoutes);
 app.use("/api/livekit", livekitRoutes);
 app.use("/api/authRoutes", authRoutes);
-app.use("/api/orders", orderRoutes);
 app.use("/api/stream", streamRoutes);
 app.use("/api/block", blockRoutes);
 app.use(

@@ -20,7 +20,6 @@ const StreamPlayers = ({ user, stream }: StreamPlayersProps) => {
   const serverUrl = import.meta.env.VITE_REACT_APP_LIVEKIT_WS_URL;
 
   const { token, viewerName, identity } = useViewerToken(user._id);
-  //  console.log({token,viewerName,identity})
   const { collapsed } = useChatSidebar((state) => state);
 
   if (!token || !viewerName || !identity) {

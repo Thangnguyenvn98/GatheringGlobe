@@ -1,5 +1,5 @@
+import { UserAvatar } from "@/components/ui/user-avatar";
 import { VerifiedMark } from "@/components/ui/verified-mark";
-import { cn } from "@/lib/utils";
 import {
   useParticipants,
   useRemoteParticipant,
@@ -22,23 +22,16 @@ const Header = ({ imageUrl, hostIdentity, hostName, name }: HeaderProps) => {
   return (
     <div className="flex flex-col lg:flex-row gap-y-4 lg:gap-y-0 items-start justify-between px-4">
       <div className="flex items-center gap-x-3">
-        {isLive && (
-          <div className="absolute z-10 h-11 w-11 ml-2 animate-ping rounded-full bg-red-600 dark:bg-red-400" />
-        )}
-        <img
-          className={cn(
-            "z-20 h-16 w-16 rounded-full border-2 border-white bg-gray-500 dark:border-zinc-900",
-            isLive && "ring-2 ring-red-600",
-          )}
-          src={`https://api.dicebear.com/5.x/open-peeps/svg?seed=${imageUrl}2&size=64&face=smile,cute`}
-          alt={hostName}
+        <UserAvatar
+          imageUrl={
+            imageUrl ||
+            `https://api.dicebear.com/5.x/open-peeps/svg?seed=${imageUrl}2&size=64&face=smile,cute`
+          }
+          username={hostName}
+          isLive={isLive}
+          showBadge
+          size={"lg"}
         />
-
-        {isLive && (
-          <div className="absolute z-30 mt-14 w-12 ml-2  rounded-xl border-2 border-white bg-red-600 p-1 text-center text-xs font-bold uppercase text-white transition-all dark:border-zinc-900">
-            Live
-          </div>
-        )}
         <div className="space-y-1">
           <div className="flex items-center gap-x-2">
             <h2 className="text-lg font-semibold">{hostName}</h2>
