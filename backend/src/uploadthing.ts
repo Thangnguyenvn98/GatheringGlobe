@@ -1,7 +1,7 @@
 import { createUploadthing, type FileRouter } from "uploadthing/server";
- 
+
 const f = createUploadthing();
- 
+
 export const uploadRouter = {
   thumbnailUploader: f({
     image: {
@@ -12,5 +12,5 @@ export const uploadRouter = {
     console.log("upload completed", data);
   }),
 } satisfies FileRouter;
- 
+
 export type OurFileRouter = typeof uploadRouter;
