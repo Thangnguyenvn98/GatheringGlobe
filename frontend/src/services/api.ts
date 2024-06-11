@@ -9,6 +9,7 @@ import { CartItem } from "@/hooks/use-cart-store";
 import { IngressInput } from "@/types/IngressInput";
 import { PaymentIntentResponse } from "@/types/paymentIntentResponse";
 import { Stream } from "@/types/stream";
+import { ChatBotUserMessage } from "@/types/chatBotUserMessage";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 export const axiosInstance = axios.create({
@@ -281,5 +282,10 @@ export const resetPassword = async (
 
 export const fetchEventFiltered = async (params: any) => {
   const response = await axiosInstance.get(`/api/events/filter/?${params}`);
+  return response.data;
+};
+
+export const sendChatBotMessage = async (message: ChatBotUserMessage) => {
+  const response = await axiosInstance.post("/api/chatbot", { message });
   return response.data;
 };

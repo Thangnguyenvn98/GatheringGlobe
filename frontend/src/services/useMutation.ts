@@ -1,9 +1,10 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createRoom, deleteRoom, editRoom } from "./api";
+import { createRoom, deleteRoom, editRoom, sendChatBotMessage } from "./api";
 import toast from "react-hot-toast";
 
 export function useCreateRoom() {
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: createRoom,
     onMutate: () => {
@@ -29,6 +30,7 @@ export function useCreateRoom() {
 
 export function useEditRoom() {
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: editRoom,
     onMutate: () => {
@@ -54,6 +56,7 @@ export function useEditRoom() {
 
 export function useDeleteRoom() {
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: deleteRoom,
     onMutate: () => {
@@ -76,3 +79,14 @@ export function useDeleteRoom() {
     },
   });
 }
+
+// export const useSendChatBotMessage = () => {
+// const queryClient = useQueryClient();
+
+//   return useMutation({
+//     mutationFn: sendChatBotMessage,
+//     onSuccess: () => {
+//       console.log("Message sent successfully");
+//     },
+//   });
+// };
