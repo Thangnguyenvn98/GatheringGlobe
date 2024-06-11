@@ -13,6 +13,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@react-pdf/renderer": "^3.4.4",
     "@types/cookie-parser": "^1.4.7",
     "@types/multer": "^1.4.11",
     "bcryptjs": "^2.4.3",
@@ -33,6 +34,7 @@
     "nodemailer": "^6.9.13",
     "npc": "^0.0.1",
     "qrcode": "^1.5.3",
+    "react": "^18.3.1",
     "socket.io": "^4.7.5",
     "stripe": "^14.25.0",
     "uploadthing": "^6.12.0",
@@ -47,6 +49,7 @@
     "@types/node": "^20.11.30",
     "@types/nodemailer": "^6.4.15",
     "@types/qrcode": "^1.5.5",
+    "@types/react": "^18.3.3",
     "@types/uuid": "^9.0.8",
     "autoprefixer": "^10.4.19",
     "nodemon": "^3.1.0",
