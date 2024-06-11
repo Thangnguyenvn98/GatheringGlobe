@@ -133,7 +133,7 @@ const FilterSection = () => {
     if (category !== "" && category !== "All event categories") {
       searchParams.set(
         "category",
-        queryString.stringify({ category }, { encode: true }).slice(8),
+        queryString.stringify({ category }, { encode: false }).slice(9),
       );
     } else {
       searchParams.delete("category");
@@ -141,7 +141,7 @@ const FilterSection = () => {
     if (eventType !== "All event types" && eventType !== "") {
       searchParams.set(
         "eventType",
-        queryString.stringify({ eventType }, { encode: true }).slice(8),
+        queryString.stringify({ eventType }, { encode: true }).slice(12),
       );
     } else {
       searchParams.delete("eventType");
