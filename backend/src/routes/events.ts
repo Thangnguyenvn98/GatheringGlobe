@@ -237,6 +237,7 @@ router.get("/:eventId/details", async (req: Request, res: Response) => {
 router.get("/filter", async (req: Request, res: Response) => {
   try {
     let {
+      sort,
       location,
       keyword,
       startTime,
@@ -246,7 +247,7 @@ router.get("/filter", async (req: Request, res: Response) => {
       category,
       eventType,
     } = req.query;
-
+    
     if (location == undefined) {
       location = "";
     }
@@ -279,80 +280,190 @@ router.get("/filter", async (req: Request, res: Response) => {
       // Convert the modified Date object back to a string
       endTime = date.toISOString();
     }
-    let eventFiltered = await Event.find({
-      $and: [
-        {
-          $or: [
-            { description: { $regex: regexKeyword } },
-            { title: { $regex: regexKeyword } },
-            { location: { $regex: regexKeyword } },
-            { artistName: { $regex: regexKeyword } }
-          ],
-        },
-        { location: { $regex: regexLocation } },
-        { eventType: { $regex: regexEventType } },
-        { category: { $regex: regexCategory } },
-        {
-          $or: [
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 7;
+    const skip = (page - 1) * limit;
+
+    // const total_pipeline: mongoose.PipelineStage[] = [{ $match:{
+    //   $and: [
+    //     {
+    //       $or: [
+    //         { description: { $regex: regexKeyword } },
+    //         { title: { $regex: regexKeyword } },
+    //         { location: { $regex: regexKeyword } },
+    //         { artistName: { $regex: regexKeyword } }
+    //       ],
+    //     },
+    //     { location: { $regex: regexLocation } },
+    //     { eventType: { $regex: regexEventType } },
+    //     { category: { $regex: regexCategory } },
+    //     {
+    //       $or: [
+    //         {
+    //           startTime: {
+    //             $gte: new Date(String(startTime)),
+    //             $lte: new Date(String(endTime)),
+    //           },
+    //         },
+    //         {
+    //           endTime: {
+    //             $gte: new Date(String(startTime)),
+    //             $lte: new Date(String(endTime)),
+    //           },
+    //         },
+    //         {
+    //           $and: [
+    //             { startTime: { $lte: new Date(String(startTime)) } },
+    //             { endTime: { $gte: new Date(String(endTime)) } },
+    //           ],
+    //         },
+    //       ],
+    //     },
+    //   ],
+    // }}]
+    const pipeline: mongoose.PipelineStage[] = [
+      { $match:{
+          $and: [
             {
-              startTime: {
-                $gte: new Date(String(startTime)),
-                $lte: new Date(String(endTime)),
-              },
+              $or: [
+                { description: { $regex: regexKeyword } },
+                { title: { $regex: regexKeyword } },
+                { location: { $regex: regexKeyword } },
+                { artistName: { $regex: regexKeyword } }
+              ],
             },
+            { location: { $regex: regexLocation } },
+            { eventType: { $regex: regexEventType } },
+            { category: { $regex: regexCategory } },
             {
-              endTime: {
-                $gte: new Date(String(startTime)),
-                $lte: new Date(String(endTime)),
-              },
-            },
-            {
-              $and: [
-                { startTime: { $lte: new Date(String(startTime)) } },
-                { endTime: { $gte: new Date(String(endTime)) } },
+              $or: [
+                {
+                  startTime: {
+                    $gte: new Date(String(startTime)),
+                    $lte: new Date(String(endTime)),
+                  },
+                },
+                {
+                  endTime: {
+                    $gte: new Date(String(startTime)),
+                    $lte: new Date(String(endTime)),
+                  },
+                },
+                {
+                  $and: [
+                    { startTime: { $lte: new Date(String(startTime)) } },
+                    { endTime: { $gte: new Date(String(endTime)) } },
+                  ],
+                },
               ],
             },
           ],
+        }},
+      {
+        $lookup: {
+          from: "tickets",
+          localField: "_id",
+          foreignField: "eventId",
+          as: "tickets",
         },
-      ],
-    })
-      .populate({ path: "tickets", select: "price type " })
-      .exec();
-
-    //the function that takes in an event array and filters by price and return a new array
-    const ticketPriceFilter = async (
-      events: EventType[],
-      priceMinPassed = priceMin,
-      priceMaxPassed = priceMax
-    ) => {
-      let eventFilteredPrice = [];
-
-      for (const event of events) {
-        let ticketIds = event.tickets;
-        for (const ticketId of ticketIds) {
-          let ticket = await Ticket.findById(ticketId).exec();
-          if (
-            ticket?.price != undefined &&
-            (priceMaxPassed == undefined ||
-              ticket.price <= parseFloat(String(priceMaxPassed))) &&
-            (priceMinPassed == undefined ||
-              ticket.price >= parseFloat(String(priceMinPassed)))
-          ) {
-            eventFilteredPrice.push(event);
-            break; //so that it does not push same event twice
-          }
+      },
+      { $unwind: "$tickets" },
+      {
+        $addFields: {
+          minPrice: { $min: "$tickets.price" },
+          maxPrice: { $max: "$tickets.price" }
         }
-      }
-      return eventFilteredPrice;
-    };
-    let eventMatchedPrice = await ticketPriceFilter(eventFiltered);
+      },
+      // { $match:{
+      //     minPrice: {$gte: priceMin? parseFloat(priceMin as string): -Infinity}
+      //     // minPrice: {$gte: 0}
+      // }}
+      { $match:{
+        $or: [
+          {
+            minPrice: {
+              $gte: priceMin? parseFloat(priceMin as string): -Infinity,
+              $lte: priceMax? parseFloat(priceMax as string): Infinity,
+            },
+          },
+          {
+            maxPrice: {
+              $gte: priceMin? parseFloat(priceMin as string): -Infinity,
+              $lte: priceMax? parseFloat(priceMax as string): Infinity,
+            },
+          },
+          {
+            $and: [
+              { minPrice: { $lte: priceMin? parseFloat(priceMin as string): -Infinity } },
+              { maxPrice: { $gte: priceMax? parseFloat(priceMax as string): Infinity } },
+            ],
+          },
+        ],
+      }},
+    ];
 
-    //if no matching event found
-    if (eventMatchedPrice.length === 0) {
-      //set the response and return so that it will set the status and would not run the part after the if statement
-      return res.status(201).json({ message: "No event matches" }); //not sure when this message is used
-    }
-    res.status(200).json(eventMatchedPrice);
+    let eventMatchedAll = await Event.aggregate(pipeline);
+    const total = eventMatchedAll.length
+
+    switch (sort) {
+      case "Soonest":
+        pipeline.push(
+          { $sort: 
+            {startTime: 1}
+          },
+          { $sort: 
+            {endTime: 1}
+          }
+        )
+        break;
+      case "Latest":
+        pipeline.push(
+          { $sort: 
+            {startTime: -1}
+          },
+          { $sort: 
+            {endTime: -1}
+          }
+        )
+        break;
+      case "Price low to high":
+        pipeline.push(
+          { $sort: 
+            {minPrice: 1}
+          },
+          { $sort: 
+            {maxPrice: 1}
+          }
+        )
+        break;
+      case "Price high to low":
+        pipeline.push(
+          { $sort: 
+            {minPrice: -1}
+          },
+          { $sort: 
+            {maxPrice: -1}
+          }
+        )
+        break;      
+      default:
+        break;
+  ``}
+    pipeline.push(
+      { $skip: skip },
+      { $limit: limit },
+    )
+    const eventMatched = await Event.aggregate(pipeline);
+
+    res.status(200).json({
+      eventMatched,
+      pagination: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+    });
   } catch (error) {
     console.error("Failed to fetch event:", error);
     res.status(500).json({ message: "Internal server error" });

@@ -114,41 +114,64 @@ const FilterSection = () => {
       firstUpdate.current = firstUpdate.current + 1;
       return;
     }
-    let params = [];
     if (priceMin !== "") {
-      params.push(queryString.stringify({ priceMin }, { encode: true }));
+      searchParams.set(
+        "priceMin",
+        queryString.stringify({ priceMin }, { encode: true }).slice(8),
+      );
+    } else {
+      searchParams.delete("priceMin");
     }
     if (priceMax !== "") {
-      params.push(queryString.stringify({ priceMax }, { encode: true }));
+      searchParams.set(
+        "priceMax",
+        queryString.stringify({ priceMax }, { encode: true }).slice(8),
+      );
+    } else {
+      searchParams.delete("priceMax");
     }
     if (category !== "" && category !== "All event categories") {
-      params.push(queryString.stringify({ category }, { encode: true }));
+      searchParams.set(
+        "category",
+        queryString.stringify({ category }, { encode: true }).slice(8),
+      );
+    } else {
+      searchParams.delete("category");
     }
     if (eventType !== "All event types" && eventType !== "") {
-      params.push(queryString.stringify({ eventType }, { encode: true }));
+      searchParams.set(
+        "eventType",
+        queryString.stringify({ eventType }, { encode: true }).slice(8),
+      );
+    } else {
+      searchParams.delete("eventType");
     }
     if (date && date.from) {
-      params.push(
-        "startTime=" +
-          queryString
-            .stringify({ startDate: date.from.toISOString() }, { encode: true })
-            .slice(10),
+      searchParams.set(
+        "startTime",
+        queryString
+          .stringify({ endDate: date.from.toISOString() }, { encode: true })
+          .slice(8),
       );
+    } else {
+      searchParams.delete("startTime");
     }
     if (date && date.to) {
-      params.push(
-        "endTime=" +
-          queryString
-            .stringify({ endDate: date.to.toISOString() }, { encode: true })
-            .slice(8),
+      searchParams.set(
+        "endTime",
+        queryString
+          .stringify({ endDate: date.to.toISOString() }, { encode: true })
+          .slice(8),
       );
+    } else {
+      searchParams.delete("endTime");
     }
-    const finalParams = params.join("&");
-    setSearchParams(finalParams);
+    searchParams.delete("page");
+    setSearchParams(searchParams);
   }, [category, eventType, priceMin, priceMax, date]);
 
   return (
-    <div className="filter-section-container relative font-bold">
+    <div className="relative font-bold">
       <h1 className="size-10 text-4xl mx-0 my-7">Filter</h1>
       <div className=" top-[152px] bottom-7">
         <div className="">
