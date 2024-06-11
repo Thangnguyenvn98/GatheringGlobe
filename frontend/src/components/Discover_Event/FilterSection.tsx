@@ -117,7 +117,7 @@ const FilterSection = () => {
     if (priceMin !== "") {
       searchParams.set(
         "priceMin",
-        queryString.stringify({ priceMin }, { encode: true }).slice(8),
+        queryString.stringify({ priceMin }, { encode: true }).slice(9),
       );
     } else {
       searchParams.delete("priceMin");
@@ -125,7 +125,7 @@ const FilterSection = () => {
     if (priceMax !== "") {
       searchParams.set(
         "priceMax",
-        queryString.stringify({ priceMax }, { encode: true }).slice(8),
+        queryString.stringify({ priceMax }, { encode: true }).slice(9),
       );
     } else {
       searchParams.delete("priceMax");
@@ -141,7 +141,7 @@ const FilterSection = () => {
     if (eventType !== "All event types" && eventType !== "") {
       searchParams.set(
         "eventType",
-        queryString.stringify({ eventType }, { encode: true }).slice(12),
+        queryString.stringify({ eventType }, { encode: true }).slice(10),
       );
     } else {
       searchParams.delete("eventType");
