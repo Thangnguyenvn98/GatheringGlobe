@@ -15,6 +15,7 @@ import allEventRoutes from "./routes/allEvents";
 import streamRoutes from "./routes/stream";
 import blockRoutes from "./routes/blocks";
 import pdfRoutes from "./routes/pdf";
+import chatBotRoutes from "./routes/chatBotRoutes";
 import { Server } from "socket.io";
 import http from "http";
 import Room from "./models/room";
@@ -68,6 +69,7 @@ app.use("/api/allEvents", allEventRoutes);
 app.use("/api/livekit", livekitRoutes);
 app.use("/api/authRoutes", authRoutes);
 app.use("/api/stream", streamRoutes);
+app.use("/api/chatbot", chatBotRoutes);
 app.use("/api/block", blockRoutes);
 app.use(
   "/api/webhooks/livekit",

@@ -28,6 +28,7 @@ import ViewerPage from "./components/streaming/[username]/ViewerPage";
 import WatchChannelPage from "./components/streaming/[username]/WatchChannelPage";
 import CreatorPageWrapper from "./components/streaming/[username]/CreatorPageWrapper";
 import GenerateStreamPage from "./components/streaming/keys/GenerateStreamPage.tsx";
+import BotChat from "./components/chatbot/BotChat.tsx";
 
 function App() {
   return (
@@ -121,6 +122,7 @@ function App() {
             </Layout>
           }
         />
+        {/* <Route path="/chatbot" element={<BotChat />} /> */}
 
         <Route
           path="/discover/:eventName/event/:eventId"
