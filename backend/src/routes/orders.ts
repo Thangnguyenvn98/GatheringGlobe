@@ -178,7 +178,7 @@ router.post(
 
       const mailOptions = {
         from: process.env.USER_EMAIL,
-        to: "kak4sh16@gmail.com",
+        to: orderObject.email,
         subject: "Your Ticket",
         html: `<p>Dear ${orderObject.firstName} ${orderObject.lastName},</p>
                <p>Thank you for your order. Here is your ticket:</p>
