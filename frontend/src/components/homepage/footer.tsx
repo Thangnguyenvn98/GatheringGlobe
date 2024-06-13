@@ -132,7 +132,7 @@ const socialMedia = [
 function Footer() {
   return (
     <div className="footer-container">
-      <div className=" w-full mt-12 text-gray-200 py-4 px-6">
+      <div className=" w-full mt-12 text-gray-200 py-4 px-4">
         <div className="footer-data border-b border-gray-700 pb-6 grid grid-cols-6 gap-2 pl-6">
           {sections.map((section, index) => (
             <div className="pt-2 pl-6" key={index}>
@@ -143,7 +143,7 @@ function Footer() {
                 {section.items.map((item, itemIndex) => (
                   <li
                     key={itemIndex}
-                    className="py-1 0 hover:text-white cursor-pointer"
+                    className="py-1 font-medium  hover:text-black hover:underline  hover:underline-offset-4 cursor-pointer"
                   >
                     <Link to={typeof item === "string" ? item : item.path}>
                       {typeof item === "string" ? item : item.name}
@@ -158,7 +158,7 @@ function Footer() {
 
       <div className=" copyright-container flex flex-wrap items-center justify-between w-full  ">
         <div className="flex-1 min-w-[300px] text-center">
-          <p className="pl-8 py-4">
+          <p className="font-medium pl-8 py-4">
             © 2024 Gathering Globe. All Rights Reserved by Gathering Globe
             Contributors Team.
           </p>
@@ -173,7 +173,7 @@ function Footer() {
                 href={social.link}
                 target="_blank"
                 rel="noreferrer"
-                className="hover:text-white cursor-pointer mx-2" // Added horizontal margin for spacing between icons
+                className="hover:text-black hover:underline  hover:underline-offset-4 cursor-pointer mx-2" // Added horizontal margin for spacing between icons
               >
                 <Icon />
               </a>
