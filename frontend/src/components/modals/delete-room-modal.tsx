@@ -30,7 +30,7 @@ export const DeleteChannelModal = () => {
 
       onClose();
       setIsLoading(false);
-      navigate("/messages");
+      navigate("/community-chat");
     } catch (error) {
       console.log(error);
     }

@@ -6,10 +6,11 @@ import {
   OpenAIStreamPayload,
 } from "../types/openai-stream";
 import { chatbotPrompt } from "../utils/constants/chatbot-prompt";
+import rateLimitMiddleware from "../middleware/rateLimit";
 
 const router = express.Router();
 
-router.post("/", async (req: Request, res: Response) => {
+router.post("/", rateLimitMiddleware, async (req: Request, res: Response) => {
   try {
     const { messages } = req.body;
 

@@ -29,13 +29,19 @@ const BotChatMessages = ({ className, ...props }: BotChatMessageProps) => {
               className={cn(
                 "flex flex-col space-y-2 text-sm max-w-xs mx-2 overflow-x-hidden",
                 {
-                  "bg-blue-600 text-white": message.isUserMessage,
-                  "bg-gray-200 text-gray-900": !message.isUserMessage,
+                  "order-1 items-end": message.isUserMessage,
+                  "order-2 items-start": !message.isUserMessage,
                 },
               )}
             >
-              {/* <MarkdownLite text={message.message} /> */}
-              {message.message}
+              <p
+                className={cn("px-4 py-2 rounded-lg", {
+                  "bg-blue-600 text-white": message.isUserMessage,
+                  "bg-gray-200 text-gray-900": !message.isUserMessage,
+                })}
+              >
+                <MarkdownLite message={message.message} />
+              </p>
             </div>
           </div>
         </div>
