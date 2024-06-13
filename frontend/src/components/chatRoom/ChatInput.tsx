@@ -55,7 +55,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
     }
   };
   return (
-    <form className="p-2 mt-auto w-full" onSubmit={handleSubmit}>
+    <form className="p-6 mt-auto w-full" onSubmit={handleSubmit}>
       <div className="relative">
         <div className="flex flex-col">
           {imageUrl && (

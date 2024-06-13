@@ -59,7 +59,7 @@ export const eventData = `
   </content>
 </url>
 <url>
-  <loc>http://localhost:5173/u/:username/keys</loc>
+  <loc>http://localhost:5173/u/:username/create-stream</loc>
   <desc>Generate stream keys for live streaming</desc>
 </url>
 <url>
@@ -67,8 +67,8 @@ export const eventData = `
   <desc>Create a new event</desc>
 </url>
 <url>
-  <loc>http://localhost:5173/messages</loc>
-  <desc>Access your messages</desc>
+  <loc>http://localhost:5173/community-chat</loc>
+  <desc>Access your community chat and join</desc>
 </url>
 <url>
   <loc>http://localhost:5173/checkout</loc>

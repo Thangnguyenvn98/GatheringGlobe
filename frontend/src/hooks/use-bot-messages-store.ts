@@ -1,5 +1,6 @@
 // stores/useBotMessagesStore.js
 import { ChatBotUserMessage } from "@/types/chatBotUserMessage";
+import { nanoid } from "nanoid";
 import { create } from "zustand";
 
 interface BotMessageStore {
@@ -12,7 +13,13 @@ interface BotMessageStore {
 }
 
 const useBotMessagesStore = create<BotMessageStore>((set) => ({
-  messages: [],
+  messages: [
+    {
+      id: nanoid(),
+      message: "Hello, how can I help you?",
+      isUserMessage: false,
+    },
+  ],
   addMessage: (message) =>
     set((state) => ({ messages: [...state.messages, ...message] })),
   clearMessages: () => set({ messages: [] }),
