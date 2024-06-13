@@ -24,7 +24,7 @@ const OrderDetails = () => {
   const purchaseDate = format(new Date(created * 1000), "MMMM dd, yyyy");
 
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col items-center bg-white">
       <div className="max-w-[1000px] p-4 w-full">
         <h2 className="font-bold text-4xl">Order Details</h2>
         <div className="grid grid-cols-[70%_30%] min-h-[100px] mt-2">
@@ -37,7 +37,7 @@ const OrderDetails = () => {
             <h2>GatheringGlobe Inc</h2>
           </div>
         </div>
-        <div className="grid grid-cols-[20%_50%_30%] p-4 border rounded-lg">
+        <div className="grid grid-cols-[20%_50%_30%] p-4 border-2 rounded-lg">
           <div>
             <h2 className="font-bold text-lg">Billing Address</h2>
             <p>
@@ -100,14 +100,15 @@ const OrderDetails = () => {
               <h2 className="font-bold">Order Details Sent To Your Email</h2>
               <h2>Email: {order.email}</h2>
               <div className="grid grid-cols-[20%_80%] gap-x-4">
-                <div>
+                <div className="w-48 h-48 relative">
                   <img
+                    className="w-full h-full object-cover rounded-lg"
                     src={event.eventId.imageUrls[0]}
                     alt={event.eventId.title}
                   />
                 </div>
-                <div>
-                  <h2>{event.eventId.title}</h2>
+                <div className="flex flex-col ml-20 items-start">
+                  <h2 className="font-bold text-lg">{event.eventId.title}</h2>
                   <p>
                     {format(new Date(event.eventId.startTime), "MMMM dd, yyyy")}
                   </p>

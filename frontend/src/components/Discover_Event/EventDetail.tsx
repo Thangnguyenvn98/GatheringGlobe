@@ -75,7 +75,12 @@ const EventDetail: React.FC = () => {
     });
 
     if (Object.keys(ticketsToAdd).length > 0) {
-      addToCart(eventId!, eventData?.title || "", ticketsToAdd);
+      addToCart(
+        eventId!,
+        eventData?.title || "",
+        eventData?.imageUrls[0] || "",
+        ticketsToAdd,
+      );
       const resetQuantities: { [key: string]: number } = {};
       Object.keys(ticketQuantities).forEach((ticketId) => {
         resetQuantities[ticketId] = 0;

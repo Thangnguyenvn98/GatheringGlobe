@@ -55,7 +55,7 @@ const Cart: React.FC = () => {
       </div>
       {cartItems.map((cartItem) => (
         <div key={cartItem.eventId} className="mb-6">
-          <h3 className="text-lg font-semibold mb-2">
+          <h3 className="text-lg font-semibold my-4">
             Event: {cartItem.eventName}
           </h3>
           {cartItem.tickets &&
