@@ -1,10 +1,14 @@
-import Sidebar from "../userDashboard/DashboardSideBar";
-// import MainContent from "./DashboardMainContent";
+import { useState } from "react";
+import SideBar from "./SideBar";
+import MainContent from "./MainContent";
+
 const Dashboard = () => {
+  const [selectedCategory, setSelectedCategory] = useState<string>("");
+
   return (
-    <div>
-      <Sidebar />
-      {/* <MainContent /> */}
+    <div className="flex">
+      <SideBar onSelectCategory={setSelectedCategory} />
+      <MainContent category={selectedCategory} />
     </div>
   );
 };
