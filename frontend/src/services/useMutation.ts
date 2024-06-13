@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createRoom, deleteRoom, editRoom, sendChatBotMessage } from "./api";
+import { createRoom, deleteRoom, editRoom } from "./api";
 import toast from "react-hot-toast";
 
 export function useCreateRoom() {
