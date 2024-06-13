@@ -132,11 +132,11 @@ const socialMedia = [
 function Footer() {
   return (
     <div className="footer-container">
-      <div className=" w-full mt-12 text-gray-200 py-4 px-4">
+      <div className=" w-full mt-12 text-gray-200 px-4 pb-4 pt-3">
         <div className="footer-data border-b border-gray-700 pb-6 grid grid-cols-6 gap-2 pl-6">
           {sections.map((section, index) => (
             <div className="pt-2 pl-6" key={index}>
-              <h3 className="font-bold uppercase pb-4 text-black text-xl">
+              <h3 className="font-bold uppercase pb-4 text-neutral-700 text-xl">
                 {section.title}
               </h3>
               <ul className="list-disc mx-auto">
@@ -158,7 +158,7 @@ function Footer() {
 
       <div className=" copyright-container flex flex-wrap items-center justify-between w-full  ">
         <div className="flex-1 min-w-[300px] text-center">
-          <p className="font-medium pl-8 py-4">
+          <p className="font-medium pl-8 py-4 text-neutral-700">
             © 2024 Gathering Globe. All Rights Reserved by Gathering Globe
             Contributors Team.
           </p>
