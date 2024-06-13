@@ -70,6 +70,7 @@ app.use("/api/livekit", livekitRoutes);
 app.use("/api/authRoutes", authRoutes);
 app.use("/api/stream", streamRoutes);
 app.use("/api/chatbot", chatBotRoutes);
+
 app.use("/api/block", blockRoutes);
 app.use(
   "/api/webhooks/livekit",
