@@ -79,14 +79,3 @@ export function useDeleteRoom() {
     },
   });
 }
-
-// export const useSendChatBotMessage = () => {
-// const queryClient = useQueryClient();
-
-//   return useMutation({
-//     mutationFn: sendChatBotMessage,
-//     onSuccess: () => {
-//       console.log("Message sent successfully");
-//     },
-//   });
-// };
