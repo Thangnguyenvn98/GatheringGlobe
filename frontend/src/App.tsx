@@ -122,7 +122,7 @@ function App() {
             </Layout>
           }
         />
-        {/* <Route path="/chatbot" element={<BotChat />} /> */}
+        <Route path="/chatbot" element={<BotChat />} />
 
         <Route
           path="/discover/:eventName/event/:eventId"

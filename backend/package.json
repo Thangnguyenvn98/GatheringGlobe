@@ -33,12 +33,14 @@
     "ncp": "^2.0.0",
     "nodemailer": "^6.9.13",
     "npc": "^0.0.1",
+    "openai": "^4.50.0",
     "qrcode": "^1.5.3",
     "react": "^18.3.1",
     "socket.io": "^4.7.5",
     "stripe": "^14.25.0",
     "uploadthing": "^6.12.0",
-    "uuid": "^9.0.1"
+    "uuid": "^9.0.1",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@faker-js/faker": "^8.4.1",
