@@ -39,7 +39,7 @@ function Pageheader() {
   };
   return (
     <>
-      <div className=" navbar-container flex md:hidden left-0">
+      <div className=" navbar-container flex md:hidden left-0 ">
         <DropdownMenu>
           <DropdownMenuTrigger className="w-full bg-transparent text-green-800">
             <svg
@@ -62,24 +62,36 @@ function Pageheader() {
         </DropdownMenu>
       </div>
 
-      <div className=" navbar-container flex flex-col w-full fixed bg-opacity-100 z-30 p-4">
-        <div className="flex justify-between w-full text-white items-center">
+      <div className=" navbar-container flex flex-col w-full fixed bg-opacity-100 z-30 p-4 px-10">
+        <div className="flex justify-between w-ful items-center">
           <div className="relative flex items-center">
             <Link to="/">
               <img src={GatheringGlobe} alt="logo" className="h-20 w-70 pt-4" />
             </Link>
           </div>
-          <div className="flex items-center gap-x-4 text-lg font-bold text-white">
-            <Link to="/discover" className="text-green-800  hover:text-white">
+          <div className="flex items-center gap-x-4 text-lg font-bold text-">
+            <Link
+              to="/discover"
+              className="text-green-600 hover:text-neutral-800"
+            >
               Discover
             </Link>
-            <Link to="/community" className="text-green-800  hover:text-white ">
+            <Link
+              to="/community"
+              className="text-green-600 hover:text-neutral-800 "
+            >
               Community
             </Link>
-            <Link to="/about" className="   text-green-800  hover:text-white ">
+            <Link
+              to="/about"
+              className="   text-green-600 hover:text-neutral-800"
+            >
               About Us
             </Link>
-            <Link to="/help" className=" text-green-800  hover:text-white ">
+            <Link
+              to="/help"
+              className=" text-green-600 hover:text-neutral-800 "
+            >
               FAQs
             </Link>
           </div>
@@ -139,9 +151,9 @@ function Pageheader() {
             {!userData && (
               <Link
                 to="/register"
-                className="bg-white text-green-800 text-lg p-4 rounded-md mr-2"
+                className="bg-white hover:bg-gray-100  text-normal text-green-800 text-lg px-3 py-2 rounded-md mr-2"
               >
-                Log In/Sign up
+                Sign In/Sign Up
               </Link>
             )}
           </div>
