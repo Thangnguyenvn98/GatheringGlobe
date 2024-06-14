@@ -287,43 +287,6 @@ router.get("/filter", async (req: Request, res: Response) => {
     const limit = parseInt(req.query.limit as string) || 7;
     const skip = (page - 1) * limit;
 
-    // const total_pipeline: mongoose.PipelineStage[] = [{ $match:{
-    //   $and: [
-    //     {
-    //       $or: [
-    //         { description: { $regex: regexKeyword } },
-    //         { title: { $regex: regexKeyword } },
-    //         { location: { $regex: regexKeyword } },
-    //         { artistName: { $regex: regexKeyword } }
-    //       ],
-    //     },
-    //     { location: { $regex: regexLocation } },
-    //     { eventType: { $regex: regexEventType } },
-    //     { category: { $regex: regexCategory } },
-    //     {
-    //       $or: [
-    //         {
-    //           startTime: {
-    //             $gte: new Date(String(startTime)),
-    //             $lte: new Date(String(endTime)),
-    //           },
-    //         },
-    //         {
-    //           endTime: {
-    //             $gte: new Date(String(startTime)),
-    //             $lte: new Date(String(endTime)),
-    //           },
-    //         },
-    //         {
-    //           $and: [
-    //             { startTime: { $lte: new Date(String(startTime)) } },
-    //             { endTime: { $gte: new Date(String(endTime)) } },
-    //           ],
-    //         },
-    //       ],
-    //     },
-    //   ],
-    // }}]
     const pipeline: mongoose.PipelineStage[] = [
       { $match:{
           $and: [
@@ -370,17 +333,13 @@ router.get("/filter", async (req: Request, res: Response) => {
           as: "tickets",
         },
       },
-      { $unwind: "$tickets" },
+      // { $unwind: "$tickets" },
       {
         $addFields: {
           minPrice: { $min: "$tickets.price" },
           maxPrice: { $max: "$tickets.price" }
         }
       },
-      // { $match:{
-      //     minPrice: {$gte: priceMin? parseFloat(priceMin as string): -Infinity}
-      //     // minPrice: {$gte: 0}
-      // }}
       { $match:{
         $or: [
           {
