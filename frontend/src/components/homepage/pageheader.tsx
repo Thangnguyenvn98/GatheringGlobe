@@ -66,13 +66,13 @@ function Pageheader() {
       </div>
 
       <div className=" navbar-container flex flex-col w-full fixed bg-opacity-100 z-30 p-4 px-10">
-        <div className="flex justify-between w-ful items-center">
+        <div className="flex justify-between w-full items-center">
           <div className="relative flex items-center">
             <Link to="/">
               <img src={GatheringGlobe} alt="logo" className="h-20 w-70 pt-4" />
             </Link>
           </div>
-          <div className="flex items-center gap-x-4 text-lg font-bold text-">
+          <div className="flex items-center gap-x-4 text-lg font-bold ">
             <Link
               to="/discover"
               className="text-green-600 hover:text-neutral-800"
@@ -85,10 +85,7 @@ function Pageheader() {
             >
               Community
             </Link>
-            <Link
-              to="/about"
-              className="   text-green-600 hover:text-neutral-800"
-            >
+            <Link to="/about" className="text-green-600 hover:text-neutral-800">
               About Us
             </Link>
             <Link
