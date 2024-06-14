@@ -1,16 +1,14 @@
-import { Calendar } from "@/components/ui/calendar";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import * as React from "react";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
-// import { EventType } from "@/types/event";
-// import queryString from "query-string";
-// import axios from "axios";
-// import { useNavigate } from "react-router-dom";
+import DatePickerWithRange from "./date-picker-with-two-range";
+import { DateRange } from "react-day-picker";
+import { useSearchParams } from "react-router-dom";
+import queryString from "query-string";
+import { useRef } from "react";
 
 const FilterSection = () => {
-  // const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
-  // const navigate = useNavigate();
-
   const categories = [
     "All event categories",
     "Music",
@@ -77,32 +75,77 @@ const FilterSection = () => {
     "Parade",
     "Marathon",
   ];
-  const [showCalendar, setShowCalendar] = useState(false);
+  const firstUpdate = useRef(0);
+  const [searchParams, setSearchParams] = useSearchParams();
   const [showCategory, setShowCategory] = useState(false);
   const [showEventType, setShowEventType] = useState(false);
-  // const [priceMin, setPriceMin] = useState("");
-  // const [priceMax, setPriceMax] = useState("");
-  // const [eventCat, setEventCat] = useState("All event categories");
-  // const [eventType, setEventType] = useState("All event types");
-  const [date, setDate] = useState<Date | undefined>(new Date());
-  const [inputs, setInputs] = useState({
-    priceMin: "",
-    priceMax: "",
-    eventCat: "All event categories",
-    eventType: "All event types",
-    date: date,
-  });
+  let startTimeFromParams = searchParams.get("startTime");
+  let endTimeFromParams = searchParams.get("endTime");
+  let dateFromParams: DateRange;
+  const [date, setDate] = React.useState<DateRange | undefined>();
+  if (startTimeFromParams) {
+    dateFromParams = {
+      from: new Date(decodeURIComponent(startTimeFromParams)),
+      to: new Date(
+        decodeURIComponent(
+          endTimeFromParams ? endTimeFromParams : startTimeFromParams,
+        ),
+      ),
+    };
+    if (String(dateFromParams) !== String(date)) {
+      setDate(dateFromParams);
+    }
+  }
 
-  // Handle the change in input
-  const handleInputChange = async (event: any) => {
-    const { name, value } = event.target;
-    console.log(event.target);
-    setInputs({
-      ...inputs,
-      [name]: value,
-    });
-    console.log(inputs);
-  };
+  const [priceMin, setPriceMin] = useState(
+    searchParams.get("priceMin") ? searchParams.get("priceMin") : "",
+  );
+  const [priceMax, setPriceMax] = useState(
+    searchParams.get("priceMax") ? searchParams.get("priceMax") : "",
+  );
+  const [category, setCategory] = useState(
+    searchParams.get("category") ? searchParams.get("category") : "",
+  );
+  const [eventType, setEventType] = useState(
+    searchParams.get("eventType") ? searchParams.get("eventType") : "",
+  );
+  useEffect(() => {
+    if (firstUpdate.current < 2) {
+      firstUpdate.current = firstUpdate.current + 1;
+      return;
+    }
+    let params = [];
+    if (priceMin !== "") {
+      params.push(queryString.stringify({ priceMin }, { encode: true }));
+    }
+    if (priceMax !== "") {
+      params.push(queryString.stringify({ priceMax }, { encode: true }));
+    }
+    if (category !== "" && category !== "All event categories") {
+      params.push(queryString.stringify({ category }, { encode: true }));
+    }
+    if (eventType !== "All event types" && eventType !== "") {
+      params.push(queryString.stringify({ eventType }, { encode: true }));
+    }
+    if (date && date.from) {
+      params.push(
+        "startTime=" +
+          queryString
+            .stringify({ startDate: date.from.toISOString() }, { encode: true })
+            .slice(10),
+      );
+    }
+    if (date && date.to) {
+      params.push(
+        "endTime=" +
+          queryString
+            .stringify({ endDate: date.to.toISOString() }, { encode: true })
+            .slice(8),
+      );
+    }
+    const finalParams = params.join("&");
+    setSearchParams(finalParams);
+  }, [category, eventType, priceMin, priceMax, date]);
 
   return (
     <div className="filter-section-container relative font-bold">
@@ -111,20 +154,21 @@ const FilterSection = () => {
         <div className="">
           <Button
             onClick={() => setShowCategory(!showCategory)}
-            className="bg-transparent border-none p-0 shadow-none hover:bg-transparent mx-0 text-[12pt] text-black font-bold"
+            className="bg-transparent border-none p-0 shadow-none hover:bg-transparent mx-0 text-[12pt] text-black font-bold hover:underline"
           >
             Category
           </Button>
           {showCategory && (
             <ScrollArea className="h-72 border-none mx-5">
               {categories.map((cat, _) => (
-                <div>
+                <div key={cat}>
                   <input
                     type="radio"
-                    name="eventCat"
+                    name="category"
                     id={cat}
                     value={cat}
-                    onChange={(e) => handleInputChange(e)}
+                    checked={cat == category ? true : false}
+                    onChange={(event) => setCategory(event.target.value)}
                   />
                   <label className="font-bold p-2" htmlFor={cat}>
                     {cat}
@@ -135,69 +179,14 @@ const FilterSection = () => {
             </ScrollArea>
           )}
         </div>
-        <h3 className="mt-3">Date</h3>
-        <div className="mx-5">
-          <div>
-            <input
-              type="radio"
-              name="date"
-              id="today"
-              key="today"
-              onClick={() => setShowCalendar(false)}
-            />
-            <label className="font-bold p-2" htmlFor="today">
-              Today
-            </label>
-          </div>
-          <div>
-            <input
-              type="radio"
-              name="date"
-              id="tomorrow"
-              key="tomorrow"
-              onClick={() => setShowCalendar(false)}
-            />
-            <label className="font-bold p-2" htmlFor="tomorrow">
-              Tomorrow
-            </label>
-          </div>
-          <div>
-            <input
-              type="radio"
-              name="date"
-              id="this-weekend"
-              key="this-weekend"
-              onClick={() => setShowCalendar(false)}
-            />
-            <label className="font-bold p-2" htmlFor="this-weekend">
-              This weekend
-            </label>
-          </div>
-          <div>
-            <input
-              type="radio"
-              name="dateshow"
-              id="pick-date"
-              key="pick-date"
-              onClick={() => setShowCalendar(!showCalendar)}
-            />
-            <label className="font-bold p-2" htmlFor="pick-date">
-              Pick a date...
-            </label>
-            {showCalendar && (
-              <div className="left-0">
-                <Calendar
-                  className="left-0"
-                  mode="single"
-                  selected={date}
-                  onSelect={setDate}
-                />
-              </div>
-            )}
-          </div>
+        <div className="my-2">
+          <DatePickerWithRange
+            setDateFromParent={setDate}
+            dateFromParent={date}
+          />
         </div>
         <div>
-          <label className="font-bold p-2" htmlFor="priceMin">
+          <label className="font-bold hover:underline" htmlFor="priceMin">
             Min Price
           </label>
           <input
@@ -205,11 +194,21 @@ const FilterSection = () => {
             name="priceMin"
             key="free"
             id="priceMin"
-            onChange={(e) => handleInputChange(e)}
+            value={priceMin ? priceMin : ""}
+            onChange={(e) => setPriceMin(e.target.value)}
+            style={{
+              marginLeft: "20px",
+              border: "1px solid #ccc",
+              borderRadius: "4px",
+              padding: "4px 8px",
+              fontWeight: "normal",
+              outline: "none", // Remove the default outline on focus
+            }}
+            onBlur={(e) => (e.target.style.borderWidth = "1px")}
           />
         </div>
         <div>
-          <label className="font-bold p-2" htmlFor="priceMax">
+          <label className="font-bold hover:underline" htmlFor="priceMax">
             Max Price
           </label>
           <input
@@ -217,27 +216,38 @@ const FilterSection = () => {
             name="priceMax"
             key="paid"
             id="priceMax"
-            onChange={(e) => handleInputChange(e)}
+            value={priceMax ? priceMax : ""}
+            onChange={(e) => setPriceMax(e.target.value)}
+            style={{
+              marginLeft: "20px",
+              border: "1px solid #ccc",
+              borderRadius: "4px",
+              padding: "4px 8px",
+              fontWeight: "normal",
+              outline: "none", // Remove the default outline on focus
+            }}
+            onBlur={(e) => (e.target.style.borderWidth = "1px")}
           />
         </div>
         <div className=" top-[152px] bottom-7">
           <div className="mt-3">
             <Button
               onClick={() => setShowEventType(!showEventType)}
-              className="bg-transparent border-none p-0 shadow-none hover:bg-transparent mx-0 text-[12pt] text-black font-bold"
+              className="bg-transparent border-none p-0 shadow-none hover:bg-transparent mx-0 text-[12pt] text-black font-bold hover:underline"
             >
               Event Type
             </Button>
             {showEventType && (
               <ScrollArea className="h-72 border-none mx-5">
                 {eventTypes.map((type, _) => (
-                  <div>
+                  <div key={type}>
                     <input
                       type="radio"
                       name="eventType"
                       id={type}
                       value={type}
-                      onChange={(e) => handleInputChange(e)}
+                      checked={type == eventType ? true : false}
+                      onChange={(e) => setEventType(e.target.value)}
                     />
                     <label className="font-bold p-2" htmlFor={type}>
                       {type}
@@ -253,5 +263,4 @@ const FilterSection = () => {
     </div>
   );
 };
-//htmlFor helps matching the label to the radio button so clciking on the label instead of the button also work
 export default FilterSection;

@@ -49,7 +49,7 @@ const ChatList: React.FC<ChatListProps> = ({
     room.name.toLowerCase().includes(searchTerm.toLowerCase()),
   );
   return (
-    <aside className="w-96 bg-white flex flex-shrink-0 overflow-y-auto sticky top-0 h-[100dvh]">
+    <aside className="w-96 bg-white flex flex-shrink-0 overflow-y-auto sticky top-0 pb-10 ">
       <div className="flex flex-col space-y-4 flex-grow p-2">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-semibold">Chats</h1>

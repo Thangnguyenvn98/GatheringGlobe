@@ -16,7 +16,7 @@ const ChatDetails = ({
   useEffect(() => {
     // If there's an error fetching the room (e.g., room is deleted), navigate to /messages
     if (status === "error" && !room) {
-      navigate("/messages");
+      navigate("/community-chat");
     }
   }, [status, room, navigate]);
   if (!roomId) {

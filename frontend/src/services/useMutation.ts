@@ -4,6 +4,7 @@ import toast from "react-hot-toast";
 
 export function useCreateRoom() {
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: createRoom,
     onMutate: () => {
@@ -29,6 +30,7 @@ export function useCreateRoom() {
 
 export function useEditRoom() {
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: editRoom,
     onMutate: () => {
@@ -54,6 +56,7 @@ export function useEditRoom() {
 
 export function useDeleteRoom() {
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: deleteRoom,
     onMutate: () => {

@@ -18,25 +18,26 @@ import Layout from "./components/layouts/layout";
 import Faq from "./components/FAQ/faq";
 import ContactUs from "./components/contact-us/contactUs";
 import ProtectedRoute from "./utils/ProtectedRoute";
-import useCheckAuth from "./hooks/useCheckAuth";
 import ForgotPassword from "./components/loginPage/Forgotpassword";
 import ResetPassword from "./components/loginPage/ResetPassword";
-import EventDetailMock from "./components/testComponent/EventDetailMock";
-import Booking from "./components/BookingForm/Booking";
 import { OrderConfirmationModal } from "./components/modals/order-confirmation-modal";
+import Booking from "./components/BookingForm/Booking";
 import OrderDetails from "./components/order/OrderDetails";
-import HostRoom from "./components/streaming/HostRoom";
-import WatchRoom from "./components/streaming/WatchRoom";
+import QrReader from "./components/QrCode/QrReader";
+import ViewerPage from "./components/streaming/[username]/ViewerPage";
+import WatchChannelPage from "./components/streaming/[username]/WatchChannelPage";
+import CreatorPageWrapper from "./components/streaming/[username]/CreatorPageWrapper";
+import GenerateStreamPage from "./components/streaming/keys/GenerateStreamPage.tsx";
+import BotChat from "./components/chatbot/BotChat.tsx";
 
 function App() {
-  useCheckAuth();
   return (
     <Router>
       <Routes>
         <Route
           path="/"
           element={
-            <Layout>
+            <Layout showChatBot={true}>
               <Homepage />
             </Layout>
           }
@@ -45,12 +46,22 @@ function App() {
         <Route
           path="/about"
           element={
-            <Layout>
+            <Layout showChatBot={true}>
               <AboutUs />
             </Layout>
           }
         />
+
         <Route element={<ProtectedRoute />}>
+          <Route
+            path="/u/:username/create-stream"
+            element={
+              <Layout>
+                <GenerateStreamPage />
+              </Layout>
+            }
+          />
+
           <Route
             path="/create-new-event"
             element={
@@ -62,17 +73,21 @@ function App() {
           <Route
             path="/messages/c/:ownerId/t/:roomId"
             element={
-              <SocketProvider>
-                <ChatPage />
-              </SocketProvider>
+              <Layout>
+                <SocketProvider>
+                  <ChatPage />
+                </SocketProvider>
+              </Layout>
             }
           />
           <Route
-            path="/messages"
+            path="/community-chat"
             element={
-              <SocketProvider>
-                <ChatPage />
-              </SocketProvider>
+              <Layout>
+                <SocketProvider>
+                  <ChatPage />
+                </SocketProvider>
+              </Layout>
             }
           />
           <Route
@@ -96,9 +111,9 @@ function App() {
 
         <Route path="*" element={<Navigate to="/" />} />
         <Route
-          path="/discover/*"
+          path="/discover"
           element={
-            <Layout>
+            <Layout showChatBot={true}>
               <DiscoverEvent />
             </Layout>
           }
@@ -106,63 +121,59 @@ function App() {
         <Route
           path="/help"
           element={
-            <Layout>
+            <Layout showChatBot={true}>
               <Faq />
             </Layout>
           }
         />
-        <Route
-          path="/channel/:roomName/viewer"
-          element={
-            <Layout>
-              <WatchRoom />
-            </Layout>
-          }
-        />
-        <Route
-          path="/channel/:roomName/host"
-          element={
-            <Layout>
-              <HostRoom />
-            </Layout>
-          }
-        />
+        <Route path="/chatbot" element={<BotChat />} />
+
         <Route
           path="/discover/:eventName/event/:eventId"
           element={
-            <Layout>
-              <EventDetailMock />
+            <Layout showChatBot={true}>
+              <EventDetail />
             </Layout>
           }
         />
         <Route
           path="/contact-us"
           element={
-            <Layout>
+            <Layout showChatBot={true}>
               <ContactUs />
             </Layout>
           }
         />
+
         <Route
-          path="/discover-event-details"
+          path="/stream/:username"
           element={
             <Layout>
-              <EventDetail />
+              <CreatorPageWrapper />
             </Layout>
           }
         />
+        <Route
+          path="/stream/:username/watch"
+          element={
+            <Layout>
+              <ViewerPage />
+            </Layout>
+          }
+        />
+        <Route
+          path="/stream/channel/watch/all"
+          element={
+            <Layout showChatBot={true}>
+              <WatchChannelPage />
+            </Layout>
+          }
+        />
+
         <Route path="/booking/:ticketId" element={<EventDetail />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
-
-        <Route
-          path="/create-new-event"
-          element={
-            <Layout>
-              <EventForm />
-            </Layout>
-          }
-        />
+        <Route path="/qr-scanner" element={<QrReader />} />
       </Routes>
     </Router>
   );

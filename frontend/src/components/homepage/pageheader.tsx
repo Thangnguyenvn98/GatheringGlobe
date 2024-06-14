@@ -19,9 +19,11 @@ import toast from "react-hot-toast";
 import { useCurrentUser } from "@/services/queries";
 import Cart from "../checkout/Cart";
 import useCartStore from "@/hooks/use-cart-store";
+import { useQueryClient } from "@tanstack/react-query";
 
 function Pageheader() {
   const { data: userData, isLoading, isError } = useCurrentUser();
+  const queryClient = useQueryClient();
   const { getTotalQuantity } = useCartStore();
   const totalQuantity = getTotalQuantity();
   const navigate = useNavigate();
@@ -31,6 +33,7 @@ function Pageheader() {
       const response = await signOutUser();
       console.log(response.message);
       toast.success(response.message);
+      queryClient.resetQueries();
       navigate("/", { replace: true });
     } catch (e) {
       console.log(e);

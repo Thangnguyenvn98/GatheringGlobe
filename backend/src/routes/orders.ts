@@ -1,11 +1,14 @@
 import Stripe from "stripe";
 import express, { Request, Response } from "express";
 import verifyToken from "../middleware/auth";
-import Event from "../models/event";
 import Order, { OrderType } from "../models/order";
 import User from "../models/user";
 import Ticket from "../models/ticket";
 import mongoose from "mongoose";
+import QRCode from "qrcode";
+import nodemailer from "nodemailer";
+import createPDF, { OrderData } from "../utils/pdf/PdfDocument";
+import fs from "fs";
 
 const stripe = new Stripe(process.env.STRIPE_API_KEY as string);
 
@@ -25,9 +28,8 @@ router.post(
     }
 
     try {
-      const paymentIntent = await stripe.paymentIntents.retrieve(
-        paymentIntentId
-      );
+      const paymentIntent =
+        await stripe.paymentIntents.retrieve(paymentIntentId);
       if (!paymentIntent) {
         return res.status(400).json({ message: "Payment intent not found" });
       }
@@ -102,8 +104,99 @@ router.post(
       await Promise.all(ticketUpdates);
       const newOrder = new Order(order);
       await newOrder.save();
+      const qrCodeData = newOrder._id.toString();
+      const qrCodeBase64 = await QRCode.toDataURL(qrCodeData);
 
-      res.status(201).json(newOrder._id);
+      const populatedOrder = await Order.findById(newOrder._id)
+        .select("-events._id -events.tickets._id")
+        .populate({
+          path: "events.eventId",
+          model: "Event",
+          select: "title imageUrls location startTime endTime", // Fields we want to populate to get
+        })
+        .populate({
+          path: "events.tickets.ticketId",
+          model: "Ticket",
+          select: "type price",
+        })
+        .exec();
+
+      if (!populatedOrder) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+
+      const orderObject = populatedOrder.toObject() as OrderData;
+
+      const completeOrderData = {
+        orderData: {
+          _id: orderObject._id.toString(),
+          userId: orderObject.userId.toString(),
+          events: orderObject.events.map((event) => ({
+            eventId: {
+              _id: event.eventId._id.toString(),
+              title: event.eventId.title,
+              startTime: event.eventId.startTime,
+              endTime: event.eventId.endTime,
+              location: event.eventId.location,
+              imageUrls: event.eventId.imageUrls,
+            },
+            tickets: event.tickets.map((ticket) => ({
+              ticketId: {
+                _id: ticket.ticketId._id.toString(),
+                type: ticket.ticketId.type,
+                price: ticket.ticketId.price,
+              },
+              quantity: ticket.quantity,
+            })),
+          })),
+          totalPrice: orderObject.totalPrice,
+          paymentStatus: orderObject.paymentStatus,
+          firstName: orderObject.firstName,
+          lastName: orderObject.lastName,
+          email: orderObject.email,
+          paymentMethodId: orderObject.paymentMethodId,
+          paymentIntentId: orderObject.paymentIntentId,
+          createdAt: orderObject.createdAt,
+          updatedAt: orderObject.updatedAt,
+        },
+        qrCodeBase64: qrCodeBase64,
+      };
+
+      const filePath = `${__dirname}/ticket.pdf`;
+
+      const result = await createPDF(completeOrderData, filePath);
+
+      // Send email with QR code
+      const transporter = nodemailer.createTransport({
+        host: "smtp.zohocloud.ca",
+        port: 587,
+        auth: {
+          user: process.env.USER_EMAIL,
+          pass: process.env.USER_PASSWORD,
+        },
+      });
+
+      const mailOptions = {
+        from: process.env.USER_EMAIL,
+        to: "kak4sh16@gmail.com",
+        subject: "Your Ticket",
+        html: `<p>Dear ${orderObject.firstName} ${orderObject.lastName},</p>
+               <p>Thank you for your order. Here is your ticket:</p>
+               <p>Order ID: ${orderObject._id}</p>
+               <p> Below is the QR Code. You can scan it now!!! </p>`,
+        attachments: [
+          {
+            filename: "Tickets.pdf",
+            path: filePath,
+          },
+        ],
+      };
+
+      await transporter.sendMail(mailOptions);
+      console.log("Email sent successfully");
+      fs.unlinkSync(filePath);
+
+      res.status(201).json(orderObject._id);
     } catch (error) {
       console.error("Failed to create order:", error);
       return res.status(500).json({ message: "Internal server error" });
@@ -119,16 +212,18 @@ router.get("/:id", verifyToken, async (req: Request, res: Response) => {
   }
   try {
     const order = await Order.findById(id)
+      .select("-events._id -events.tickets._id")
       .populate({
         path: "events.eventId",
         model: "Event",
-        select: "title imageUrls startTime endTime", // Fields we want to populate to get
+        select: "title imageUrls location startTime endTime", // Fields we want to populate to get
       })
       .populate({
         path: "events.tickets.ticketId",
         model: "Ticket",
-        select: "type price", 
-      });
+        select: "type price",
+      })
+      .exec();
     if (!order) {
       return res.status(404).json({ message: "Order not found" });
     }
