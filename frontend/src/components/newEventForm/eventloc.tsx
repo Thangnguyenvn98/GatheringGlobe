@@ -45,7 +45,7 @@ function EventLocation({ name = "", onChange }: EventLocationProps) {
         return;
       }
 
-      const request = { input: inputValue, sessionToken, types: ["(cities)"] };
+      const request = { input: inputValue, sessionToken, types: ["(regions)"] };
       const response = await autocompleteService.getPlacePredictions(request);
       setPredictionResults(response ? response.predictions : []);
     },
