@@ -18,9 +18,7 @@ const DiscoverEvent: React.FC = () => {
   const [page, setPage] = useState(
     searchParams.get("page") ? searchParams.get("page") : "1",
   );
-  const [sort, setSort] = useState(
-    searchParams.get("sort") ? searchParams.get("sort") : "",
-  );
+
   const allSearchParams = queryString.stringify(
     Object.fromEntries(searchParams),
     { encode: true },
@@ -46,14 +44,6 @@ const DiscoverEvent: React.FC = () => {
     }
   };
 
-  const handleSortChange = (newSort: string) => {
-    setPage("1");
-    setSort(newSort);
-    searchParams.set("sort", newSort);
-    searchParams.delete("page");
-    setSearchParams(searchParams);
-  };
-
   return (
     <div>
       <div className="grid grid-cols-6 ps-8 pt-8">
@@ -61,10 +51,7 @@ const DiscoverEvent: React.FC = () => {
         <div className="col-span-4">
           <div className="flex flex-col">
             <div>
-              <SortSection
-                sort={String(sort)}
-                handleSortChange={handleSortChange}
-              />
+              <SortSection />
             </div>
             <div>
               <EventList
