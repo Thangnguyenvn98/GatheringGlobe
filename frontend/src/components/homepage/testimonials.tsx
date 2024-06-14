@@ -22,7 +22,7 @@ function Testimonials() {
             {contents.map((content, index) => (
               <CarouselItem key={index} className="w-full">
                 <div>
-                  <Card className="bg-green-500 bg-opacity-20">
+                  <Card className="bg-green-600 bg-opacity-20">
                     <CardContent className="flex items-center justify-center p-2">
                       <img src={AvatarImg} className="h-60" />
                       <span className="mx-4">{content}</span>
