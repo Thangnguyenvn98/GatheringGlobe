@@ -57,7 +57,7 @@ const EventCategory = () => {
             <button
               key={index}
               onClick={() => onSearchCategory(category.title)}
-              className="flex items-center justify-center w-24 h-24 border-2 border-gray-200 rounded-full p-4"
+              className="flex items-center justify-center w-24 h-24 border-2 border-gray-200 rounded-full p-4 hover:bg-green-200"
             >
               {category.icon}
             </button>
