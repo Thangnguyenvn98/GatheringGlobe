@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import EventCard from "../shared/EventCard";
 import UserProfile from "../streaming/[username]/UserProfile";
+
 interface Event {
   title: string;
   description: string;
@@ -14,15 +15,6 @@ interface Event {
 
 interface MainContentProps {
   category: string;
-}
-
-interface User {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phoneNumber: string;
-  country: string;
-  postalCode: string;
 }
 
 const MainContent: React.FC<MainContentProps> = ({ category }) => {
@@ -109,12 +101,19 @@ const MainContent: React.FC<MainContentProps> = ({ category }) => {
   ];
 
   const userInfo: User = {
+    _id: "some_unique_id",
+    username: "quynhtran",
+    email: "nhuquynhtran_2026@depauw.edu",
     firstName: "Quynh",
     lastName: "Tran",
-    email: "nhuquynhtran_2026@depauw.edu",
     phoneNumber: "123-456-3015",
     country: "United States",
     postalCode: "46135",
+    password: "your_secure_password", // Include a placeholder or actual hashed password as necessary
+    // Optional fields can remain unspecified or null if not used
+    stream: undefined, // Assuming 'Stream' is an optional reference to another data model
+    imageUrl: undefined, // If you have an image URL, include it here
+    bio: undefined, // Include a bio if applicable
   };
 
   useEffect(() => {

@@ -1,37 +1,21 @@
 import React, { useState } from "react";
-
+import { User } from "@/types/user";
 interface UserProfileProps {
-  user: {
-    firstName: string;
-    lastName: string;
-    email: string;
-    phoneNumber: string;
-    country: string;
-    postalCode: string;
-    password: string;
-  };
+  user: User;
 }
 
-const UserProfile: React.FC = () => {
-  const [user, setUser] = useState<UserProfileProps["user"]>({
-    firstName: "Quynh",
-    lastName: "Tran",
-    email: "nhuquynhtran_2026@depauw.edu",
-    phoneNumber: "123-456-3015",
-    country: "United States",
-    postalCode: "46135",
-    password: "",
-  });
+const UserProfile: React.FC<UserProfileProps> = ({ user }) => {
+  const [userInfo, setUserInfo] = useState<User>(user);
 
   const handleChange = (
     event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
-    setUser({ ...user, [event.target.name]: event.target.value });
+    setUserInfo({ ...userInfo, [event.target.name]: event.target.value });
   };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    console.log("Profile updated:", user);
+    console.log("Profile updated:", userInfo);
     // Actual update logic would go here
   };
 

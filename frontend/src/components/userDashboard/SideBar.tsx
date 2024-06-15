@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { signOutUser } from "@/services/api";
 import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
-import { useCurrentUser } from "@/services/queries";
+// import { useCurrentUser } from "@/services/queries";
 const ChevronDownIcon: React.FC<{ isOpen: boolean }> = ({ isOpen }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -27,7 +27,7 @@ const SideBar: React.FC<{ onSelectCategory?: (category: string) => void }> = ({
   onSelectCategory,
 }) => {
   const [openDropdowns, setOpenDropdowns] = useState<Set<string>>(new Set());
-  const { data: userData, isLoading, isError } = useCurrentUser();
+  // const { data: userData, isLoading, isError } = useCurrentUser();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
@@ -44,9 +44,8 @@ const SideBar: React.FC<{ onSelectCategory?: (category: string) => void }> = ({
     }
   };
 
-  if (isLoading) {
-    return <div>Loading...</div>; // Display loading indicator
-  }
+  // if (isLoading) return <div>Loading...</div>; // Display loading indicator
+  // if (isError || !userData) return <div>Error or no user data</div>;
 
   const toggleDropdown = (id: string) => {
     setOpenDropdowns((prevState) => {
