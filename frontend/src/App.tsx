@@ -29,6 +29,7 @@ import WatchChannelPage from "./components/streaming/[username]/WatchChannelPage
 import CreatorPageWrapper from "./components/streaming/[username]/CreatorPageWrapper";
 import GenerateStreamPage from "./components/streaming/keys/GenerateStreamPage.tsx";
 import BotChat from "./components/chatbot/BotChat.tsx";
+import TicketForm from "./components/TicketForm/TicketForm";
 
 function App() {
   return (
@@ -67,6 +68,14 @@ function App() {
             element={
               <Layout>
                 <EventForm />
+              </Layout>
+            }
+          />
+          <Route
+            path="/create-new-ticket"
+            element={
+              <Layout>
+                <TicketForm />
               </Layout>
             }
           />
