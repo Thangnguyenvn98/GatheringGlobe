@@ -142,6 +142,9 @@ const TicketForm = () => {
                         disabled={loading}
                         type="number"
                         placeholder="0.00"
+                        onChange={(e) =>
+                          field.onChange(parseFloat(e.target.value) || 0)
+                        } // Convert string to number here
                       />
                     </FormControl>
                     <FormMessage />
@@ -160,6 +163,9 @@ const TicketForm = () => {
                         disabled={loading}
                         type="number"
                         placeholder="1"
+                        onChange={(e) =>
+                          field.onChange(parseFloat(e.target.value) || 0)
+                        } // Convert string to number here
                       />
                     </FormControl>
                     <FormMessage />
