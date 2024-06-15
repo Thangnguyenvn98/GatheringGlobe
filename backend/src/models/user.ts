@@ -6,9 +6,6 @@ export type UserType = {
   username: string;
   firstName?: string;
   lastName?: string;
-  phoneNumber: string;
-  country: string;
-  postalCode: string;
   email: string;
   password: string;
   stream?: mongoose.Types.ObjectId;
@@ -22,9 +19,6 @@ const userSchema = new mongoose.Schema({
   lastName: { type: String, required: false },
   email: { type: String, required: true, unqiue: true },
   password: { type: String, required: true },
-  phoneNumber: { type: String, required: true },
-  country: { type: String, required: true },
-  postalCode: { type: String, required: true },
   stream: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Stream",
