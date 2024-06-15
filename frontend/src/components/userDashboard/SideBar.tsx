@@ -106,7 +106,10 @@
 
 import React, { useState } from "react";
 import "./SideBar.css";
-
+import { useNavigate } from "react-router-dom";
+import { signOutUser } from "@/services/api";
+import { useQueryClient } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 const ChevronDownIcon: React.FC<{ isOpen: boolean }> = ({ isOpen }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -141,69 +144,115 @@ const SideBar: React.FC<{ onSelectCategory: (category: string) => void }> = ({
       return newSet;
     });
   };
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
-  // Handles category selection, possibly triggering external actions
-  const handleCategorySelection = (category: string) => {
-    onSelectCategory(category); // Trigger the passed function with the selected category
+  const signOut = async () => {
+    try {
+      const response = await signOutUser();
+      console.log(response.message);
+      toast.success(response.message);
+      queryClient.resetQueries();
+      navigate("/", { replace: true });
+    } catch (e) {
+      console.log(e);
+      toast.error("Logout failed");
+    }
+    // Handles category selection, possibly triggering external actions
+    const handleCategorySelection = (category: string) => {
+      onSelectCategory(category); // Trigger the passed function with the selected category
+    };
+
+    return (
+      <div className="h-full w-64 bg-white text-blue-800 p-5 space-y-4">
+        <h1 className="text-xl font-bold">Ticketmaster</h1>
+
+        <div>
+          <button
+            className="flex justify-between items-center w-full text-left"
+            onClick={() => {
+              toggleDropdown("tickets");
+            }}
+          >
+            My Tickets
+            <ChevronDownIcon isOpen={openDropdowns.has("tickets")} />
+          </button>
+          <div
+            className={`dropdown-content ${openDropdowns.has("tickets") ? "open" : ""}`}
+          >
+            <p
+              className="hover:underline underline-offset-4 cursor-pointer"
+              onClick={() => handleCategorySelection("upcoming-events")}
+            >
+              Upcoming Events
+            </p>
+            <p
+              className="hover:underline underline-offset-4 cursor-pointer"
+              onClick={() => handleCategorySelection("past-events")}
+            >
+              Past Events
+            </p>
+            <p
+              className="hover:underline underline-offset-4 cursor-pointer"
+              onClick={() => handleCategorySelection("my-listings")}
+            >
+              My Listings
+            </p>
+          </div>
+        </div>
+
+        <div>
+          <button
+            className="flex justify-between items-center w-full text-left"
+            onClick={() => toggleDropdown("profile")}
+          >
+            My Profile
+            <ChevronDownIcon isOpen={openDropdowns.has("profile")} />
+          </button>
+          <div
+            className={`dropdown-content ${openDropdowns.has("profile") ? "open" : ""}`}
+          >
+            <p
+              className="hover:underline underline-offset-4 cursor-pointer"
+              onClick={() => handleCategorySelection("profile-details")}
+            >
+              Profile Details
+            </p>
+            <p
+              className="hover:underline underline-offset-4 cursor-pointer"
+              onClick={() => handleCategorySelection("billing-information")}
+            >
+              Billing Information
+            </p>
+            <p
+              className="hover:underline underline-offset-4 cursor-pointer"
+              onClick={() => handleCategorySelection("connected-accounts")}
+            >
+              Connected Accounts
+            </p>
+            <p
+              className="hover:underline underline-offset-4 cursor-pointer"
+              onClick={() =>
+                handleCategorySelection("accessibility-requirements")
+              }
+            >
+              Accessibility Requirements
+            </p>
+            <p
+              className="hover:underline underline-offset-4 cursor-pointer"
+              onClick={() => handleCategorySelection("gift-card-balance")}
+            >
+              Gift Card Balance
+            </p>
+          </div>
+        </div>
+
+        <button className="w-full" onClick={signOut}>
+          Sign Out
+        </button>
+      </div>
+    );
   };
-
-  return (
-    <div className="h-full w-64 bg-white text-blue-800 p-5 space-y-4">
-      <h1 className="text-xl font-bold">Ticketmaster</h1>
-
-      <div>
-        <button
-          className="flex justify-between items-center w-full text-left"
-          onClick={() => {
-            toggleDropdown("tickets");
-          }}
-        >
-          My Tickets
-          <ChevronDownIcon isOpen={openDropdowns.has("tickets")} />
-        </button>
-        <div
-          className={`dropdown-content ${openDropdowns.has("tickets") ? "open" : ""}`}
-        >
-          <p onClick={() => handleCategorySelection("upcoming-events")}>
-            Upcoming Events
-          </p>
-          <p onClick={() => handleCategorySelection("past-events")}>
-            Past Events
-          </p>
-          <p onClick={() => handleCategorySelection("my-listings")}>
-            My Listings
-          </p>
-          <p>My Digital Collectibles</p>
-        </div>
-      </div>
-
-      <div>
-        <button
-          className="flex justify-between items-center w-full text-left"
-          onClick={() => toggleDropdown("profile")}
-        >
-          My Profile
-          <ChevronDownIcon isOpen={openDropdowns.has("profile")} />
-        </button>
-        <div
-          className={`dropdown-content ${openDropdowns.has("profile") ? "open" : ""}`}
-        >
-          <p>Profile Details</p>
-          <p>Billing Information</p>
-          <p>Connected Accounts</p>
-          <p>Accessibility Requirements</p>
-          <p>Gift Card Balance</p>
-        </div>
-      </div>
-
-      <button
-        className="w-full"
-        onClick={() => handleCategorySelection("sign-out")}
-      >
-        Sign Out
-      </button>
-    </div>
-  );
 };
 
 export default SideBar;

@@ -50,6 +50,7 @@
 
 import React, { useState, useEffect } from "react";
 import EventCard from "../shared/EventCard";
+import UserProfile from "../streaming/[username]/UserProfile";
 interface Event {
   title: string;
   description: string;
@@ -65,11 +66,20 @@ interface MainContentProps {
   category: string;
 }
 
+interface User {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber: string;
+  country: string;
+  postalCode: string;
+}
+
 const MainContent: React.FC<MainContentProps> = ({ category }) => {
   const [events, setEvents] = useState<Event[]>([]);
   const [isPending, setIsPending] = useState(false);
   const [isError, setIsError] = useState(false); // Error state to handle possible fetching issues
-
+  const [user, setUser] = useState<User | null>(null);
   // Fake data arrays for demonstration
   const upcomingEvents: Event[] = [
     {
@@ -148,6 +158,15 @@ const MainContent: React.FC<MainContentProps> = ({ category }) => {
     // More listings...
   ];
 
+  const userInfo: User = {
+    firstName: "Quynh",
+    lastName: "Tran",
+    email: "nhuquynhtran_2026@depauw.edu",
+    phoneNumber: "123-456-3015",
+    country: "United States",
+    postalCode: "46135",
+  };
+
   useEffect(() => {
     setIsPending(true);
     setIsError(false); // Reset error state on new category selection
@@ -155,46 +174,56 @@ const MainContent: React.FC<MainContentProps> = ({ category }) => {
     // Simulate loading data based on category
     setTimeout(() => {
       try {
-        switch (category) {
-          case "upcoming-events":
-            setEvents(upcomingEvents);
-            break;
-          case "past-events":
-            setEvents(pastEvents);
-            break;
-          case "my-listings":
-            setEvents(myListings);
-            break;
-          default:
-            setEvents([]);
+        if (category === "profile-details") {
+          setUser(userInfo); // Set user info if category is 'my-profile'
+          setEvents([]); // Clear events when showing profile
+        } else {
+          setUser(null); // Clear user info when not showing profile
+          switch (category) {
+            case "upcoming-events":
+              setEvents(upcomingEvents);
+              break;
+            case "past-events":
+              setEvents(pastEvents);
+              break;
+            case "my-listings":
+              setEvents(myListings);
+              break;
+            default:
+              setEvents([]);
+          }
         }
         setIsPending(false);
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error("Error handling data:", error);
         setIsError(true);
         setIsPending(false);
       }
-    }, 1000); // Simulate network request delay
+    }, 500); // Reduced delay for quicker response
   }, [category]);
 
   if (isPending) return <div>Loading...</div>;
-  if (isError) return <div>Error occurred while fetching events.</div>;
+  if (isError) return <div>Error occurred while fetching data.</div>;
 
   return (
     <div>
-      {events.map((event) => (
-        <EventCard
-          key={event._id}
-          title={event.title}
-          description={event.description}
-          startTime={new Date(event.startTime).toLocaleString()}
-          endTime={new Date(event.endTime).toLocaleString()}
-          artistName={event.artistName}
-          imageUrls={event.imageUrls}
-          location={event.location}
-          onClick={() => console.log("Event Clicked:", event.title)}
-        />
-      ))}
+      {user ? (
+        <UserProfile user={user} />
+      ) : (
+        events.map((event) => (
+          <EventCard
+            key={event._id}
+            title={event.title}
+            description={event.description}
+            startTime={new Date(event.startTime).toLocaleString()}
+            endTime={new Date(event.endTime).toLocaleString()}
+            artistName={event.artistName}
+            imageUrls={event.imageUrls}
+            location={event.location}
+            onClick={() => console.log("Event Clicked:", event.title)}
+          />
+        ))
+      )}
     </div>
   );
 };
