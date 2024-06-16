@@ -230,7 +230,7 @@ router.post(
   async (req: Request, res: Response) => {
     console.log("yay");
     const { eventId } = req.params;
-    const tickets = req.body.tickets;
+    const tickets = req.body;
     console.log("Tickets:", tickets);
 
     if (!Array.isArray(tickets) || tickets.length === 0) {
@@ -271,6 +271,8 @@ router.post(
 
         const ticket = new Ticket({
           eventId,
+          ticketName: event.title,
+          status: "active",
           type,
           price,
           quantityAvailable,

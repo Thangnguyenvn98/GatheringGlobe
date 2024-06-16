@@ -1,6 +1,6 @@
 import { useForm } from "react-hook-form";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import toast from "react-hot-toast";
@@ -67,6 +67,7 @@ type FormData = z.infer<typeof formSchema>;
 
 const TicketForm = () => {
   const navigate = useNavigate();
+  const { eventId } = useParams();
   const [loading, setLoading] = useState(false);
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -84,11 +85,9 @@ const TicketForm = () => {
     try {
       setLoading(true);
       console.log(data);
-      const eventId = localStorage.getItem("eventId");
-      console.log(eventId);
       const response = await axiosInstance.post(
         `/api/events/${eventId}/tickets`,
-        data,
+        [data],
       );
       form.reset();
       toast.success(response.data.message);
