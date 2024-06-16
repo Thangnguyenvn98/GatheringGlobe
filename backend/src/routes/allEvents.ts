@@ -6,7 +6,7 @@ import Ticket from "../models/ticket";
 import mongoose from "mongoose";
 
 const router = express.Router();
-router.get("/all/:userId", async (req: Request, res: Response) => {
+router.get("/:userId", async (req: Request, res: Response) => {
   try {
     const { userId } = req.params;
     const user = await User.findById(userId);

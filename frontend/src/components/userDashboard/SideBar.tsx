@@ -81,6 +81,9 @@ const SideBar: React.FC<{ onSelectCategory?: (category: string) => void }> = ({
         <div
           className={`dropdown-content ${openDropdowns.has("tickets") ? "open" : ""}`}
         >
+          <p onClick={() => handleCategorySelection("all-events")}>
+            All Events
+          </p>
           <p onClick={() => handleCategorySelection("upcoming-events")}>
             Upcoming Events
           </p>

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { User } from "@/types/user";
+
 interface UserProfileProps {
   user: User;
 }
