@@ -92,6 +92,7 @@ const TicketForm = () => {
         navigate(0);
       }, 800);
     } catch (error) {
+      console.error(error);
       toast.error("Something went wrong");
     } finally {
       setLoading(false);
