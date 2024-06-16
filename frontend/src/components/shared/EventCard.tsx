@@ -24,14 +24,14 @@ const EventCard: React.FC<EventCardProps> = ({
 }) => {
   return (
     <div
-      className="w-9/12 flex mb-5 bg-white shadow-md rounded-lg p-4 {cursor: pointer}"
+      className="event-card-container w-9/12 flex mb-5 bg-white shadow-md rounded-lg p-4 cursor-pointer"
       onClick={onClick}
     >
-      <div className="container w-1/3">
+      <div className="container w-1/3 flex justify-center items-center">
         <img
           src={imageUrls[0]} // Assuming the first URL is the primary image
           alt={title}
-          className="w-60 h-auto object-contain rounded-lg mr-4 "
+          className="event-card-image w-60 h-auto  rounded-xl mr-4 "
         />
       </div>
 
@@ -39,16 +39,31 @@ const EventCard: React.FC<EventCardProps> = ({
         className="flex-1 flex flex-col justify-center pl-4"
         onClick={onClick}
       >
-        <div className="event-description">
-          <h1 className="text-lg font-bold py-2">{title}</h1>
-          <h2 className="text-sm text-gray-600 py-2">{artistName}</h2>
-          <p className="text-sm w-full py-2">{description}</p>
-          <div className="text-xs text-gray-500 mt-2 ">
-            <h3 className="py-2">Start: {startTime}</h3>
-            <h3 className="py-2">End: {endTime}</h3>
-            <h3>Location: {location}</h3>
+        {
+          /* <div className="event-description flex flex-col space-y-2">
+          <div className="flex items-center space-x-4">
+            {" "}
+            <h1 className="text-lg font-bold mr-7">{title}</h1>
+            <h3 className="text-xs"> {startTime}</h3>
+            <h3 className="text-xs ">{endTime}</h3>
           </div>
-        </div>
+          <h3 className="text-xs text-gray-500">Location: {location}</h3>
+          <h2 className="text-sm text-gray-600">{artistName}</h2>
+          <p className="text-sm">{description}</p>
+        </div> */
+          <div className="event-description flex flex-col space-y-2">
+            <div className="flex justify-between items-center w-full">
+              <h1 className="text-lg font-bold">{title}</h1>
+              <div className="flex space-x-2 text-xs">
+                <h3>{startTime}</h3>
+                <h3>{endTime}</h3>
+              </div>
+            </div>
+            <h3 className="text-xs text-gray-500">Location: {location}</h3>
+            <h2 className="text-sm text-gray-600">{artistName}</h2>
+            <p className="text-sm">{description}</p>
+          </div>
+        }
       </div>
     </div>
   );

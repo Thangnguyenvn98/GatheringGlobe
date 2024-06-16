@@ -2,5 +2,10 @@
   box-shadow: 5px 5px 10px 5px rgba(0, 0, 0, 0.1);
 }
 .event-card-container {
-  cursor: pointer;
+  height: 370px;
+  width: 950px;
+}
+.event-card-image {
+  height: 99%;
+  width: 100%;
 }
