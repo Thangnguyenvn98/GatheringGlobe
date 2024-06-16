@@ -228,8 +228,10 @@ router.post(
   "/:eventId/tickets",
   verifyToken,
   async (req: Request, res: Response) => {
+    console.log("yay");
     const { eventId } = req.params;
     const tickets = req.body.tickets;
+    console.log("Tickets:", tickets);
 
     if (!Array.isArray(tickets) || tickets.length === 0) {
       return res.status(400).json({
