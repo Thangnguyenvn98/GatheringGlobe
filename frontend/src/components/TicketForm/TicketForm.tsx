@@ -40,21 +40,21 @@ const axiosInstance = axios.create({
 // Define the schema using zod
 const formSchema = z
   .object({
-    ticketName: z.string().min(1, { message: "Ticket name is required" }),
-    ticketPrice: z.number().min(0, { message: "Price must be at least zero" }),
+    ticketName: z.string().min(1, { message: "Ticket name is required" }), //ticket name nên lấy từ event name
+    price: z.number().min(0, { message: "Price must be at least zero" }),
     quantityAvailable: z
       .number()
       .min(1, { message: "At least one ticket must be available" }),
-    ticketType: z.enum(["General Admission", "VIP", "Early Bird"]),
-    salesStart: z.date().refine((date) => date >= new Date(), {
+    type: z.enum(["General Admission", "VIP", "Early Bird"]),
+    startTime: z.date().refine((date) => date >= new Date(), {
       message: "Start time must be in the future",
     }),
-    salesEnd: z.date().refine((date) => date >= new Date(), {
+    endTime: z.date().refine((date) => date >= new Date(), {
       message: "End time must be in the future",
     }),
   })
   .superRefine((data, ctx) => {
-    if (data.salesEnd <= data.salesStart) {
+    if (data.endTime <= data.startTime) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: "End time must be after start time",
@@ -72,11 +72,11 @@ const TicketForm = () => {
     resolver: zodResolver(formSchema),
     defaultValues: {
       ticketName: "", // Default text for ticket name
-      ticketPrice: 0, // Default price set to 0, assuming it's in a currency
+      price: 0, // Default price set to 0, assuming it's in a currency
       quantityAvailable: 1, // Start with a minimum of 1 ticket available
-      ticketType: "General Admission", // Default to "General Admission"
-      salesStart: new Date(), // Initialize with the current date/time
-      salesEnd: new Date(), // Initialize with the current date/time; adjust in UI if needed
+      type: "General Admission", // Default to "General Admission"
+      startTime: new Date(), // Initialize with the current date/time
+      endTime: new Date(), // Initialize with the current date/time; adjust in UI if needed
     },
   });
 
@@ -137,7 +137,7 @@ const TicketForm = () => {
               />
               <FormField
                 control={form.control}
-                name="ticketPrice"
+                name="price"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Ticket Price ($)</FormLabel>
@@ -179,7 +179,7 @@ const TicketForm = () => {
               />
               <FormField
                 control={form.control}
-                name="ticketType"
+                name="type"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Ticket Type</FormLabel>
@@ -202,7 +202,7 @@ const TicketForm = () => {
               />
               <FormField
                 control={form.control}
-                name="salesStart"
+                name="startTime"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Sales Start</FormLabel>
@@ -229,7 +229,7 @@ const TicketForm = () => {
               />
               <FormField
                 control={form.control}
-                name="salesEnd"
+                name="endTime"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Sales End</FormLabel>

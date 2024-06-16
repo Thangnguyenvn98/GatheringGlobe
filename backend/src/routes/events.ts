@@ -248,24 +248,25 @@ router.post(
       const createdTickets = [];
 
       for (const ticketData of tickets) {
-        const { type, price, quantityAvailable, seatNumber, status, isFree } =
-          ticketData;
+        const {
+          type,
+          price,
+          quantityAvailable,
+          seatNumber,
+          startTime,
+          endTime,
+        } = ticketData;
 
         if (
           !type ||
           price == null ||
           !quantityAvailable ||
-          !status ||
-          isFree == null
+          !startTime ||
+          endTime == null
         ) {
           return res
             .status(400)
             .json({ message: "Missing required ticket details." });
-        }
-        if (isFree && price !== 0) {
-          return res
-            .status(400)
-            .json({ message: "Free tickets must have a price of 0." });
         }
 
         const ticket = new Ticket({
@@ -274,8 +275,8 @@ router.post(
           price,
           quantityAvailable,
           seatNumber,
-          status,
-          isFree,
+          startTime,
+          endTime,
         });
 
         await ticket.save();
