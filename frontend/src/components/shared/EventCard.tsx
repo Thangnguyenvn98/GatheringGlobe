@@ -24,14 +24,16 @@ const EventCard: React.FC<EventCardProps> = ({
 }) => {
   return (
     <div
-      className="event-card-container flex mb-5 bg-white shadow-md rounded-lg p-4"
+      className="w-9/12 flex mb-5 bg-white shadow-md rounded-lg p-4 {cursor: pointer}"
       onClick={onClick}
     >
-      <img
-        src={imageUrls[0]} // Assuming the first URL is the primary image
-        alt={title}
-        className="w-60 h-auto object-contain rounded-lg mr-4 "
-      />
+      <div className="container w-1/3">
+        <img
+          src={imageUrls[0]} // Assuming the first URL is the primary image
+          alt={title}
+          className="w-60 h-auto object-contain rounded-lg mr-4 "
+        />
+      </div>
 
       <div
         className="flex-1 flex flex-col justify-center pl-4"
@@ -40,7 +42,7 @@ const EventCard: React.FC<EventCardProps> = ({
         <div className="event-description">
           <h1 className="text-lg font-bold py-2">{title}</h1>
           <h2 className="text-sm text-gray-600 py-2">{artistName}</h2>
-          <h3 className="text-sm py-2">{description}</h3>
+          <p className="text-sm w-full py-2">{description}</p>
           <div className="text-xs text-gray-500 mt-2 ">
             <h3 className="py-2">Start: {startTime}</h3>
             <h3 className="py-2">End: {endTime}</h3>

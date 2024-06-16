@@ -4,11 +4,11 @@ import { User } from "@/types/user";
 import { useQuery } from "@tanstack/react-query";
 import { ContactUsFormData } from "@/types/contactUsFormData";
 import axios from "axios";
-import {
-  OrderDetailsByIdResponse,
-  PaymentIntentResponse,
-} from "../../../backend/src/shared/types";
+import { OrderDetailsByIdResponse } from "@/types/orderDetails";
 import { CartItem } from "@/hooks/use-cart-store";
+import { IngressInput } from "@/types/IngressInput";
+import { PaymentIntentResponse } from "@/types/paymentIntentResponse";
+import { Stream } from "@/types/stream";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 export const axiosInstance = axios.create({
@@ -155,8 +155,51 @@ export const getCurrentUser = async () => {
   return response.data;
 };
 
+export const getCurrentUserById = async (userId: string) => {
+  const response = await axiosInstance.get<User>(`/api/users/${userId}`);
+  return response.data;
+};
+
+export const getCurrentUserByUsername = async (username: string) => {
+  const response = await axiosInstance.get<User>(`/api/users/u/${username}`);
+  return response.data;
+};
+
 export const validateToken = async () => {
   const response = await axiosInstance.get("/api/users/validate-token");
+  return response.data;
+};
+
+export const getStreamDetails = async (userId: string) => {
+  const response = await axiosInstance.get(`/api/stream/u/${userId}`);
+  return response.data;
+};
+
+export const getAllStreamDetails = async () => {
+  const response = await axiosInstance.get("/api/stream");
+  return response.data;
+};
+
+export const editStreamDetails = async (data: {
+  name?: string;
+  thumbnailUrl?: string | null;
+  streamId: string;
+  usedObs?: boolean;
+}) => {
+  const response = await axiosInstance.put<Stream>(
+    `/api/stream/${data.streamId}`,
+    data,
+  );
+  return response.data;
+};
+
+export const blockUser = async (userId: string) => {
+  const response = await axiosInstance.post(`/api/block/user`, { id: userId });
+  return response.data;
+};
+
+export const getBlockUser = async (userId: string) => {
+  const response = await axiosInstance.get(`/api/block/${userId}`);
   return response.data;
 };
 
@@ -179,5 +222,64 @@ export const getOrderDetailsById = async (
 
 export const sendUserHelpRequest = async (data: ContactUsFormData) => {
   const response = await axiosInstance.post("api/users/help/contact-us", data);
+  return response.data;
+};
+
+export const getAllEvents = async (page = 1) => {
+  console.log("Page: ", page);
+  const response = await axiosInstance.get(`/api/events?page=${page}&limit=12`);
+  return response.data;
+};
+
+export const fetchStreamerToken = async (hostIdentity: string) => {
+  const { data } = await axiosInstance.get(
+    `/api/livekit/streamer-token?hostIdentity=${hostIdentity}`,
+  );
+  return data.token;
+};
+
+export const editUserInfo = async (data: { bio: string }) => {
+  const response = await axiosInstance.put("/api/users/u/update", data);
+  return response.data;
+};
+
+export const fetchViewerToken = async (hostIdentity: string) => {
+  const { data } = await axiosInstance.get(
+    `/api/livekit/viewer-token?hostIdentity=${hostIdentity}`,
+  );
+  return data.token;
+};
+
+export const fetchCreateIngress = async (ingressType: IngressInput) => {
+  console.log(ingressType);
+  const { data } = await axiosInstance.get(
+    `/api/livekit/create-ingress?ingressType=${ingressType}`,
+  );
+  return data.ingress;
+};
+export const resetPassword = async (
+  userId: string,
+  token: string,
+  newPassword: string,
+): Promise<boolean> => {
+  try {
+    console.log("Token: ", token);
+    const response = await axios.post(
+      `${API_BASE_URL}/api/authRoutes/reset-password`,
+      {
+        userId,
+        token,
+        newPassword,
+      },
+    );
+    return response.status === 200;
+  } catch (error) {
+    console.error("Error resetting password:", error);
+    throw error;
+  }
+};
+
+export const fetchEventFiltered = async (params: any) => {
+  const response = await axiosInstance.get(`/api/events/filter/?${params}`);
   return response.data;
 };

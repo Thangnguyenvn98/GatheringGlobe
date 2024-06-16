@@ -7,6 +7,7 @@ import { Button } from "../ui/button";
 
 const EventDetailMock: React.FC = () => {
   const { eventId } = useParams<{ eventId: string }>();
+  useParams<{ eventId: string }>();
   const {
     data: eventData,
     isLoading,
@@ -113,7 +114,7 @@ const EventDetailMock: React.FC = () => {
           {new Date(eventData.endTime).toLocaleString()}
         </p>
         <div className="mb-4">
-          {eventData.categories.map((tag: string) => (
+          {eventData?.categories?.map((tag: string) => (
             <span
               key={tag}
               className="inline-block bg-blue-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2"
@@ -128,7 +129,7 @@ const EventDetailMock: React.FC = () => {
       <div className="flex-1">
         <div className="bg-gray-100 p-6 rounded-lg shadow-lg">
           <h3 className="text-lg font-semibold mb-2">Tickets</h3>
-          {eventData.tickets.map((ticket: TicketType) => (
+          {eventData?.tickets?.map((ticket: TicketType) => (
             <div key={ticket._id} className="mb-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center">

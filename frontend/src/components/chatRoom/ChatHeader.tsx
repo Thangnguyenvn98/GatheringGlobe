@@ -22,7 +22,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
         {/* Icon or text to indicate toggle functionality */}
         <Info />
       </Button>
-      <div className="p-4 bg-cyan-800 bg-opacity-15 rounded-md">
+      <div className="p-4 bg-cyan-400 bg-opacity-15 rounded-md">
         <div className="flex gap-x-2 items-center ">
           {/* <div className="w-10 h-10">
             <img src={rooms[1].images} alt={rooms[1].label} className="rounded-full" />

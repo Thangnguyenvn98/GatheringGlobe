@@ -2,6 +2,11 @@
     <head>
         <style>
             /* Your styles here */
+            img {
+                max-width: 100%; /* Ensure images are responsive */
+                height: auto; /* Maintain aspect ratio */
+                margin-bottom: 10px; /* Space between images */
+            }
         </style>
     </head>
     <body>
@@ -11,9 +16,11 @@
         <p>Description: {{{description}}}</p> <!-- Use triple braces for HTML content -->
         {{#if attachments.length}}
             <p>Attachments:</p>
-            {{#each attachments}}
-                <img src="{{this.url}}" alt="supportPhoto" style="max-width: 100%;">
-            {{/each}}
+            <div>
+                {{#each attachments}}
+                    <img src="{{this}}" alt="Attachment"> <!-- Adjusted to use {{this}} -->
+                {{/each}}
+            </div>
         {{else}}
             <p>No attachments provided.</p>
         {{/if}}

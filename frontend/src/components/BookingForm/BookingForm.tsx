@@ -1,4 +1,3 @@
-import { PaymentIntentResponse } from "../../../../backend/src/shared/types";
 import {
   useStripe,
   useElements,
@@ -23,8 +22,7 @@ import useCartStore from "@/hooks/use-cart-store";
 import { createOrderPayment } from "@/services/api";
 import toast from "react-hot-toast";
 import { useModal } from "@/hooks/use-modal-store";
-
-// import { StripeCardElement } from "@stripe/stripe-js";
+import { PaymentIntentResponse } from "@/types/paymentIntentResponse";
 
 type Props = {
   currentUser: User;
@@ -102,7 +100,6 @@ const BookingForm = ({ paymentIntent, currentUser }: Props) => {
           email: data.email,
         });
         if (response) {
-          console.log(response._id);
           setLoading(false);
           onOpen("orderConfirmation", { orderId: response });
         }

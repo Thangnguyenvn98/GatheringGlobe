@@ -8,20 +8,22 @@ import {
   DropdownMenuGroup,
   DropdownMenuShortcut,
 } from "../ui/dropdown-menu";
+import "./Pageheader.css";
 import { Button } from "../ui/button";
 import GatheringGlobe from "../../images/GatheringGlobe.png";
 import SearchForm from "../navbar/searchbar";
 import { Link, useNavigate } from "react-router-dom";
-import { CircleUserRound, LogOut } from "lucide-react";
+import { CircleUserRound, LogOut, ShoppingCart } from "lucide-react";
 import { signOutUser } from "@/services/api";
 import toast from "react-hot-toast";
 import { useCurrentUser } from "@/services/queries";
-import { ShoppingCart } from "lucide-react";
 import Cart from "../checkout/Cart";
 import useCartStore from "@/hooks/use-cart-store";
+import { useQueryClient } from "@tanstack/react-query";
 
 function Pageheader() {
   const { data: userData, isLoading, isError } = useCurrentUser();
+  const queryClient = useQueryClient();
   const { getTotalQuantity } = useCartStore();
   const totalQuantity = getTotalQuantity();
   const navigate = useNavigate();
@@ -31,6 +33,7 @@ function Pageheader() {
       const response = await signOutUser();
       console.log(response.message);
       toast.success(response.message);
+      queryClient.resetQueries();
       navigate("/", { replace: true });
     } catch (e) {
       console.log(e);
@@ -39,7 +42,7 @@ function Pageheader() {
   };
   return (
     <>
-      <div className="flex md:hidden left-0">
+      <div className=" navbar-container flex md:hidden left-0 ">
         <DropdownMenu>
           <DropdownMenuTrigger className="w-full bg-transparent text-green-800">
             <svg
@@ -51,7 +54,7 @@ function Pageheader() {
               <path d="M5.625 3.75a2.625 2.625 0 1 0 0 5.25h12.75a2.625 2.625 0 0 0 0-5.25H5.625ZM3.75 11.25a.75.75 0 0 0 0 1.5h16.5a.75.75 0 0 0 0-1.5H3.75ZM3 15.75a.75.75 0 0 1 .75-.75h16.5a.75.75 0 0 1 0 1.5H3.75a.75.75 0 0 1-.75-.75ZM3.75 18.75a.75.75 0 0 0 0 1.5h16.5a.75.75 0 0 0 0-1.5H3.75Z" />
             </svg>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-96 bg-emerald-800">
+          <DropdownMenuContent className="w-96">
             <DropdownMenuItem className="h-14">Home</DropdownMenuItem>
             <DropdownMenuItem className="h-14">Discover Event</DropdownMenuItem>
             <DropdownMenuItem className="h-14">Community</DropdownMenuItem>
@@ -62,24 +65,33 @@ function Pageheader() {
         </DropdownMenu>
       </div>
 
-      <div className="flex flex-col w-full bg-green-200 fixed bg-opacity-100 z-30 p-4">
-        <div className="flex justify-between w-full text-white items-center">
+      <div className=" navbar-container flex flex-col w-full fixed bg-opacity-100 z-30 p-4 px-10">
+        <div className="flex justify-between w-full items-center">
           <div className="relative flex items-center">
             <Link to="/">
               <img src={GatheringGlobe} alt="logo" className="h-20 w-70 pt-4" />
             </Link>
           </div>
-          <div className="flex items-center gap-x-4 text-lg font-bold text-green-800">
-            <Link to="/discover" className="   hover:text-green-500">
+          <div className="flex items-center gap-x-4 text-lg font-bold ">
+            <Link
+              to="/discover"
+              className="text-green-600 hover:text-neutral-800"
+            >
               Discover
             </Link>
-            <Link to="/community" className=" hover:text-green-500 ">
+            <Link
+              to="/community"
+              className="text-green-600 hover:text-neutral-800 "
+            >
               Community
             </Link>
-            <Link to="/about" className="    hover:text-green-500 ">
+            <Link to="/about" className="text-green-600 hover:text-neutral-800">
               About Us
             </Link>
-            <Link to="/help" className=" hover:text-green-500 ">
+            <Link
+              to="/help"
+              className=" text-green-600 hover:text-neutral-800 "
+            >
               FAQs
             </Link>
           </div>
@@ -87,7 +99,7 @@ function Pageheader() {
             <DropdownMenu modal={false}>
               <DropdownMenuTrigger asChild>
                 <Button className="relative" variant={"outline"}>
-                  <ShoppingCart className="h-6 w-6 text-green-800 hover:text-green-500" />
+                  <ShoppingCart className="h-6 w-6 text-green-800" />
                   {totalQuantity > 0 && (
                     <div className="absolute -top-4 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex justify-center items-center">
                       {totalQuantity}
@@ -103,7 +115,7 @@ function Pageheader() {
               <DropdownMenu modal={false}>
                 <DropdownMenuTrigger asChild>
                   <Button variant={"profile"}>
-                    <CircleUserRound />
+                    <CircleUserRound className="h-6 w-6 text-green-800" />
                   </Button>
                 </DropdownMenuTrigger>
 
@@ -139,9 +151,9 @@ function Pageheader() {
             {!userData && (
               <Link
                 to="/register"
-                className="bg-white text-green-800 text-lg p-4 rounded-md mr-2"
+                className="bg-white hover:bg-gray-100  text-normal text-green-800 text-lg px-3 py-2 rounded-md mr-2"
               >
-                Log In/Sign up
+                Sign In/Sign Up
               </Link>
             )}
           </div>

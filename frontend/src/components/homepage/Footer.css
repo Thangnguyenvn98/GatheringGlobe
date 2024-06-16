@@ -1,0 +1,14 @@
+.footer-container ul,
+li {
+  list-style: none;
+  margin: 0 auto;
+  padding: 0;
+}
+
+.footer-container {
+  background-color: rgb(187 247 208);
+}
+
+.footer-container ul {
+  color: #53574e;
+}

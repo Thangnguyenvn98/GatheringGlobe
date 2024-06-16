@@ -8,7 +8,9 @@ export type UserType = {
     lastName?: string,
     email: string,
     password: string,
-    
+    stream?: mongoose.Types.ObjectId,
+    imageUrl?: string,
+    bio?:string,
 }; 
 
 const userSchema = new mongoose.Schema({
@@ -17,6 +19,9 @@ const userSchema = new mongoose.Schema({
     lastName: {type: String, required: false},
     email: {type: String, required: true, unqiue: true},
     password: {type: String, required: true},
+    stream: {type: mongoose.Schema.Types.ObjectId, ref: "Stream", required: false},
+    imageUrl: {type: String, required: false},
+    bio: {type: String, required: false},
 });
 
 // Middleware for mongodb
