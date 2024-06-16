@@ -124,7 +124,11 @@ function Pageheader() {
                     <DropdownMenuItem>My Profile</DropdownMenuItem>
                     <DropdownMenuItem>My Tickets</DropdownMenuItem>
                     <DropdownMenuItem>My Settings</DropdownMenuItem>
-                    <DropdownMenuItem>My Events</DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <Link to={`/dashboard/${userData.username}`}>
+                        My Events
+                      </Link>
+                    </DropdownMenuItem>
                   </DropdownMenuGroup>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem

@@ -171,7 +171,7 @@ function App() {
           }
         />
         <Route
-          path="/dashboard"
+          path="/dashboard/:username"
           element={
             <Layout>
               <Dashboard />

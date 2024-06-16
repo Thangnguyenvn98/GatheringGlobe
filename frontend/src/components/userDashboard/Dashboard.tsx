@@ -1,29 +1,27 @@
 import { useEffect, useState } from "react";
 import SideBar from "./SideBar";
 import MainContent from "./MainContent";
-
+import { EventType } from "@/types/event";
 // import UserProfile from "../streaming/[username]/UserProfile";
-import { useAuthQuery } from "@/services/queries";
 import { axiosInstance } from "@/services/api";
 
 const Dashboard = () => {
-  const [selectedCategory, setSelectedCategory] = useState<string>("");
-  const { data } = useAuthQuery();
-  console.log(data);
+  // const [selectedCategory, setSelectedCategory] = useState<string>("");
+  const [events, setEvents] = useState<EventType[]>([]);
 
   useEffect(() => {
-    if (data == null) return;
     async function fetchData() {
-      const result = await axiosInstance.get(`/api/allEvents/${data.userId}`);
+      const result = await axiosInstance.get("/api/allEvents");
       console.log(result);
+      setEvents(result.data);
     }
     fetchData();
-  }, [data]);
+  }, []);
 
   return (
     <div className="flex">
-      <SideBar onSelectCategory={setSelectedCategory} />
-      <MainContent category={selectedCategory} />
+      <SideBar />
+      <MainContent events={events} />
       {/* <UserProfile /> */}
     </div>
   );
