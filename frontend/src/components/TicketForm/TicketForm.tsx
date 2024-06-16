@@ -84,8 +84,12 @@ const TicketForm = () => {
     try {
       setLoading(true);
       console.log(data);
-
-      const response = await axiosInstance.post("/api/events", data);
+      const eventId = localStorage.getItem("eventId");
+      console.log(eventId);
+      const response = await axiosInstance.post(
+        `/api/events/${eventId}/tickets`,
+        data,
+      );
       form.reset();
       toast.success(response.data.message);
       setTimeout(() => {
