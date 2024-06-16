@@ -186,7 +186,7 @@ const EventForm = () => {
       form.reset();
       toast.success(response.data.message);
       const event = response.data;
-      localStorage.setItem("eventId", event._id);
+      // localStorage.setItem("eventId", event._id);
       navigate(`/${event._id}/tickets`);
       console.log(event);
     } catch (error) {
