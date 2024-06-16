@@ -228,9 +228,8 @@ router.post(
   "/:eventId/tickets",
   verifyToken,
   async (req: Request, res: Response) => {
-    console.log("yay");
     const { eventId } = req.params;
-    const tickets = req.body.tickets;
+    const tickets = req.body;
     console.log("Tickets:", tickets);
 
     if (!Array.isArray(tickets) || tickets.length === 0) {
@@ -253,16 +252,13 @@ router.post(
           price,
           quantityAvailable,
           seatNumber,
-          startTime,
-          endTime,
+          isFree,
         } = ticketData;
 
         if (
           !type ||
           price == null ||
-          !quantityAvailable ||
-          !startTime ||
-          endTime == null
+          quantityAvailable  == null
         ) {
           return res
             .status(400)
@@ -271,12 +267,12 @@ router.post(
 
         const ticket = new Ticket({
           eventId,
+          status: "active",
           type,
           price,
           quantityAvailable,
           seatNumber,
-          startTime,
-          endTime,
+          isFree,
         });
 
         await ticket.save();

@@ -1,6 +1,6 @@
 import { useForm } from "react-hook-form";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import toast from "react-hot-toast";
@@ -22,14 +22,6 @@ import {
 } from "../ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { format } from "date-fns";
 import axios from "axios";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
@@ -38,57 +30,44 @@ const axiosInstance = axios.create({
   withCredentials: true,
 });
 // Define the schema using zod
-const formSchema = z
-  .object({
-    ticketName: z.string().min(1, { message: "Ticket name is required" }), //ticket name nên lấy từ event name
-    price: z.number().min(0, { message: "Price must be at least zero" }),
-    quantityAvailable: z
-      .number()
-      .min(1, { message: "At least one ticket must be available" }),
-    type: z.enum(["General Admission", "VIP", "Early Bird"]),
-    startTime: z.date().refine((date) => date >= new Date(), {
-      message: "Start time must be in the future",
+const formSchema = z.object({
+  price: z.number().min(0, { message: "Price must be at least zero" }),
+  quantityAvailable: z
+    .number()
+    .min(1, { message: "At least one ticket must be available" }),
+  type: z
+    .string()
+    .min(50, { message: "Ticket type must be at least 50 characters long" })
+    .max(200, {
+      message: "Ticket type  must be no more than 200 characters long",
     }),
-    endTime: z.date().refine((date) => date >= new Date(), {
-      message: "End time must be in the future",
-    }),
-  })
-  .superRefine((data, ctx) => {
-    if (data.endTime <= data.startTime) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: "End time must be after start time",
-        path: ["endTime"],
-      });
-    }
-  });
+});
 
 type FormData = z.infer<typeof formSchema>;
 
 const TicketForm = () => {
   const navigate = useNavigate();
+  const { eventId } = useParams();
   const [loading, setLoading] = useState(false);
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      ticketName: "", // Default text for ticket name
       price: 0, // Default price set to 0, assuming it's in a currency
       quantityAvailable: 1, // Start with a minimum of 1 ticket available
       type: "General Admission", // Default to "General Admission"
-      startTime: new Date(), // Initialize with the current date/time
-      endTime: new Date(), // Initialize with the current date/time; adjust in UI if needed
     },
   });
-
+  // const { fields, append, remove } = useFieldArray({
+  //   control: form.control,
+  //   name: "tickets",
+  // });  //this help manage dynamic form field, allowing user to add or remove input form field dynamically
   const onSubmit = async (data: FormData) => {
     try {
       setLoading(true);
       console.log(data);
-      const eventId = localStorage.getItem("eventId");
-      console.log(eventId);
       const response = await axiosInstance.post(
         `/api/events/${eventId}/tickets`,
-        data,
+        [data],
       );
       form.reset();
       toast.success(response.data.message);
@@ -120,16 +99,12 @@ const TicketForm = () => {
             <CardContent className="space-y-4">
               <FormField
                 control={form.control}
-                name="ticketName"
+                name="type"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Ticket Name</FormLabel>
+                    <FormLabel>Ticket Type*</FormLabel>
                     <FormControl>
-                      <Input
-                        {...field}
-                        disabled={loading}
-                        placeholder="Enter ticket name"
-                      />
+                      <Input {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -177,89 +152,11 @@ const TicketForm = () => {
                   </FormItem>
                 )}
               />
-              <FormField
-                control={form.control}
-                name="type"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Ticket Type</FormLabel>
-                    <FormControl>
-                      <Select {...field}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select ticket type" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="General Admission">
-                            General Admission
-                          </SelectItem>
-                          <SelectItem value="VIP">VIP</SelectItem>
-                          <SelectItem value="Early Bird">Early Bird</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="startTime"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Sales Start</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="datetime-local"
-                        disabled={loading}
-                        value={
-                          field.value
-                            ? format(
-                                new Date(field.value),
-                                "yyyy-MM-dd'T'HH:mm",
-                              )
-                            : format(new Date(), "yyyy-MM-dd'T'HH:mm")
-                        }
-                        onChange={(e) =>
-                          // Convert the input value to Date here
-                          field.onChange(new Date(e.target.value))
-                        }
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="endTime"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Sales End</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="datetime-local"
-                        disabled={loading}
-                        value={
-                          field.value
-                            ? format(
-                                new Date(field.value),
-                                "yyyy-MM-dd'T'HH:mm",
-                              )
-                            : format(new Date(), "yyyy-MM-dd'T'HH:mm")
-                        }
-                        onChange={(e) =>
-                          // Convert the input value to Date here
-                          field.onChange(new Date(e.target.value))
-                        }
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
             </CardContent>
             <CardFooter>
               <Button
                 type="submit"
-                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700 w-full"
+                className="bg-white text-white px-4 py-2 rounded hover:bg-black w-full hover:text-white"
               >
                 Create Ticket
               </Button>
