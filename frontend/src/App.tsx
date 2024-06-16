@@ -72,7 +72,7 @@ function App() {
             }
           />
           <Route
-            path="/create-new-ticket"
+            path="/:eventId/tickets"
             element={
               <Layout>
                 <TicketForm />
@@ -179,7 +179,7 @@ function App() {
           }
         />
 
-        <Route path="/booking/:ticketId" element={<EventDetail />} />
+        <Route path="c" element={<EventDetail />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/qr-scanner" element={<QrReader />} />
