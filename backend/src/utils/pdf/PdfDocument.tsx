@@ -125,7 +125,7 @@ const styles = StyleSheet.create({
   ticketImage: {
     marginTop: 20,
     width: 300,
-    height: 200,
+    height: 500,
     alignSelf: "center",
   },
 });
@@ -211,6 +211,12 @@ const PDF = ({ orderData }: PDFProps) => {
                   REFUNDS.
                 </Text>
               </View>
+              {event.eventId.imageUrls[0] && (
+                <Image
+                  style={styles.ticketImage}
+                  src={event.eventId.imageUrls[0]}
+                />
+              )}
             </Page>
           ))
         )
