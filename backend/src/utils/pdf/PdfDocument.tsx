@@ -121,11 +121,12 @@ const styles = StyleSheet.create({
     marginTop: 10,
     width: 100,
     height: 100,
+    marginLeft: 80,
   },
   ticketImage: {
     marginTop: 20,
-    width: 300,
-    height: 500,
+    width: 200,
+    height: 300,
     alignSelf: "center",
   },
 });
@@ -146,10 +147,7 @@ const PDF = ({ orderData }: PDFProps) => {
               key={`${event.eventId._id}-${ticket.ticketId._id}-${index}`}
             >
               <View style={styles.header}>
-                <Text>
-                  {event.eventId.title} •{" "}
-                  {new Date(orderData.createdAt).toLocaleDateString()}
-                </Text>
+                <Text>{event.eventId.title} • </Text>
                 <Text style={styles.ticketNo}>{orderData._id}</Text>
               </View>
 
