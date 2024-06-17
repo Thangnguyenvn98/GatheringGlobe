@@ -7,6 +7,7 @@ import ReactPDF, {
   StyleSheet,
   Image,
 } from "@react-pdf/renderer";
+import Order from "../../models/order";
 
 // Define TypeScript types
 export type OrderData = {
@@ -39,12 +40,23 @@ export type OrderData = {
   paymentIntentId: string;
   createdAt: Date;
   updatedAt: Date;
+  qrCodes: QRCode[];
 };
 
 interface PDFProps {
   orderData: OrderData;
-  qrCodeBase64: string;
+  // qrCodes: {
+  //   eventId: string;
+  //   ticketId: string;
+  //   qrCodeBase64: string;
+  // }[];
 }
+
+export type QRCode = {
+  eventId: string;
+  ticketId: string;
+  qrCodeBase64: string;
+};
 
 const styles = StyleSheet.create({
   page: {
@@ -110,84 +122,105 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
   },
+  ticketImage: {
+    marginTop: 20,
+    width: 300,
+    height: 200,
+    alignSelf: "center",
+  },
 });
 
-const PDF = ({ orderData, qrCodeBase64 }: PDFProps) => {
+const PDF = ({ orderData }: PDFProps) => {
   console.log(orderData);
   return (
     <Document>
-      <Page size="A4" style={styles.page}>
-        <View style={styles.header}>
-          <Text>
-            {orderData.events[0].eventId.title} •{" "}
-            {new Date(orderData.createdAt).toLocaleDateString()}
-          </Text>
-          <Text style={styles.ticketNo}>{orderData._id}</Text>
-        </View>
+      {/* {map here} */}
+      {/* Start of the page */}
+      {orderData.events.map((event, eventIndex) =>
+        event.tickets.map((ticket) =>
+          // Creating a new page for each ticket ( based on quantity)
+          [...Array(ticket.quantity)].map((_, index) => (
+            <Page
+              size="A4"
+              style={styles.page}
+              key={`${event.eventId._id}-${ticket.ticketId._id}-${index}`}
+            >
+              <View style={styles.header}>
+                <Text>
+                  {event.eventId.title} •{" "}
+                  {new Date(orderData.createdAt).toLocaleDateString()}
+                </Text>
+                <Text style={styles.ticketNo}>{orderData._id}</Text>
+              </View>
 
-        <View style={styles.infoSection}>
-          <View style={styles.leftColumn}>
-            <Text style={styles.label}>TIME & LOCATION</Text>
-            <Text style={styles.text}>
-              {new Date(orderData.events[0].eventId.startTime).toLocaleString()}{" "}
-              - {new Date(orderData.events[0].eventId.endTime).toLocaleString()}{" "}
-            </Text>
-            <Text style={styles.text}>
-              {orderData.events[0].eventId.location}
-            </Text>
+              <View style={styles.infoSection}>
+                <View style={styles.leftColumn}>
+                  <Text style={styles.label}>TIME & LOCATION</Text>
+                  <Text style={styles.text}>
+                    {new Date(event.eventId.startTime).toLocaleString()} -{" "}
+                    {new Date(event.eventId.endTime).toLocaleString()}{" "}
+                  </Text>
+                  <Text style={styles.text}>{event.eventId.location}</Text>
 
-            <Text style={styles.label}>TICKET TYPE & PRICE</Text>
-            <Text style={styles.text}>
-              {orderData.events[0].tickets[0].ticketId.type} - $
-              {orderData.events[0].tickets[0].ticketId.price}
-            </Text>
-          </View>
-          <View style={styles.rightColumn}>
-            <Text style={styles.label}>ORDER NO.</Text>
-            <Text style={styles.text}>{orderData._id}</Text>
+                  <Text style={styles.label}>TICKET TYPE & PRICE</Text>
+                </View>
+              </View>
+              <View style={styles.ticket}>
+                <View style={styles.ticketHolder}>
+                  <Text style={styles.label}>TICKET HOLDER</Text>
+                  <Text style={styles.label}>ORDER DATE</Text>
+                </View>
+                <View style={styles.ticketHolder}>
+                  <Text>
+                    {orderData.firstName} {orderData.lastName}
+                  </Text>
+                  <Text>
+                    {new Date(orderData.createdAt).toLocaleDateString()}
+                  </Text>
+                </View>
+                <View style={styles.ticketHolder}>
+                  <Text style={styles.label}>
+                    {ticket.ticketId.type} - ${ticket.ticketId.price}
+                  </Text>
 
-            <Text style={styles.label}>PAYMENT STATUS</Text>
-            <Text style={styles.text}>{orderData.paymentStatus}</Text>
-
-            <Image src={qrCodeBase64} style={styles.qrCode} />
-          </View>
-        </View>
-
-        <View style={styles.ticket}>
-          <View style={styles.ticketHolder}>
-            <Text style={styles.label}>TICKET HOLDER</Text>
-            <Text style={styles.label}>ORDER DATE</Text>
-          </View>
-          <View style={styles.ticketHolder}>
-            <Text>
-              {orderData.firstName} {orderData.lastName}
-            </Text>
-            <Text>{new Date(orderData.createdAt).toLocaleDateString()}</Text>
-          </View>
-        </View>
-
-        <View style={styles.footer}>
-          <Text>
-            This is your event ticket. Ticket holders must present their tickets
-            and Valid Government ID on entry. You can either print your ticket
-            or present this digital version. You can find all the details about
-            this event on our website.
-          </Text>
-          <Text style={{ marginTop: 10 }}>
-            Valid for one (1) person [19+ ONLY]; General Admission to the event
-          </Text>
-          <Text style={{ marginTop: 10 }}>
-            Event is Rain or Shine! All purchases are final sale - NO REFUNDS.
-          </Text>
-        </View>
-      </Page>
+                  <Image
+                    style={styles.qrCode}
+                    src={
+                      orderData.qrCodes.find(
+                        (qrCode) =>
+                          qrCode.eventId === event.eventId._id &&
+                          qrCode.ticketId === ticket.ticketId._id
+                      )?.qrCodeBase64 || ""
+                    }
+                  />
+                </View>
+              </View>
+              <View style={styles.footer}>
+                <Text>
+                  This is your event ticket. Ticket holders must present their
+                  tickets and Valid Government ID on entry. You can either print
+                  your ticket or present this digital version. You can find all
+                  the details about this event on our website.
+                </Text>
+                <Text style={{ marginTop: 10 }}>
+                  Valid for one (1) person [19+ ONLY]; General Admission to the
+                  event
+                </Text>
+                <Text style={{ marginTop: 10 }}>
+                  Event is Rain or Shine! All purchases are final sale - NO
+                  REFUNDS.
+                </Text>
+              </View>
+            </Page>
+          ))
+        )
+      )}
     </Document>
   );
 };
-
 export default async (data: PDFProps, filePath: string) => {
   return await ReactPDF.renderToFile(
-    <PDF orderData={data.orderData} qrCodeBase64={data.qrCodeBase64} />,
+    <PDF orderData={data.orderData} />,
     filePath
   );
 };
