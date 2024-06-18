@@ -28,6 +28,7 @@ import ViewerPage from "./components/streaming/[username]/ViewerPage";
 import WatchChannelPage from "./components/streaming/[username]/WatchChannelPage";
 import CreatorPageWrapper from "./components/streaming/[username]/CreatorPageWrapper";
 import GenerateStreamPage from "./components/streaming/keys/GenerateStreamPage.tsx";
+import BotChat from "./components/chatbot/BotChat.tsx";
 
 function App() {
   return (
@@ -36,7 +37,7 @@ function App() {
         <Route
           path="/"
           element={
-            <Layout>
+            <Layout showChatBot={true}>
               <Homepage />
             </Layout>
           }
@@ -45,7 +46,7 @@ function App() {
         <Route
           path="/about"
           element={
-            <Layout>
+            <Layout showChatBot={true}>
               <AboutUs />
             </Layout>
           }
@@ -53,7 +54,7 @@ function App() {
 
         <Route element={<ProtectedRoute />}>
           <Route
-            path="/u/:username/keys"
+            path="/u/:username/create-stream"
             element={
               <Layout>
                 <GenerateStreamPage />
@@ -72,17 +73,21 @@ function App() {
           <Route
             path="/messages/c/:ownerId/t/:roomId"
             element={
-              <SocketProvider>
-                <ChatPage />
-              </SocketProvider>
+              <Layout>
+                <SocketProvider>
+                  <ChatPage />
+                </SocketProvider>
+              </Layout>
             }
           />
           <Route
-            path="/messages"
+            path="/community-chat"
             element={
-              <SocketProvider>
-                <ChatPage />
-              </SocketProvider>
+              <Layout>
+                <SocketProvider>
+                  <ChatPage />
+                </SocketProvider>
+              </Layout>
             }
           />
           <Route
@@ -108,7 +113,7 @@ function App() {
         <Route
           path="/discover"
           element={
-            <Layout>
+            <Layout showChatBot={true}>
               <DiscoverEvent />
             </Layout>
           }
@@ -116,16 +121,17 @@ function App() {
         <Route
           path="/help"
           element={
-            <Layout>
+            <Layout showChatBot={true}>
               <Faq />
             </Layout>
           }
         />
+        <Route path="/chatbot" element={<BotChat />} />
 
         <Route
           path="/discover/:eventName/event/:eventId"
           element={
-            <Layout>
+            <Layout showChatBot={true}>
               <EventDetail />
             </Layout>
           }
@@ -133,7 +139,7 @@ function App() {
         <Route
           path="/contact-us"
           element={
-            <Layout>
+            <Layout showChatBot={true}>
               <ContactUs />
             </Layout>
           }
@@ -158,20 +164,12 @@ function App() {
         <Route
           path="/stream/channel/watch/all"
           element={
-            <Layout>
+            <Layout showChatBot={true}>
               <WatchChannelPage />
             </Layout>
           }
         />
 
-        <Route
-          path="/discover-event-details"
-          element={
-            <Layout>
-              <EventDetail />
-            </Layout>
-          }
-        />
         <Route path="/booking/:ticketId" element={<EventDetail />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />

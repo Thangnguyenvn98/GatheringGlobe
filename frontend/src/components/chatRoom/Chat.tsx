@@ -31,7 +31,7 @@ const ChatPage = () => {
   useEffect(() => {
     if (useRoomsQuery.status !== "pending" && !currentRoom) {
       // Redirect to /messages if the current room does not exist
-      navigate("/messages");
+      navigate("/community-chat");
     }
 
     if (
@@ -69,7 +69,7 @@ const ChatPage = () => {
   }
 
   return (
-    <div className="flex min-h-screen max-w-full bg-black relative">
+    <div className="flex min-h-screen max-w-full bg-black relative ">
       {/* Left Sidebar */}
       <ChatList
         userId={useUserQuery.data?._id}
