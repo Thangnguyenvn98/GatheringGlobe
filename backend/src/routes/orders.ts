@@ -62,6 +62,7 @@ router.post(
       };
 
       const ticketUpdates = [];
+      const ticketQRCodeDataList = [];
 
       for (const ticketDetail of JSON.parse(
         paymentIntent.metadata.allTicketsDetails
@@ -99,13 +100,27 @@ router.post(
           ticketId: mongoose.Types.ObjectId.createFromHexString(ticketId),
           quantity,
         });
+        // Generate QR code data for each ticket
+        for (let i = 0; i < quantity; i++) {
+          const qrCodeData = {
+            orderId: order._id.toString(),
+            eventId: eventId,
+            ticketId: ticketId,
+            index: i + 1, // To differentiate multiple tickets
+          };
+          const qrCodeString = JSON.stringify(qrCodeData);
+          const qrCodeBase64 = await QRCode.toDataURL(qrCodeString);
+          ticketQRCodeDataList.push({
+            eventId,
+            ticketId,
+            qrCodeBase64,
+          });
+        }
       }
 
       await Promise.all(ticketUpdates);
       const newOrder = new Order(order);
       await newOrder.save();
-      const qrCodeData = newOrder._id.toString();
-      const qrCodeBase64 = await QRCode.toDataURL(qrCodeData);
 
       const populatedOrder = await Order.findById(newOrder._id)
         .select("-events._id -events.tickets._id")
@@ -158,8 +173,8 @@ router.post(
           paymentIntentId: orderObject.paymentIntentId,
           createdAt: orderObject.createdAt,
           updatedAt: orderObject.updatedAt,
+          qrCodes: ticketQRCodeDataList, // Add QR codes list
         },
-        qrCodeBase64: qrCodeBase64,
       };
 
       const filePath = `${__dirname}/ticket.pdf`;
@@ -176,14 +191,23 @@ router.post(
         },
       });
 
+      const qrCodeHTML = ticketQRCodeDataList.map((data) => {
+        return `<div>
+                  <p>Event ID: ${data.eventId}</p>
+                  <p>Ticket ID: ${data.ticketId}</p>
+                  <img src="${data.qrCodeBase64}" alt="QR Code" />
+                </div>`;
+      }).join('');
+
       const mailOptions = {
         from: process.env.USER_EMAIL,
-        to: "kak4sh16@gmail.com",
+        to: orderObject.email,
         subject: "Your Ticket",
         html: `<p>Dear ${orderObject.firstName} ${orderObject.lastName},</p>
                <p>Thank you for your order. Here is your ticket:</p>
                <p>Order ID: ${orderObject._id}</p>
-               <p> Below is the QR Code. You can scan it now!!! </p>`,
+               <p> Below is the QR Code. You can scan it now!!! </p>
+               ${qrCodeHTML}`,
         attachments: [
           {
             filename: "Tickets.pdf",
