@@ -19,7 +19,7 @@ router.post("/", rateLimitMiddleware, async (req: Request, res: Response) => {
 
     // Prepare the outbound messages
     const outboundMessages: ChatGPTMessage[] = parsedMessages.map(
-      (message: any) => ({
+      (message) => ({
         role: message.isUserMessage ? "user" : "system",
         content: message.message,
       })
