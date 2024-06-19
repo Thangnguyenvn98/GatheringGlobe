@@ -10,7 +10,6 @@ const EventCard = ({ event }: { event: EventType }) => {
       className="w-9/12 flex mb-5 bg-white shadow-md rounded-lg p-4 {cursor: pointer}"
     >
       <div className="container w-1/3">
-        s
         <img
           src={event.imageUrls[0]} // Assuming the first URL is the primary image
           alt={event.title}
@@ -27,7 +26,8 @@ const EventCard = ({ event }: { event: EventType }) => {
             {event.tickets.map((ticket) => {
               return (
                 <p className="text-sm py-2">
-                  {ticket.title.toString()} - ${ticket.price.toFixed(2)}
+                  {ticket.ticketName.toString()} - $
+                  {ticket.price.toFixed(2).toString()}
                 </p>
               );
             })}
