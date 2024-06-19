@@ -52,7 +52,7 @@ const EventDetail: React.FC = () => {
         total += (quantities[ticket._id] || 0) * ticket.price;
       });
     }
-    setTotalCost(total);
+    setTotalCost(Number(total.toFixed(2)));
   };
 
   const handleAddToCart = () => {
