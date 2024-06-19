@@ -1,4 +1,4 @@
-import { EventType } from "react-hook-form";
+import { EventType } from "./event";
 
 export interface TicketType {
   _id: string;
@@ -10,4 +10,6 @@ export interface TicketType {
   endTime: string;
   quantityAvailable: number;
   type: string;
+  isFree: boolean;
+  title: EventType;
 }

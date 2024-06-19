@@ -30,6 +30,7 @@ import CreatorPageWrapper from "./components/streaming/[username]/CreatorPageWra
 import GenerateStreamPage from "./components/streaming/keys/GenerateStreamPage.tsx";
 import BotChat from "./components/chatbot/BotChat.tsx";
 import TicketForm from "./components/TicketForm/TicketForm";
+import Dashboard from "./components/userDashboard/Dashboard";
 
 function App() {
   return (
@@ -175,6 +176,14 @@ function App() {
           element={
             <Layout showChatBot={true}>
               <WatchChannelPage />
+            </Layout>
+          }
+        />
+        <Route
+          path="/dashboard/:username"
+          element={
+            <Layout>
+              <Dashboard />
             </Layout>
           }
         />

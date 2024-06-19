@@ -6,18 +6,16 @@ import Ticket from "../models/ticket";
 import mongoose from "mongoose";
 
 const router = express.Router();
-router.get("/all/:userId", async (req: Request, res: Response) => {
+router.get("/", verifyToken, async (req: Request, res: Response) => {
   try {
-    const { userId } = req.params;
-    const user = await User.findById(userId);
-    console.log(userId);
+    const user = await User.findById(req.userId);
 
     if (!user) {
       return res.status(400).json({ message: "User not exists!" });
     }
 
     // const events = await Event.find({ organizerId: req.userId });
-    const events = await Event.find({ organizerId: userId });
+    const events = await Event.find({ organizerId: user._id });
     // .populate("tickets")
     // .exec();
 

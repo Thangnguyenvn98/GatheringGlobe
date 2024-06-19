@@ -21,8 +21,9 @@ const ticketSchema = new mongoose.Schema({
     required: true,
   },
   ticketName: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Event",
+    // type: mongoose.Schema.Types.ObjectId,
+    // ref: "Event",
+    type: String,
     required: true,
   },
   seatNumber: { type: String, required: false },
