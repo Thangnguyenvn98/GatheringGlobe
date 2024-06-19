@@ -17,14 +17,14 @@ const EventCard = ({
   return (
     <Link
       to={eventLink}
-      className="w-9/12 flex mb-5 bg-white shadow-md rounded-lg p-4 {cursor: pointer}  "
+      className="event-card-container w-9/12 flex mb-5 bg-white shadow-md rounded-lg p-4 cursor-pointer"
       onClick={onClick}
     >
-      <div className="container w-1/3">
+      <div className="container w-1/3 flex justify-center items-center">
         <img
           src={event.imageUrls[0]} // Assuming the first URL is the primary image
           alt={event.title}
-          className="w-60 h-auto object-contain rounded-lg mr-4 "
+          className="event-card-image w-60 h-auto  rounded-xl mr-4 "
         />
       </div>
 
