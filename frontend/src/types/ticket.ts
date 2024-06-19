@@ -1,3 +1,5 @@
+import { EventType } from "./event";
+
 export interface TicketType {
   _id: string;
   eventId: string;
@@ -7,4 +9,5 @@ export interface TicketType {
   quantityAvailable: number;
   type: string;
   isFree: boolean;
+  title: EventType;
 }
