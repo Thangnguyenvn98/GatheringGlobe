@@ -15,19 +15,19 @@ router.get("/", verifyToken, async (req: Request, res: Response) => {
     }
 
     // const events = await Event.find({ organizerId: req.userId });
-    const events = await Event.find({ organizerId: user._id });
-    // .populate("tickets")
-    // .exec();
+    const events = await Event.find({ organizerId: user._id })
+      .populate("tickets")
+      .exec();
 
     if (!events) {
       return res.status(400).json({ message: "Events not exist!" });
     }
 
-    for (const event of events) {
-      const tickets = await Ticket.find({ eventId: event._id });
+    // for (const event of events) {
+    //   const tickets = await Ticket.find({ eventId: event._id });
 
-      event.tickets = tickets.map((ticket) => ticket._id);
-    }
+    //   event.tickets = tickets.map((ticket) => ticket._id);
+    // }
 
     res.json(events);
   } catch (error) {

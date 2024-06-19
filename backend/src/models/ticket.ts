@@ -21,8 +21,6 @@ const ticketSchema = new mongoose.Schema({
     required: true,
   },
   ticketName: {
-    // type: mongoose.Schema.Types.ObjectId,
-    // ref: "Event",
     type: String,
     required: true,
   },

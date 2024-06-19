@@ -2,7 +2,11 @@ import { Link } from "react-router-dom";
 import "./EventCard.css";
 import { EventType } from "@/types/event";
 
-const EventCard = ({ event }: { event: EventType }) => {
+const EventCard = ({ event }: { event: EventType | undefined }) => {
+  // Ensure event is defined before rendering
+  if (!event) {
+    return <div>Loading...</div>; // Render a fallback UI while event data is being loaded
+  }
   const eventLink = `/discover/${event.title}/event/${event._id}`;
   return (
     <Link
