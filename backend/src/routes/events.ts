@@ -228,8 +228,10 @@ router.post(
   "/:eventId/tickets",
   verifyToken,
   async (req: Request, res: Response) => {
+    console.log("yay");
     const { eventId } = req.params;
-    const tickets = req.body.tickets;
+    const tickets = req.body;
+    console.log("Tickets:", tickets);
 
     if (!Array.isArray(tickets) || tickets.length === 0) {
       return res.status(400).json({
@@ -246,34 +248,37 @@ router.post(
       const createdTickets = [];
 
       for (const ticketData of tickets) {
-        const { type, price, quantityAvailable, seatNumber, status, isFree } =
-          ticketData;
+        const {
+          type,
+          price,
+          quantityAvailable,
+          seatNumber,
+          startTime,
+          endTime,
+        } = ticketData;
 
         if (
           !type ||
           price == null ||
           !quantityAvailable ||
-          !status ||
-          isFree == null
+          !startTime ||
+          endTime == null
         ) {
           return res
             .status(400)
             .json({ message: "Missing required ticket details." });
         }
-        if (isFree && price !== 0) {
-          return res
-            .status(400)
-            .json({ message: "Free tickets must have a price of 0." });
-        }
 
         const ticket = new Ticket({
           eventId,
+          ticketName: event.title,
+          status: "active",
           type,
           price,
           quantityAvailable,
           seatNumber,
-          status,
-          isFree,
+          startTime,
+          endTime,
         });
 
         await ticket.save();
