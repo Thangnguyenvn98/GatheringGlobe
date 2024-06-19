@@ -27,7 +27,7 @@ const EventdataList = () => {
     );
   if (data.message != undefined)
     return <div>No data found for this Filter</div>;
-  let eventdatas: EventType[] = data;
+  let events: EventType[] = data;
 
   const handleClick = (eventData: EventType) => {
     navigate(
@@ -38,16 +38,10 @@ const EventdataList = () => {
   return (
     <div style={{ padding: "20px" }}>
       <div className="flex flex-col place-items-center p-4 pb-5">
-        {eventdatas?.map((eventData: any) => (
+        {events.map((eventData) => (
           <EventCard
             key={eventData._id}
-            title={eventData.title}
-            description={eventData.description}
-            startTime={eventData.startTime.toString()}
-            endTime={eventData.endTime.toString()}
-            artistName={eventData.artistName}
-            imageUrls={eventData.imageUrls}
-            location={eventData.location}
+            event={eventData} // Pass the entire event object as a prop
             onClick={() => handleClick(eventData)}
           />
         ))}

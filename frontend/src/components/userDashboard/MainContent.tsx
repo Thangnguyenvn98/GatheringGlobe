@@ -1,9 +1,13 @@
+import { useNavigate } from "react-router-dom";
 import EventCard from "../shared/EventCard";
 // import UserProfile from "../streaming/[username]/UserProfile";
 import { EventType } from "@/types/event";
 
 const MainContent = ({ events }: { events: EventType[] }) => {
-  console.log(events);
+  const navigate = useNavigate();
+  const handleClick = (event: EventType) => {
+    navigate(`/discover/${event.title.replace(/ /g, "-")}/event/${event._id}`);
+  };
   return (
     <div>
       {!events
@@ -12,6 +16,7 @@ const MainContent = ({ events }: { events: EventType[] }) => {
             <EventCard
               key={event._id}
               event={event} // Pass the event object as a prop
+              onClick={() => handleClick(event)}
             />
           ))}
     </div>
