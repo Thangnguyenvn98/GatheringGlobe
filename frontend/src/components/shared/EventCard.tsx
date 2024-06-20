@@ -40,7 +40,7 @@ const EventCard = ({
             {event.tickets.map((ticket) => {
               return (
                 <p className="text-sm py-2">
-                  {ticket.ticketName} ${ticket.price.toFixed(2)}
+                  {ticket.ticketName} ${Number(ticket.price).toFixed(2)}
                 </p>
               );
             })}

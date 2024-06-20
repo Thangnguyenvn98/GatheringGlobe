@@ -158,7 +158,9 @@ const EventDetail: React.FC = () => {
                     <span
                       className={`${ticket.price === 0 ? "font-bold" : ""}`}
                     >
-                      {ticket.price === 0 ? "Free" : `$${ticket.price}`}
+                      {ticket.price === 0
+                        ? "Free"
+                        : `$${Number(ticket.price).toFixed(2)}`}
                     </span>
                   </div>
                   <div className="flex items-center">
