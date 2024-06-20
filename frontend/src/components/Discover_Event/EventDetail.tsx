@@ -7,6 +7,7 @@ import { Button } from "../ui/button";
 import { useNavigate } from "react-router-dom";
 import { useCurrentUser } from "@/services/queries";
 import "./EventDetail.css";
+
 const EventDetail: React.FC = () => {
   const { eventId } = useParams<{ eventId: string }>();
   useParams<{ eventId: string }>();
@@ -94,6 +95,20 @@ const EventDetail: React.FC = () => {
     console.log("Checkout");
   };
 
+  const formatDate = (dateString: string) => {
+    const options: Intl.DateTimeFormatOptions = {
+      weekday: "short",
+      month: "short",
+      day: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+      hour12: true,
+    };
+    return new Intl.DateTimeFormat("en-US", options).format(
+      new Date(dateString),
+    );
+  };
+
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -108,46 +123,33 @@ const EventDetail: React.FC = () => {
 
   return (
     <div className="event-detail-container p-6">
-      <div className="event-image-container  bg-amber-100	  ">
+      <div className="event-image-container bg-amber-100">
         <img
           src={eventData.imageUrls[0]}
           alt={eventData.title}
-          className=" event-image rounded-lg   mb-4"
+          className="event-image rounded-lg mb-4"
         />
       </div>
       <div className="md:flex-row grid grid-cols-6 gap-2 py-8 event-info-container">
-        <div className=" event-info col-span-4">
+        <div className="event-info col-span-4">
           <div id="info-section">
-            <h1 className="text-2xl font-bold mb-2 ">{eventData.title}</h1>
+            <p className="font-bold mb-2">{eventData.title}</p>
             <p className="text-gray-600 mb-2">{eventData.location}</p>
-            <div className="flex items-center gap-4 ">
+            <div className="flex items-center gap-4">
               <p className="text-gray-600 mb-2">
-                {new Date(eventData.startTime).toLocaleString()}
+                {formatDate(eventData.startTime)}
               </p>
               <p className="text-gray-600 mb-2">
-                {new Date(eventData.endTime).toLocaleString()}
+                {formatDate(eventData.endTime)}
               </p>
             </div>
           </div>
-          {/* THE CURRENT SCHEMA DOES NOT HAVE CATEGORIES FOR TAGS DISPLAYING */}
-
-          {/* <div className="mb-4">
-            <h1 className="text-2xl font-bold mb-2">Tags</h1>
-            {eventData.categories?.map((tag: string) => (
-              <span
-                key={tag}
-                className="inline-block bg-blue-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2"
-              >
-                {tag}
-              </span>
-            ))}
-          </div> */}
           <div id="info-section">
             <h2 className="text-xl font-semibold mb-2">About this event</h2>
             <p>{eventData.description}</p>
           </div>
         </div>
-        <div className="add-ticket-box sticky col-span-2 rounded-lg shadow-lg top-[calc(184px+2.5rem)] right-10 overflow-y-auto max-h-[calc(100vh-10px-100px)] h-fit bg-red-100">
+        <div className="add-ticket-box sticky w-2/3 col-span-2 rounded-lg shadow-lg top-[calc(184px+2.5rem)] right-10 overflow-y-auto max-h-[calc(100vh-10px-100px)] h-fit bg-red-100">
           <div className="bg-gray-100 p-4 rounded-lg shadow-lg">
             <h3 className="text-lg font-semibold mb-2">Tickets</h3>
             {eventData.tickets.map((ticket: TicketType) => (
@@ -173,7 +175,7 @@ const EventDetail: React.FC = () => {
                     >
                       -
                     </Button>
-                    <span className=" bg-white text-black mx-2 p-2 w-8 text-center">
+                    <span className="bg-white text-black mx-2 p-2 w-8 text-center">
                       {ticketQuantities[ticket._id]}
                     </span>
                     <Button

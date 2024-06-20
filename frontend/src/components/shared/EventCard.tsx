@@ -33,7 +33,7 @@ const EventCard = ({
         onClick={onClick}
       >
         <div className="event-description">
-          <h1 className="text-lg font-bold py-2">{event.title}</h1>
+          <h1 className="text-3xl font-bold py-2">{event.title}</h1>
           <h2 className="text-sm text-gray-600 py-2">{event.artistName}</h2>
           <p className="text-sm w-full py-2">{event.description}</p>
           <div>
