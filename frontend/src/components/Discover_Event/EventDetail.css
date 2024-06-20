@@ -9,10 +9,14 @@
   border-radius: 15px;
 }
 .event-info-container {
-  width: 90%;
+  width: 100%;
   margin: 0 auto;
 }
 
 #info-section {
   margin-top: 4rem;
+}
+
+.add-ticket-box {
+  width: 400px;
 }
