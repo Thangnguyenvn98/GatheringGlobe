@@ -57,6 +57,7 @@ const Booking = () => {
         <h1 className="font-bold text-4xl">Checkout</h1>
         <div className="grid grid-cols-[1fr_1fr] p-4 gap-8 border border-gray-300 rounded-lg shadow-md min-w-[1500px] min-h-[800px]">
           <BookingDetailsSummary
+            paymentIntentId={paymentIntentData?.paymentIntentId || ""}
             cartItems={cartItems}
             totalCost={getTotalCost()}
             updateCart={updateCart}

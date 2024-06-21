@@ -20,7 +20,10 @@ const OrderDetails = () => {
   const { data, error, isLoading } = useCurrentOrderDetail(id || "");
   if (isLoading) return <div>Loading...</div>;
   if (error || !data) return <div>No data found for this Order</div>;
-  const { order, paymentMethod, created, billing_details } = data;
+  const { order, paymentMethod, created, billing_details, discountedTickets } =
+    data;
+
+  console.log(discountedTickets);
   const purchaseDate = format(new Date(created * 1000), "MMMM dd, yyyy");
 
   return (

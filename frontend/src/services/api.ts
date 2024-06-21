@@ -289,11 +289,13 @@ export const applyDiscountCode = async (
   cartItems: CartItem[],
   currentTotalCost: number,
   discountCode: string,
+  paymentIntentId: string,
 ): Promise<ApplyDiscountResponse> => {
   const response = await axiosInstance.post("/api/discounts/apply-discount", {
     cartItems,
     totalCost: currentTotalCost,
     discountCode,
+    paymentIntentId,
   });
   return response.data;
 };

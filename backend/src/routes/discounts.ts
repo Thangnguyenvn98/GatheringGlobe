@@ -1,6 +1,10 @@
 import express, { Request, Response } from "express";
 import Discount from "../models/discount";
 import verifyToken from "../middleware/auth";
+import Stripe from "stripe";
+import DiscountApplication from "../models/discountTicketOrder";
+
+const stripe = new Stripe(process.env.STRIPE_API_KEY as string);
 
 const router = express.Router();
 
@@ -22,7 +26,8 @@ router.get("/:discountId", async (req: Request, res: Response) => {
 
 // Backend route for applying a discount
 router.post("/apply-discount", verifyToken, async (req, res) => {
-  const { cartItems, discountCode, totalCost } = req.body;
+  const { cartItems, discountCode, totalCost, paymentIntentId } = req.body;
+  const userId = req.userId;
 
   try {
     // Validate the discount code
@@ -76,6 +81,7 @@ router.post("/apply-discount", verifyToken, async (req, res) => {
         }
       }
     }
+
     if (discount.usedCount + totalQuantityDiscounted > discount.usageLimit) {
       return res
         .status(400)
@@ -85,8 +91,42 @@ router.post("/apply-discount", verifyToken, async (req, res) => {
     discount.usedCount += totalQuantityDiscounted;
     await discount.save();
 
+    console.log(discountedTickets);
     // Calculate the new total cost
     const newTotal = totalCost - discountAmount;
+    const existingDiscountApplication = await DiscountApplication.findOne({
+      paymentIntentId: paymentIntentId,
+    });
+
+    if (!existingDiscountApplication) {
+      const newDiscountApplication = new DiscountApplication({
+        paymentIntentId,
+        userId,
+        discountedTickets,
+      });
+      await newDiscountApplication.save();
+    } else {
+      existingDiscountApplication.discountedTickets.push(...discountedTickets);
+      await existingDiscountApplication.save();
+    }
+
+    try {
+      const paymentIntent =
+        await stripe.paymentIntents.retrieve(paymentIntentId);
+      if (!paymentIntent) {
+        return res.status(400).json({ message: "Payment intent not found" });
+      }
+      console.log(paymentIntent.amount);
+      if (paymentIntent.metadata.userId !== req.userId) {
+        return res.status(400).json({ message: "Payment Intent Mismatch" });
+      }
+      await stripe.paymentIntents.update(paymentIntentId, {
+        amount: Math.round(newTotal * 100),
+      });
+    } catch (error) {
+      console.error("Failed to apply discount:", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
 
     res.json({
       message: "Discount applied successfully.",

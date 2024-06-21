@@ -9,11 +9,13 @@ import { Tag, X } from "lucide-react";
 import toast from "react-hot-toast";
 
 const BookingDetailsSummary = ({
+  paymentIntentId,
   cartItems,
   totalCost,
   updateCart,
 }: {
   cartItems: CartItem[];
+  paymentIntentId: string;
   totalCost: number;
   updateCart: (eventId: string, ticketId: string, increment: number) => void;
 }) => {
@@ -29,7 +31,13 @@ const BookingDetailsSummary = ({
   const applyDiscount = async () => {
     try {
       const { message, newTotal, discountedTickets, discountAmount } =
-        await applyDiscountCode(cartItems, currentTotalCost, discountCodeInput);
+        await applyDiscountCode(
+          cartItems,
+          currentTotalCost,
+          discountCodeInput,
+          paymentIntentId,
+        );
+      console.log("discountedTickets", discountedTickets);
       toast.success(message);
       const updatedTotalDiscount = totalDiscount + discountAmount;
 
@@ -183,10 +191,13 @@ const BookingDetailsSummary = ({
             <span>Subtotal</span>
             <span> ${totalCost.toFixed(2)}</span>
           </div>
-          <div className="mt-4 font-semibold text-md flex justify-between text-red-400">
-            <span>Discount</span>
-            <span> -${totalDiscount.toFixed(2)}</span>
-          </div>
+          {totalDiscount > 0 && (
+            <div className="mt-4 font-semibold text-md flex justify-between text-red-500 ">
+              <span>Discount</span>
+              <span> -${totalDiscount.toFixed(2)}</span>
+            </div>
+          )}
+
           <div className="mt-4 font-bold text-lg flex justify-between">
             <span>Total due</span>
             <span> ${currentTotalCost.toFixed(2)}</span>
