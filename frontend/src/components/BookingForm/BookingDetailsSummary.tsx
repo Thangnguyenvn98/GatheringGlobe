@@ -21,7 +21,7 @@ const BookingDetailsSummary = ({
 }) => {
   const [currentTotalCost, setCurrentTotalCost] = useState(totalCost);
   const [totalDiscount, setTotalDiscount] = useState(0);
-
+  console.log(paymentIntentId);
   const [discountCodes, setDiscountCodes] = useState<string[]>([]);
   const [discountCodeInput, setDiscountCodeInput] = useState("");
   const [discountDetails, setDiscountDetails] = useState<DiscountedTicket[]>(

@@ -26,15 +26,6 @@ interface CartRequest extends Request {
   };
 }
 
-interface CartCheckoutConfirm extends Request {
-  body: {
-    paymentIntentId: string;
-    firstName: string;
-    lastName: string;
-    email: string;
-  };
-}
-
 const stripe = new Stripe(process.env.STRIPE_API_KEY as string);
 
 const router = express.Router();
