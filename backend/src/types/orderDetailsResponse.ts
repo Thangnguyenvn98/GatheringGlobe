@@ -8,7 +8,7 @@ type DiscountedTicket = {
   discountCode: string;
 };
 
-export type OrderDetailsByIdResponse = {
+export type OrderDetailsResponse = {
   order: {
     _id: string;
     userId: string;
@@ -40,7 +40,6 @@ export type OrderDetailsByIdResponse = {
     }>;
     __v: number;
   };
-
   paymentMethod: {
     id: string;
     brand: string;
@@ -48,19 +47,16 @@ export type OrderDetailsByIdResponse = {
     exp_year: number;
     last4: string;
   };
-
   billing_details: {
     address: {
       city: string | null;
-      country: string;
+      country: string | null;
       line1: string | null;
       line2: string | null;
-      postal_code: string;
+      postal_code: string | null;
       state: string | null;
-    };
+    } | null;
   };
-
   created: number;
-  testId: string;
-  discountedTickets: DiscountedTicket[];
+  discountedTickets?: DiscountedTicket[];
 };
