@@ -52,8 +52,10 @@ function SearchForm() {
     }
     const finalParams = params.join("&"); //join the strings into one query
     if (loc.pathname == "/discover") {
+      console.log(`/discover?${finalParams}`);
       setSearchParams(finalParams);
     } else {
+      console.log(`/discover?${finalParams}`);
       navigate(`/discover?${finalParams}`);
     }
   };

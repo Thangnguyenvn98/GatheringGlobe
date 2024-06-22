@@ -77,6 +77,13 @@ const FilterSection = () => {
     "Parade",
     "Marathon",
   ];
+  const sortOptions = [
+    "Soonest",
+    "Latest",
+    "Price low to high",
+    "Price high to low",
+  ];
+
   const firstUpdate = useRef(0);
   const [searchParams, setSearchParams] = useSearchParams();
   const [showCategory, setShowCategory] = useState(false);
@@ -87,6 +94,17 @@ const FilterSection = () => {
   const [eventType, setEventType] = useState(
     searchParams.get("eventType") || "",
   );
+  const [sort, setSort] = useState(searchParams.get("sort") || "");
+
+  useEffect(() => {
+    console.log("sort changed");
+    if (sort) {
+      searchParams.set("sort", sort);
+    } else {
+      searchParams.delete("sort");
+    }
+    setSearchParams(searchParams);
+  }, [sort]);
 
   const [date, setDate] = React.useState<DateRange | undefined>();
   useEffect(() => {
@@ -133,13 +151,32 @@ const FilterSection = () => {
     else searchParams.delete("endTime");
 
     searchParams.delete("page");
+    console.log("page", searchParams.get("page"));
     setSearchParams(searchParams);
   }, [category, eventType, priceMin, priceMax, date]);
   console.log(category);
 
   return (
-    <div className="relative font-bold">
-      <h1 className="size-10 text-4xl mx-0 my-7">Filter</h1>
+    <div className="relative font-bold flex-col">
+      <h3>Sort by</h3>
+      <div className="border-none mx-5">
+        {sortOptions.map((sortOption, _) => (
+          <div key={sortOption} className="">
+            <input
+              type="radio"
+              name="sortegory"
+              id={sortOption}
+              value={sortOption}
+              checked={sortOption === sort}
+              onChange={(event) => setSort(event.target.value)}
+            />
+            <label className="font-light p-2" htmlFor={sortOption}>
+              {sortOption}
+            </label>
+          </div>
+        ))}
+      </div>
+      {/* <h1 className="size-10 text-4xl mx-0 my-7">Filter</h1> */}
       <div className=" top-[152px] bottom-7">
         <h3>Categories</h3>
         <div className="border-none mx-5">
@@ -162,7 +199,7 @@ const FilterSection = () => {
         {showCategory ? (
           <Button
             onClick={() => setShowCategory(!showCategory)}
-            className="bg-transparent place-items-end p-0 shadow-none hover:bg-transparent mx-0 text-[12pt] text-grey-800 hover:underline"
+            className="bg-transparent place-items-end p-0 shadow-none hover:bg-transparent mx-0 text-[12pt] text-grey-800"
           >
             See More
           </Button>
@@ -197,8 +234,8 @@ const FilterSection = () => {
             dateFromParent={date}
           />
         </div>
-        <div>
-          <label className="font-bold hover:underline" htmlFor="priceMin">
+        <div className="flex flex-col">
+          <label className="font-bold" htmlFor="priceMin">
             Min Price
           </label>
           <input
@@ -219,8 +256,8 @@ const FilterSection = () => {
             onBlur={(e) => (e.target.style.borderWidth = "1px")}
           />
         </div>
-        <div>
-          <label className="font-bold hover:underline" htmlFor="priceMax">
+        <div className="flex flex-col">
+          <label className="font-bold" htmlFor="priceMax">
             Max Price
           </label>
           <input

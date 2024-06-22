@@ -346,16 +346,8 @@ router.get("/filter", async (req: Request, res: Response) => {
     const regexCategory = new RegExp(String(category), "i");
     const regexKeyword = new RegExp(String(keyword), "i");
     const regexLocation = new RegExp(String(location), "i");
-    //if no given date range, we look for event that start on or after today
-    if (!startTime) {
-      let date = new Date(); //let startDate be the date today
-      startTime = date.toISOString();
-      //let endDate be really far away so that it fetch all the event we currently have from today
-      date = new Date(3000, 1, 1);
-      endTime = date.toISOString();
-    }
     //if no endDate input, we let it be one day after startDate (so that we only filter by  event within the day)
-    if (!endTime) {
+    if (startTime && !endTime) {
       const date = new Date(String(startTime).split("T")[0]);
       // Add one day to the Date object
       date.setDate(date.getDate() + 1);
@@ -363,7 +355,7 @@ router.get("/filter", async (req: Request, res: Response) => {
       endTime = date.toISOString();
     }
     const page = parseInt(req.query.page as string) || 1;
-    const limit = parseInt(req.query.limit as string) || 7;
+    const limit = parseInt(req.query.limit as string) || 8;
     const skip = (page - 1) * limit;
 
     const pipeline: mongoose.PipelineStage[] = [
@@ -380,28 +372,6 @@ router.get("/filter", async (req: Request, res: Response) => {
             { location: { $regex: regexLocation } },
             { eventType: { $regex: regexEventType } },
             { category: { $regex: regexCategory } },
-            {
-              $or: [
-                {
-                  startTime: {
-                    $gte: new Date(String(startTime)),
-                    $lte: new Date(String(endTime)),
-                  },
-                },
-                {
-                  endTime: {
-                    $gte: new Date(String(startTime)),
-                    $lte: new Date(String(endTime)),
-                  },
-                },
-                {
-                  $and: [
-                    { startTime: { $lte: new Date(String(startTime)) } },
-                    { endTime: { $gte: new Date(String(endTime)) } },
-                  ],
-                },
-              ],
-            },
           ],
         }},
       {
@@ -412,7 +382,6 @@ router.get("/filter", async (req: Request, res: Response) => {
           as: "tickets",
         },
       },
-      // { $unwind: "$tickets" },
       {
         $addFields: {
           minPrice: { $min: "$tickets.price" },
@@ -443,6 +412,34 @@ router.get("/filter", async (req: Request, res: Response) => {
       }},
     ];
 
+    //if date is given, match by date as well
+    if (startTime){
+      pipeline.push({ $match :
+        {
+          $or: [
+            {
+              startTime: {
+                $gte: new Date(String(startTime)),
+                $lte: new Date(String(endTime)),
+              },
+            },
+            {
+              endTime: {
+                $gte: new Date(String(startTime)),
+                $lte: new Date(String(endTime)),
+              },
+            },
+            {
+              $and: [
+                { startTime: { $lte: new Date(String(startTime)) } },
+                { endTime: { $gte: new Date(String(endTime)) } },
+              ],
+            },
+          ],
+        },
+      })
+    }
+    
     let eventMatchedAll = await Event.aggregate(pipeline);
     const total = eventMatchedAll.length
 

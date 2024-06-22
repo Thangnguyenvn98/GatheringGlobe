@@ -9,6 +9,11 @@ interface EventLocationProps {
 }
 
 function EventLocation({ name = "", onChange }: EventLocationProps) {
+  const [city, setCity] = useState("");
+  const [postalCode, setPostalCode] = useState("");
+  const [country, setCountry] = useState("");
+  const [province, setProvince] = useState("");
+
   const formContext = useFormContext();
   const map = useMap();
   const places = useMapsLibrary("places");
@@ -25,8 +30,6 @@ function EventLocation({ name = "", onChange }: EventLocationProps) {
   const [predictionResults, setPredictionResults] = useState<
     Array<google.maps.places.AutocompletePrediction>
   >([]);
-
-  const [inputValue, setInputValue] = useState<string>("");
 
   useEffect(() => {
     if (!places || !map) return;
@@ -55,8 +58,8 @@ function EventLocation({ name = "", onChange }: EventLocationProps) {
   const onInputChange = useCallback(
     (event: FormEvent<HTMLInputElement>) => {
       const value = (event.target as HTMLInputElement).value;
-      setInputValue(value); // Update the state
       fetchPredictions(value);
+      setPostalCode(value);
       if (onChange) {
         onChange(value); // Call the onChange prop if provided
       }
@@ -70,62 +73,110 @@ function EventLocation({ name = "", onChange }: EventLocationProps) {
 
       const detailRequestOptions = {
         placeId,
-        fields: ["formatted_address"],
+        fields: ["address_components", "formatted_address", "geometry"],
         sessionToken,
       };
       const detailsRequestCallback = (
         placeDetails: google.maps.places.PlaceResult | null,
       ) => {
-        const formatAddress = placeDetails?.formatted_address
-          ?.split(",")
-          .splice(0, 2)
-          .join(",");
-        setPredictionResults([]);
-        setInputValue(formatAddress ?? "");
-        if (formContext) {
-          formContext.setValue(name, formatAddress ?? ""); // Update form state
+        if (placeDetails && placeDetails.address_components) {
+          console.log(placeDetails.address_components);
+          interface AddressMap {
+            [key: string]: string;
+          }
+          const addressMap: AddressMap = {}; //defiend map to use string as key
+          placeDetails.address_components.forEach((component) => {
+            if (component.types && component.types.length > 0) {
+              const primaryType = component.types[0];
+              addressMap[primaryType] = component.long_name;
+            }
+          });
+          setCity(
+            addressMap["locality"]
+              ? addressMap["locality"]
+              : addressMap["administrative_area_level_1"],
+          );
+          setProvince(
+            addressMap["locality"]
+              ? addressMap["administrative_area_level_1"]
+              : "",
+          );
+          setCountry(addressMap["country"]);
+          setPostalCode(addressMap["postal_code"]);
+
+          const formatAddress = placeDetails.formatted_address;
+          setPredictionResults([]);
+          if (formContext) {
+            formContext.setValue(name, formatAddress ?? "");
+          }
+          if (onChange) {
+            onChange(formatAddress ?? "");
+          }
+          setSessionToken(new places.AutocompleteSessionToken());
         }
-        if (onChange) {
-          onChange(formatAddress ?? ""); // Call the onChange prop if provided
-        }
-        setSessionToken(new places.AutocompleteSessionToken());
       };
-      // Directly use the description from the prediction result
       placesService?.getDetails(detailRequestOptions, detailsRequestCallback);
     },
-
     [places, placesService, sessionToken, formContext, name, onChange],
   );
 
   return (
     <div className="relative">
       <div className="p-0 mx-0 text-[12pt] text-black text-sm font-medium">
-        Location*
+        Postal code*
       </div>
       <div className="flex items-center">
         <Input
-          value={inputValue}
-          // onChange={(e) => onInputChange(e)}
-          placeholder="Location"
+          id="postalCode"
+          value={postalCode}
+          placeholder="Location postal code"
           {...(formContext ? formContext.register(name) : {})} // Register the input with react-hook-form if within a form context
           onChange={(e) => onInputChange(e)}
         />
+        {predictionResults.length > 0 && (
+          <ul className="absolute top-[100%] left-0 right-0 z-[10] overflow-y-hidden w-full border-solid border-2 border-black max-h-[200px] bg-white">
+            {predictionResults.map(({ place_id, description }) => {
+              return (
+                <li
+                  key={place_id}
+                  className="p-2 cursor-pointer"
+                  onClick={() => handleSuggestionClick(place_id)}
+                >
+                  {description}
+                </li>
+              );
+            })}
+          </ul>
+        )}
       </div>
-      {predictionResults.length > 0 && (
-        <ul className="absolute top-[100%] left-0 right-0 z-[10] overflow-y-hidden w-full border-solid border-2 border-black max-h-[200px] bg-white">
-          {predictionResults.map(({ place_id, description }) => {
-            return (
-              <li
-                key={place_id}
-                className="p-2 cursor-pointer"
-                onClick={() => handleSuggestionClick(place_id)}
-              >
-                {description}
-              </li>
-            );
-          })}
-        </ul>
-      )}
+      <div className="p-0 mx-0 text-[12pt] text-black text-sm font-medium">
+        City*
+      </div>
+      <div className="flex items-center">
+        <Input id="city" readOnly value={city} placeholder="Location city" />
+      </div>
+      <div className="p-0 mx-0 text-[12pt] text-black text-sm font-medium">
+        State/Province*
+      </div>
+      <div className="flex items-center">
+        <Input
+          id="province"
+          value={province}
+          readOnly
+          placeholder="Location state/province"
+        />
+      </div>
+      <div className="p-0 mx-0 text-[12pt] text-black text-sm font-medium">
+        Country*
+      </div>
+      <div className="flex items-center">
+        <Input
+          id="country"
+          value={country}
+          readOnly
+          placeholder="Location postal code"
+        />
+      </div>
     </div>
   );
 }

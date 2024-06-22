@@ -16,6 +16,7 @@ const EventdataList = ({
   isError,
   topOfListRef,
 }: EventListProps) => {
+  console.log(eventdatas);
   return (
     <div style={{ padding: "20px" }}>
       <div
@@ -37,7 +38,7 @@ const EventdataList = ({
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {eventdatas?.map((event: any, index: number) => (
               <div key={index}>
                 <Link
