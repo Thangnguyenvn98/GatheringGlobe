@@ -23,6 +23,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import axios from "axios";
+import { useCurrentUser } from "@/services/queries";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 const axiosInstance = axios.create({
@@ -34,7 +35,10 @@ const axiosInstance = axios.create({
 const formSchema = z.object({
   tickets: z.array(
     z.object({
-      price: z.number().min(0, { message: "Price must be at least zero" }),
+      price: z.preprocess(
+        (val) => parseFloat(z.string().parse(val)),
+        z.number().min(0, { message: "Price must be at least zero" }),
+      ),
       quantityAvailable: z
         .number()
         .min(1, { message: "At least one ticket must be available" }),
@@ -46,6 +50,7 @@ const formSchema = z.object({
 type FormData = z.infer<typeof formSchema>;
 
 const TicketForm = () => {
+  const { data: userData } = useCurrentUser();
   const navigate = useNavigate();
   const { eventId } = useParams();
   const [loading, setLoading] = useState(false);
@@ -70,9 +75,7 @@ const TicketForm = () => {
       );
       form.reset();
       toast.success(response.data.message);
-      setTimeout(() => {
-        navigate(0);
-      }, 800);
+      navigate(`/dashboard/${userData?.username ?? ""}`);
     } catch (error) {
       console.error(error);
       toast.error("Something went wrong");
@@ -120,9 +123,15 @@ const TicketForm = () => {
                             disabled={loading}
                             type="number"
                             placeholder="0.00"
+                            onFocus={(e) => {
+                              if (e.target.value === "0") e.target.value = "";
+                            }}
+                            onBlur={(e) => {
+                              if (e.target.value === "") e.target.value = "0";
+                            }}
                             onChange={(e) =>
                               field.onChange(parseFloat(e.target.value) || 0)
-                            } // Convert string to number here
+                            }
                           />
                         </FormControl>
                         <FormMessage />
@@ -178,7 +187,7 @@ const TicketForm = () => {
             <CardFooter>
               <Button
                 type="submit"
-                className="bg-black text-white px-4 py-2 rounded hover:bg-green-500 w-full"
+                className="bg-black text-white px-4 py-2 rounded hover:bg-gray-400  hover:text-black w-full"
                 disabled={loading}
               >
                 Create Tickets

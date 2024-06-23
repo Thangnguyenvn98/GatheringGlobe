@@ -259,9 +259,9 @@ const EventForm = () => {
                             field.value
                               ? format(
                                   new Date(field.value),
-                                  "EEE, MMM d • h:mm a",
+                                  "yyyy-MM-dd'T'HH:mm",
                                 )
-                              : format(new Date(), "EEE, MMM d • h:mm a")
+                              : format(new Date(), "yyyy-MM-dd'T'HH:mm")
                           }
                           onChange={(e) =>
                             // Convert the input value to Date here
@@ -289,9 +289,9 @@ const EventForm = () => {
                             field.value
                               ? format(
                                   new Date(field.value),
-                                  "EEE, MMM d • h:mm a",
+                                  "yyyy-MM-dd'T'HH:mm",
                                 )
-                              : format(new Date(), "EEE, MMM d • h:mm a")
+                              : format(new Date(), "yyyy-MM-dd'T'HH:mm")
                           }
                           onChange={(e) =>
                             // Convert the input value to Date here
@@ -448,7 +448,7 @@ const EventForm = () => {
             <div className="flex flex-col  w-full">
               <Button
                 type="submit"
-                className="flex bg-white hover:bg-black hover:text-white text-black w-full"
+                className="flex bg-green-500 hover:bg-green-600 text-white w-full"
               >
                 Create Event
               </Button>

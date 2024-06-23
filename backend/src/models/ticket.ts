@@ -9,7 +9,9 @@ export type TicketType = {
   quantityAvailable: number;
   type: string;
   isFree: boolean;
-};
+  ref: "Event",
+    required: true,
+  }
 
 const ticketSchema = new mongoose.Schema({
   eventId: {
