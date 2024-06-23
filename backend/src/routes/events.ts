@@ -228,7 +228,6 @@ router.post(
   "/:eventId/tickets",
   verifyToken,
   async (req: Request, res: Response) => {
-    console.log("yay");
     const { eventId } = req.params;
     const tickets = req.body;
     console.log("Tickets:", tickets);
@@ -253,32 +252,26 @@ router.post(
           price,
           quantityAvailable,
           seatNumber,
-          startTime,
-          endTime,
         } = ticketData;
 
         if (
           !type ||
           price == null ||
-          !quantityAvailable ||
-          !startTime ||
-          endTime == null
+          quantityAvailable  == null
         ) {
           return res
             .status(400)
             .json({ message: "Missing required ticket details." });
         }
-
+const isFree = price === 0;
         const ticket = new Ticket({
           eventId,
-          ticketName: event.title,
           status: "active",
           type,
           price,
           quantityAvailable,
           seatNumber,
-          startTime,
-          endTime,
+          isFree,
         });
 
         await ticket.save();
