@@ -347,10 +347,10 @@ const EventDetail: React.FC = () => {
   }
 
   const minPrice = Math.min(
-    ...eventData.tickets.map((ticket) => ticket.price),
+    ...eventData.tickets.map((ticket: TicketType) => ticket.price),
   ).toFixed(2);
   const maxPrice = Math.max(
-    ...eventData.tickets.map((ticket) => ticket.price),
+    ...eventData.tickets.map((ticket: TicketType) => ticket.price),
   ).toFixed(2);
 
   return (

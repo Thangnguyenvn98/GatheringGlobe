@@ -35,10 +35,7 @@ const axiosInstance = axios.create({
 const formSchema = z.object({
   tickets: z.array(
     z.object({
-      price: z.preprocess(
-        (val) => parseFloat(z.string().parse(val)),
-        z.number().min(0, { message: "Price must be at least zero" }),
-      ),
+      price: z.number().min(0, { message: "Price must be at least zero" }),
       quantityAvailable: z
         .number()
         .min(1, { message: "At least one ticket must be available" }),
@@ -75,7 +72,7 @@ const TicketForm = () => {
       );
       form.reset();
       toast.success(response.data.message);
-      navigate(`/dashboard/${userData?.username ?? ""}`);
+      navigate(`/dashboard/${userData?.username}`);
     } catch (error) {
       console.error(error);
       toast.error("Something went wrong");
@@ -152,7 +149,7 @@ const TicketForm = () => {
                             placeholder="1"
                             onChange={(e) =>
                               field.onChange(parseFloat(e.target.value) || 0)
-                            } // Convert string to number here
+                            }
                           />
                         </FormControl>
                         <FormMessage />
