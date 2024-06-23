@@ -2,15 +2,18 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import toast from "react-hot-toast";
 
+export interface TicketItem {
+  ticketType: string;
+  quantity: number;
+  price: number;
+}
+
 export interface CartItem {
   eventId: string;
   eventName: string;
+  eventImageUrl: string;
   tickets: {
-    [ticketId: string]: {
-      ticketType: string;
-      quantity: number;
-      price: number;
-    };
+    [ticketId: string]: TicketItem;
   };
 }
 
@@ -19,6 +22,7 @@ interface CartStore {
   addToCart: (
     eventId: string,
     eventName: string, // Added event name
+    eventImageUrl: string,
     tickets: {
       [ticketId: string]: {
         ticketType: string;
@@ -38,7 +42,7 @@ const useCart = create<CartStore>()(
   persist(
     (set, get) => ({
       cartItems: [],
-      addToCart: (eventId, eventName, tickets) => {
+      addToCart: (eventId, eventName, eventImageUrl, tickets) => {
         set((state) => {
           const updatedCartItems = state.cartItems.slice();
           let cartItem = updatedCartItems.find(
@@ -46,7 +50,7 @@ const useCart = create<CartStore>()(
           );
 
           if (!cartItem) {
-            cartItem = { eventId, eventName, tickets: {} };
+            cartItem = { eventId, eventName, eventImageUrl, tickets: {} };
             updatedCartItems.push(cartItem);
           }
 

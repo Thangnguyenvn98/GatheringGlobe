@@ -12,7 +12,6 @@ const Homepage = () => {
   const [page, setPage] = useState(1);
   const { isPending, isError, data, isPlaceholderData } =
     useAllEventsPagination(page);
-  console.log(data);
   const topOfListRef = useRef<HTMLDivElement>(null);
 
   const handlePageChange = (newPage: number) => {
