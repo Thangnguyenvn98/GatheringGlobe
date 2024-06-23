@@ -1,18 +1,12 @@
-import React from "react";
+import React, { useEffect } from "react";
 import EventList from "./EventList";
 import FilterSection from "./FilterSection";
-// import Pagination from "./Pagination";
-// import { useAllEventsPagination } from "@/services/queries";
 import { useFilterParams } from "@/services/queries";
 import { useRef, useState } from "react";
 import EventPaginationButton from "../homepage/homepageEventPagination";
 import { useSearchParams } from "react-router-dom";
 import queryString from "query-string";
-import SortSection from "./sort";
-// import { useState } from "react";
-// import { useLocation } from "react-router-dom";
-// import { useEffect } from "react";
-
+import SearchMap from "./SearchMap";
 const DiscoverEvent: React.FC = () => {
   let [searchParams, setSearchParams] = useSearchParams();
   const [page, setPage] = useState(
@@ -33,6 +27,11 @@ const DiscoverEvent: React.FC = () => {
     searchParams.set("page", String(newPage));
     setSearchParams(searchParams);
 
+    useEffect(() => {
+      console.log("page in search params change");
+      setPage(searchParams.get("page") ? searchParams.get("page") : "1");
+    }, [searchParams]);
+
     if (topOfListRef.current) {
       const yOffset = -200;
       const y =
@@ -45,14 +44,11 @@ const DiscoverEvent: React.FC = () => {
   };
 
   return (
-    <div>
+    <div className="">
       <div className="grid grid-cols-6 ps-8 pt-8">
         <FilterSection />
-        <div className="col-span-4">
-          <div className="flex flex-col">
-            <div>
-              <SortSection />
-            </div>
+        <div className="col-span-4 lg:col-span-3">
+          <div className="flex flex-col mb-2">
             <div>
               <EventList
                 isPending={isPending}
@@ -61,15 +57,18 @@ const DiscoverEvent: React.FC = () => {
                 topOfListRef={topOfListRef}
               />
             </div>
+            <EventPaginationButton
+              currentPage={parseInt(String(page))}
+              onPageChange={handlePageChange}
+              totalPages={data?.pagination?.totalPages}
+              isPlaceholderData={isPlaceholderData}
+            />
           </div>
         </div>
+        <div className="hidden lg:flex">
+          <SearchMap />
+        </div>
       </div>
-      <EventPaginationButton
-        currentPage={parseInt(String(page))}
-        onPageChange={handlePageChange}
-        totalPages={data?.pagination?.totalPages}
-        isPlaceholderData={isPlaceholderData}
-      />
     </div>
   );
 };

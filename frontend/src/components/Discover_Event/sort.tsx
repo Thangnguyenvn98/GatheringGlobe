@@ -25,7 +25,7 @@ const SortSection = () => {
   }, [sort]);
 
   return (
-    <div className="relative font-bold">
+    <div className="relative font-bold hidden md:flex flex-col items-start">
       {showSort ? (
         <Button
           onClick={() => setShowSort(!showSort)}
@@ -43,8 +43,9 @@ const SortSection = () => {
       )}
       {showSort &&
         sortOptions.map((sortOption, _) => (
-          <div key={sortOption}>
+          <div key={sortOption} className="">
             <input
+              className=""
               type="radio"
               name="sortegory"
               id={sortOption}
