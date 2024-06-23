@@ -497,7 +497,7 @@ router.patch("/:eventId/updateEvent", verifyToken, async (req: Request, res: Res
 });
 
 //route to fetch all event created by the given user
-router.get("/:userId/fetch", verifyToken, async (req: Request, res: Response) => {
+router.get("/fetch", verifyToken, async (req: Request, res: Response) => {
   try {
     const event = await Event.find(
         { organizerId: req.userId },
