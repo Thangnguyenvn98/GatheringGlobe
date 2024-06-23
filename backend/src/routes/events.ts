@@ -98,7 +98,7 @@ router.get("/", async (req: Request, res: Response) => {
 
     // Define an aggregation pipeline to find and process events
     const pipeline: mongoose.PipelineStage[] = [
-      { $match: { startTime: { $lte: now } } },
+      { $match: { startTime: { $gte: now } } },
       { $sort: { startTime: 1 } },
       { $skip: skip },
       { $limit: limit },
@@ -120,6 +120,7 @@ router.get("/", async (req: Request, res: Response) => {
           endTime: { $first: "$endTime" },
           venueId: { $first: "$venueId" },
           capacity: { $first: "$capacity" },
+          postalCode: { $first: "$postalCode" },
           organizerId: { $first: "$organizerId" },
           location: { $first: "$location" },
           category: { $first: "$category" },
@@ -135,7 +136,7 @@ router.get("/", async (req: Request, res: Response) => {
     const events = await Event.aggregate(pipeline);
 
     // Count total documents for pagination metadata
-    const total = await Event.countDocuments({ startTime: { $lte: now } });
+    const total = await Event.countDocuments({ startTime: { $gte: now } });
 
     res.status(200).json({
       events,
@@ -328,7 +329,7 @@ router.get("/filter", async (req: Request, res: Response) => {
       category,
       eventType,
     } = req.query;
-    
+
     if (location == undefined) {
       location = "";
     }
@@ -359,21 +360,23 @@ router.get("/filter", async (req: Request, res: Response) => {
     const skip = (page - 1) * limit;
 
     const pipeline: mongoose.PipelineStage[] = [
-      { $match:{
+      {
+        $match: {
           $and: [
             {
               $or: [
                 { description: { $regex: regexKeyword } },
                 { title: { $regex: regexKeyword } },
                 { location: { $regex: regexKeyword } },
-                { artistName: { $regex: regexKeyword } }
+                { artistName: { $regex: regexKeyword } },
               ],
             },
             { location: { $regex: regexLocation } },
             { eventType: { $regex: regexEventType } },
             { category: { $regex: regexCategory } },
           ],
-        }},
+        },
+      },
       {
         $lookup: {
           from: "tickets",
@@ -385,37 +388,47 @@ router.get("/filter", async (req: Request, res: Response) => {
       {
         $addFields: {
           minPrice: { $min: "$tickets.price" },
-          maxPrice: { $max: "$tickets.price" }
-        }
+          maxPrice: { $max: "$tickets.price" },
+        },
       },
-      { $match:{
-        $or: [
-          {
-            minPrice: {
-              $gte: priceMin? parseFloat(priceMin as string): -Infinity,
-              $lte: priceMax? parseFloat(priceMax as string): Infinity,
+      {
+        $match: {
+          $or: [
+            {
+              minPrice: {
+                $gte: priceMin ? parseFloat(priceMin as string) : -Infinity,
+                $lte: priceMax ? parseFloat(priceMax as string) : Infinity,
+              },
             },
-          },
-          {
-            maxPrice: {
-              $gte: priceMin? parseFloat(priceMin as string): -Infinity,
-              $lte: priceMax? parseFloat(priceMax as string): Infinity,
+            {
+              maxPrice: {
+                $gte: priceMin ? parseFloat(priceMin as string) : -Infinity,
+                $lte: priceMax ? parseFloat(priceMax as string) : Infinity,
+              },
             },
-          },
-          {
-            $and: [
-              { minPrice: { $lte: priceMin? parseFloat(priceMin as string): -Infinity } },
-              { maxPrice: { $gte: priceMax? parseFloat(priceMax as string): Infinity } },
-            ],
-          },
-        ],
-      }},
+            {
+              $and: [
+                {
+                  minPrice: {
+                    $lte: priceMin ? parseFloat(priceMin as string) : -Infinity,
+                  },
+                },
+                {
+                  maxPrice: {
+                    $gte: priceMax ? parseFloat(priceMax as string) : Infinity,
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      },
     ];
 
     //if date is given, match by date as well
-    if (startTime){
-      pipeline.push({ $match :
-        {
+    if (startTime) {
+      pipeline.push({
+        $match: {
           $or: [
             {
               startTime: {
@@ -437,60 +450,30 @@ router.get("/filter", async (req: Request, res: Response) => {
             },
           ],
         },
-      })
+      });
     }
-    
+
     let eventMatchedAll = await Event.aggregate(pipeline);
-    const total = eventMatchedAll.length
+    const total = eventMatchedAll.length;
 
     switch (sort) {
       case "Soonest":
-        pipeline.push(
-          { $sort: 
-            {startTime: 1}
-          },
-          { $sort: 
-            {endTime: 1}
-          }
-        )
+        pipeline.push({ $sort: { startTime: 1 } }, { $sort: { endTime: 1 } });
         break;
       case "Latest":
-        pipeline.push(
-          { $sort: 
-            {startTime: -1}
-          },
-          { $sort: 
-            {endTime: -1}
-          }
-        )
+        pipeline.push({ $sort: { startTime: -1 } }, { $sort: { endTime: -1 } });
         break;
       case "Price low to high":
-        pipeline.push(
-          { $sort: 
-            {minPrice: 1}
-          },
-          { $sort: 
-            {maxPrice: 1}
-          }
-        )
+        pipeline.push({ $sort: { minPrice: 1 } }, { $sort: { maxPrice: 1 } });
         break;
       case "Price high to low":
-        pipeline.push(
-          { $sort: 
-            {minPrice: -1}
-          },
-          { $sort: 
-            {maxPrice: -1}
-          }
-        )
-        break;      
+        pipeline.push({ $sort: { minPrice: -1 } }, { $sort: { maxPrice: -1 } });
+        break;
       default:
         break;
-  ``}
-    pipeline.push(
-      { $skip: skip },
-      { $limit: limit },
-    )
+        ``;
+    }
+    pipeline.push({ $skip: skip }, { $limit: limit });
     const eventMatched = await Event.aggregate(pipeline);
 
     res.status(200).json({
@@ -510,27 +493,23 @@ router.get("/filter", async (req: Request, res: Response) => {
 
 router.delete("/delete", verifyToken, async (req: Request, res: Response) => {
   try {
-    console.log(req.query)
-    const userId = req.userId
+    console.log(req.query);
+    const userId = req.userId;
     const event = await Event.findOneAndDelete({
-      $and: [
-        { organizerId: userId },
-        { _id: req.query.eventId }
-      ]
-    })
-    console.log(event)
+      $and: [{ organizerId: userId }, { _id: req.query.eventId }],
+    });
+    console.log(event);
 
     if (!event) {
-      return res.status(404).send('Event not found/not created by this user');
+      return res.status(404).send("Event not found/not created by this user");
     }
 
-    await Ticket.deleteMany({ eventId: req.query.eventId })
-    res.status(200).send('Event deleted successfully');
+    await Ticket.deleteMany({ eventId: req.query.eventId });
+    res.status(200).send("Event deleted successfully");
   } catch (error) {
-    console.log("Fail to delete event", error)
-    res.status(500).send({message: "Internal server error"});
+    console.log("Fail to delete event", error);
+    res.status(500).send({ message: "Internal server error" });
   }
-
 });
 
 export default router;

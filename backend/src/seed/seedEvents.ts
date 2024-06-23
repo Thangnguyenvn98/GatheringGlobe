@@ -58,6 +58,7 @@ export const generateEvents = async (numEvents: number, users: any[]) => {
         "Health",
         "Lifestyle",
       ]),
+      postalCode: faker.location.zipCode(),
       eventType: faker.helpers.arrayElement([
         "Concert",
         "Exhibition",

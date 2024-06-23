@@ -100,7 +100,7 @@ const Faq = () => {
         <h1 className="text-4xl text-center font-bold">
           Frequently Asked Questions{" "}
         </h1>
-        <div className="w-full max-w-screen-lg mx-auto">
+        <div className="w-full max-w-screen-lg mx-auto 2xl:max-w-screen-2xl ">
           <CustomAccordion
             question="How do I create an event on the platform?"
             answer={`To create an event, log in to your account, and navigate to the 'Create Event' section. Fill out the event details form, including event name, date, location, and description. You can also upload images and set ticket prices. Once you've reviewed your details, submit the form to publish your event.`}
