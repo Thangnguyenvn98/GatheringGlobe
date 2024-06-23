@@ -508,4 +508,29 @@ router.get("/filter", async (req: Request, res: Response) => {
   }
 });
 
+router.delete("/delete", verifyToken, async (req: Request, res: Response) => {
+  try {
+    console.log(req.query)
+    const userId = req.userId
+    const event = await Event.findOneAndDelete({
+      $and: [
+        { organizerId: userId },
+        { _id: req.query.eventId }
+      ]
+    })
+    console.log(event)
+
+    if (!event) {
+      return res.status(404).send('Event not found/not created by this user');
+    }
+
+    await Ticket.deleteMany({ eventId: req.query.eventId })
+    res.status(200).send('Event deleted successfully');
+  } catch (error) {
+    console.log("Fail to delete event", error)
+    res.status(500).send({message: "Internal server error"});
+  }
+
+});
+
 export default router;

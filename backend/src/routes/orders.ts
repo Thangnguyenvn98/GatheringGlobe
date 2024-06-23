@@ -9,6 +9,7 @@ import QRCode from "qrcode";
 import nodemailer from "nodemailer";
 import createPDF, { OrderData } from "../utils/pdf/PdfDocument";
 import fs from "fs";
+import {$} from "@upstash/redis/zmscore-490ca5bd";
 
 const stripe = new Stripe(process.env.STRIPE_API_KEY as string);
 
@@ -283,6 +284,29 @@ router.get("/:id", verifyToken, async (req: Request, res: Response) => {
         address: paymentMethod.billing_details.address,
       },
       created: paymentIntent.created,
+    };
+
+    res.status(200).json(response);
+  } catch (error) {
+    console.error("Failed to fetch order:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+router.get("/", verifyToken, async (req: Request, res: Response) => {
+  const user = await User.findById(req.userId);
+  console.log(user)
+  if (!user) {
+    return res.status(404).json({ message: "User not found." });
+  }
+  try {
+    const order = await Order.find({userId: user})
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    const response = {
+      order,
     };
 
     res.status(200).json(response);
