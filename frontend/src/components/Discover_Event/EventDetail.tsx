@@ -17,6 +17,7 @@ const EventDetail: React.FC = () => {
     isLoading,
     error,
   } = useCurrentEventDetail(eventId || "");
+  console.log(eventData);
   const { addToCart } = useCart();
   const [ticketQuantities, setTicketQuantities] = useState<{
     [key: string]: number;

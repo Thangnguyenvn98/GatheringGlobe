@@ -29,7 +29,7 @@ const connectDB = async () => {
 const generate = async () => {
   try {
     const users = await generateUsers(10);
-    const events = await generateEvents(60, users);
+    const events = await generateEvents(120, users);
     const tickets = await generateTickets(events);
     const discounts = await generateDiscounts();
     console.log("----------------------");
