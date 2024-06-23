@@ -1,4 +1,4 @@
-import { useForm } from "react-hook-form";
+import { useForm, useFieldArray } from "react-hook-form";
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -29,18 +29,18 @@ const axiosInstance = axios.create({
   baseURL: API_BASE_URL,
   withCredentials: true,
 });
+
 // Define the schema using zod
 const formSchema = z.object({
-  price: z.number().min(0, { message: "Price must be at least zero" }),
-  quantityAvailable: z
-    .number()
-    .min(1, { message: "At least one ticket must be available" }),
-  type: z
-    .string()
-    .min(50, { message: "Ticket type must be at least 50 characters long" })
-    .max(200, {
-      message: "Ticket type  must be no more than 200 characters long",
+  tickets: z.array(
+    z.object({
+      price: z.number().min(0, { message: "Price must be at least zero" }),
+      quantityAvailable: z
+        .number()
+        .min(1, { message: "At least one ticket must be available" }),
+      type: z.string().min(1, { message: "Ticket type is required" }),
     }),
+  ),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -52,22 +52,21 @@ const TicketForm = () => {
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      price: 0, // Default price set to 0, assuming it's in a currency
-      quantityAvailable: 1, // Start with a minimum of 1 ticket available
-      type: "General Admission", // Default to "General Admission"
+      tickets: [{ price: 0, quantityAvailable: 1, type: "General Admission" }],
     },
   });
-  // const { fields, append, remove } = useFieldArray({
-  //   control: form.control,
-  //   name: "tickets",
-  // });  //this help manage dynamic form field, allowing user to add or remove input form field dynamically
+
+  const { fields, append, remove } = useFieldArray({
+    control: form.control,
+    name: "tickets",
+  });
+
   const onSubmit = async (data: FormData) => {
     try {
       setLoading(true);
-      console.log(data);
       const response = await axiosInstance.post(
         `/api/events/${eventId}/tickets`,
-        [data],
+        data.tickets,
       );
       form.reset();
       toast.success(response.data.message);
@@ -80,9 +79,6 @@ const TicketForm = () => {
     } finally {
       setLoading(false);
     }
-
-    console.log(data);
-    toast.success("Ticket created successfully!");
   };
 
   return (
@@ -91,74 +87,101 @@ const TicketForm = () => {
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <Card className="max-w-4xl mx-auto p-5">
             <CardHeader className="text-center">
-              <CardTitle>Create Ticket</CardTitle>
+              <CardTitle>Create Tickets</CardTitle>
               <CardDescription>
-                Fill out the form below to create a new ticket.
+                Fill out the form below to create new tickets.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <FormField
-                control={form.control}
-                name="type"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Ticket Type*</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="price"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Ticket Price ($)</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        disabled={loading}
-                        type="number"
-                        placeholder="0.00"
-                        onChange={(e) =>
-                          field.onChange(parseFloat(e.target.value) || 0)
-                        } // Convert string to number here
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="quantityAvailable"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Ticket Quantity Available</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        disabled={loading}
-                        type="number"
-                        placeholder="1"
-                        onChange={(e) =>
-                          field.onChange(parseFloat(e.target.value) || 0)
-                        } // Convert string to number here
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              {fields.map((field, index) => (
+                <div key={field.id} className="border p-4 rounded-lg">
+                  <FormField
+                    control={form.control}
+                    name={`tickets.${index}.type`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Ticket Type*</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name={`tickets.${index}.price`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Ticket Price ($)</FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            disabled={loading}
+                            type="number"
+                            placeholder="0.00"
+                            onChange={(e) =>
+                              field.onChange(parseFloat(e.target.value) || 0)
+                            } // Convert string to number here
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name={`tickets.${index}.quantityAvailable`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Ticket Quantity Available</FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            disabled={loading}
+                            type="number"
+                            placeholder="1"
+                            onChange={(e) =>
+                              field.onChange(parseFloat(e.target.value) || 0)
+                            } // Convert string to number here
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  {fields.length > 1 && (
+                    <Button
+                      type="button"
+                      onClick={() => remove(index)}
+                      className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-700 w-full mt-2"
+                    >
+                      Remove Ticket
+                    </Button>
+                  )}
+                </div>
+              ))}
+              <Button
+                type="button"
+                onClick={() =>
+                  append({
+                    price: 0,
+                    quantityAvailable: 1,
+                    type: "General Admission",
+                  })
+                }
+                className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 w-full mt-2"
+              >
+                Add Another Ticket
+              </Button>
             </CardContent>
             <CardFooter>
               <Button
                 type="submit"
-                className="bg-white text-white px-4 py-2 rounded hover:bg-black w-full hover:text-white"
+                className="bg-black text-white px-4 py-2 rounded hover:bg-green-500 w-full"
+                disabled={loading}
               >
-                Create Ticket
+                Create Tickets
               </Button>
             </CardFooter>
           </Card>

@@ -252,7 +252,6 @@ router.post(
           price,
           quantityAvailable,
           seatNumber,
-          isFree,
         } = ticketData;
 
         if (
@@ -264,7 +263,7 @@ router.post(
             .status(400)
             .json({ message: "Missing required ticket details." });
         }
-
+const isFree = price === 0;
         const ticket = new Ticket({
           eventId,
           status: "active",
