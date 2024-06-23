@@ -368,7 +368,7 @@ const EventDetail: React.FC = () => {
           className="event-image rounded-lg mb-4"
         />
       </div>
-      <div className="event-info-container flex justify-center pt-9 md:flex-row items-center">
+      <div className="event-info-container flex justify-center item-center pt-9 md:flex-row items-center">
         <div className="event-info w-full md:w-2/3 mb-4 md:mb-0">
           <h1 className="text-4xl font-bold text-black mb-2">
             {eventData.title}
