@@ -10,27 +10,26 @@ import { RegisterUser } from "@/services/api";
 import toast from "react-hot-toast";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { SignInFormData } from "@/types/signInFormData";
-import { useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { AxiosError } from "axios";
 
 const Register = () => {
-  const navigate = useNavigate();
   const {
     register,
     watch,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm<SignInFormData>();
 
   const handleRegistration: SubmitHandler<SignInFormData> = async (data) => {
     try {
       console.log(data);
       RegisterUser(data);
-      navigate("/");
       toast.success("Registration Success");
+      reset();
     } catch (error) {
       const errorMessage =
         error instanceof AxiosError
