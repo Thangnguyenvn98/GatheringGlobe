@@ -98,7 +98,7 @@ router.get("/", async (req: Request, res: Response) => {
 
     // Define an aggregation pipeline to find and process events
     const pipeline: mongoose.PipelineStage[] = [
-      { $match: { startTime: { $lte: now } } },
+      { $match: { startTime: { $gte: now } } },
       { $sort: { startTime: 1 } },
       { $skip: skip },
       { $limit: limit },
@@ -120,6 +120,7 @@ router.get("/", async (req: Request, res: Response) => {
           endTime: { $first: "$endTime" },
           venueId: { $first: "$venueId" },
           capacity: { $first: "$capacity" },
+          postalCode: { $first: "$postalCode" },
           organizerId: { $first: "$organizerId" },
           location: { $first: "$location" },
           category: { $first: "$category" },
@@ -135,7 +136,7 @@ router.get("/", async (req: Request, res: Response) => {
     const events = await Event.aggregate(pipeline);
 
     // Count total documents for pagination metadata
-    const total = await Event.countDocuments({ startTime: { $lte: now } });
+    const total = await Event.countDocuments({ startTime: { $gte: now } });
 
     res.status(200).json({
       events,
@@ -316,6 +317,7 @@ router.get("/:eventId/details", async (req: Request, res: Response) => {
 router.get("/filter", async (req: Request, res: Response) => {
   try {
     let {
+      sort,
       location,
       keyword,
       startTime,
@@ -343,36 +345,88 @@ router.get("/filter", async (req: Request, res: Response) => {
     const regexCategory = new RegExp(String(category), "i");
     const regexKeyword = new RegExp(String(keyword), "i");
     const regexLocation = new RegExp(String(location), "i");
-    //if no given date range, we look for event that start on or after today
-    if (!startTime) {
-      let date = new Date(); //let startDate be the date today
-      startTime = date.toISOString();
-      //let endDate be really far away so that it fetch all the event we currently have from today
-      date = new Date(3000, 1, 1);
-      endTime = date.toISOString();
-    }
     //if no endDate input, we let it be one day after startDate (so that we only filter by  event within the day)
-    if (!endTime) {
+    if (startTime && !endTime) {
       const date = new Date(String(startTime).split("T")[0]);
       // Add one day to the Date object
       date.setDate(date.getDate() + 1);
       // Convert the modified Date object back to a string
       endTime = date.toISOString();
     }
-    let eventFiltered = await Event.find({
-      $and: [
-        {
-          $or: [
-            { description: { $regex: regexKeyword } },
-            { title: { $regex: regexKeyword } },
-            { location: { $regex: regexKeyword } },
-            { artistName: { $regex: regexKeyword } },
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 8;
+    const skip = (page - 1) * limit;
+
+    const pipeline: mongoose.PipelineStage[] = [
+      {
+        $match: {
+          $and: [
+            {
+              $or: [
+                { description: { $regex: regexKeyword } },
+                { title: { $regex: regexKeyword } },
+                { location: { $regex: regexKeyword } },
+                { artistName: { $regex: regexKeyword } },
+              ],
+            },
+            { location: { $regex: regexLocation } },
+            { eventType: { $regex: regexEventType } },
+            { category: { $regex: regexCategory } },
           ],
         },
-        { location: { $regex: regexLocation } },
-        { eventType: { $regex: regexEventType } },
-        { category: { $regex: regexCategory } },
-        {
+      },
+      {
+        $lookup: {
+          from: "tickets",
+          localField: "_id",
+          foreignField: "eventId",
+          as: "tickets",
+        },
+      },
+      {
+        $addFields: {
+          minPrice: { $min: "$tickets.price" },
+          maxPrice: { $max: "$tickets.price" },
+        },
+      },
+      {
+        $match: {
+          $or: [
+            {
+              minPrice: {
+                $gte: priceMin ? parseFloat(priceMin as string) : -Infinity,
+                $lte: priceMax ? parseFloat(priceMax as string) : Infinity,
+              },
+            },
+            {
+              maxPrice: {
+                $gte: priceMin ? parseFloat(priceMin as string) : -Infinity,
+                $lte: priceMax ? parseFloat(priceMax as string) : Infinity,
+              },
+            },
+            {
+              $and: [
+                {
+                  minPrice: {
+                    $lte: priceMin ? parseFloat(priceMin as string) : -Infinity,
+                  },
+                },
+                {
+                  maxPrice: {
+                    $gte: priceMax ? parseFloat(priceMax as string) : Infinity,
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      },
+    ];
+
+    //if date is given, match by date as well
+    if (startTime) {
+      pipeline.push({
+        $match: {
           $or: [
             {
               startTime: {
@@ -394,48 +448,65 @@ router.get("/filter", async (req: Request, res: Response) => {
             },
           ],
         },
-      ],
-    })
-      .populate({ path: "tickets", select: "price type " })
-      .exec();
-
-    //the function that takes in an event array and filters by price and return a new array
-    const ticketPriceFilter = async (
-      events: EventType[],
-      priceMinPassed = priceMin,
-      priceMaxPassed = priceMax
-    ) => {
-      let eventFilteredPrice = [];
-
-      for (const event of events) {
-        let ticketIds = event.tickets;
-        for (const ticketId of ticketIds) {
-          let ticket = await Ticket.findById(ticketId).exec();
-          if (
-            ticket?.price != undefined &&
-            (priceMaxPassed == undefined ||
-              ticket.price <= parseFloat(String(priceMaxPassed))) &&
-            (priceMinPassed == undefined ||
-              ticket.price >= parseFloat(String(priceMinPassed)))
-          ) {
-            eventFilteredPrice.push(event);
-            break; //so that it does not push same event twice
-          }
-        }
-      }
-      return eventFilteredPrice;
-    };
-    let eventMatchedPrice = await ticketPriceFilter(eventFiltered);
-
-    //if no matching event found
-    if (eventMatchedPrice.length === 0) {
-      //set the response and return so that it will set the status and would not run the part after the if statement
-      return res.status(201).json({ message: "No event matches" }); //not sure when this message is used
+      });
     }
-    res.status(200).json(eventMatchedPrice);
+
+    let eventMatchedAll = await Event.aggregate(pipeline);
+    const total = eventMatchedAll.length;
+
+    switch (sort) {
+      case "Soonest":
+        pipeline.push({ $sort: { startTime: 1 } }, { $sort: { endTime: 1 } });
+        break;
+      case "Latest":
+        pipeline.push({ $sort: { startTime: -1 } }, { $sort: { endTime: -1 } });
+        break;
+      case "Price low to high":
+        pipeline.push({ $sort: { minPrice: 1 } }, { $sort: { maxPrice: 1 } });
+        break;
+      case "Price high to low":
+        pipeline.push({ $sort: { minPrice: -1 } }, { $sort: { maxPrice: -1 } });
+        break;
+      default:
+        break;
+        ``;
+    }
+    pipeline.push({ $skip: skip }, { $limit: limit });
+    const eventMatched = await Event.aggregate(pipeline);
+
+    res.status(200).json({
+      eventMatched,
+      pagination: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+    });
   } catch (error) {
     console.error("Failed to fetch event:", error);
     res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+router.delete("/delete", verifyToken, async (req: Request, res: Response) => {
+  try {
+    console.log(req.query);
+    const userId = req.userId;
+    const event = await Event.findOneAndDelete({
+      $and: [{ organizerId: userId }, { _id: req.query.eventId }],
+    });
+    console.log(event);
+
+    if (!event) {
+      return res.status(404).send("Event not found/not created by this user");
+    }
+
+    await Ticket.deleteMany({ eventId: req.query.eventId });
+    res.status(200).send("Event deleted successfully");
+  } catch (error) {
+    console.log("Fail to delete event", error);
+    res.status(500).send({ message: "Internal server error" });
   }
 });
 

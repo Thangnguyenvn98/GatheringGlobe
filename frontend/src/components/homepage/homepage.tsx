@@ -31,8 +31,7 @@ const Homepage = () => {
   return (
     <div className="flex flex-col w-full mb-10 ">
       <Events />
-      <Separator orientation="horizontal" className="mb-10 mt-10" />
-      <div>
+      <div className="mt-10">
         <EventCategory />
         <EventList
           isPending={isPending}

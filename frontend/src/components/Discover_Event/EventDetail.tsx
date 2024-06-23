@@ -242,6 +242,7 @@ const EventDetail: React.FC = () => {
     isLoading,
     error,
   } = useCurrentEventDetail(eventId || "");
+  console.log(eventData);
   const { addToCart } = useCart();
   const [ticketQuantities, setTicketQuantities] = useState<{
     [key: string]: number;
@@ -301,7 +302,12 @@ const EventDetail: React.FC = () => {
     });
 
     if (Object.keys(ticketsToAdd).length > 0) {
-      addToCart(eventId!, eventData?.title || "", ticketsToAdd);
+      addToCart(
+        eventId!,
+        eventData?.title || "",
+        eventData?.imageUrls[0] || "",
+        ticketsToAdd,
+      );
       const resetQuantities: { [key: string]: number } = {};
       Object.keys(ticketQuantities).forEach((ticketId) => {
         resetQuantities[ticketId] = 0;
@@ -362,7 +368,7 @@ const EventDetail: React.FC = () => {
           className="event-image rounded-lg mb-4"
         />
       </div>
-      <div className="event-info-container justify-center flex flex-col pt-9 md:flex-row items-center">
+      <div className="event-info-container flex justify-center pt-9 md:flex-row items-center">
         <div className="event-info w-full md:w-2/3 mb-4 md:mb-0">
           <h1 className="text-4xl font-bold text-black mb-2">
             {eventData.title}
@@ -396,7 +402,7 @@ const EventDetail: React.FC = () => {
                   Early bird discount
                 </span>
                 <span className="text-xs font-bold text-gray-600 bg-orange-200 rounded-full px-2 py-1">
-                  $19.00 off applied
+                  Discount Available
                 </span>
               </div>
               <p className="text-2xl font-bold mb-2">

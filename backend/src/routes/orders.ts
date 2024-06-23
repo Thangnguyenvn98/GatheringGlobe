@@ -9,6 +9,8 @@ import QRCode from "qrcode";
 import nodemailer from "nodemailer";
 import createPDF, { OrderData } from "../utils/pdf/PdfDocument";
 import fs from "fs";
+import DiscountApplication from "../models/discountTicketOrder";
+import { OrderDetailsResponse } from "../types/orderDetailsResponse";
 
 const stripe = new Stripe(process.env.STRIPE_API_KEY as string);
 
@@ -191,13 +193,15 @@ router.post(
         },
       });
 
-      const qrCodeHTML = ticketQRCodeDataList.map((data) => {
-        return `<div>
+      const qrCodeHTML = ticketQRCodeDataList
+        .map((data) => {
+          return `<div>
                   <p>Event ID: ${data.eventId}</p>
                   <p>Ticket ID: ${data.ticketId}</p>
                   <img src="${data.qrCodeBase64}" alt="QR Code" />
                 </div>`;
-      }).join('');
+        })
+        .join("");
 
       const mailOptions = {
         from: process.env.USER_EMAIL,
@@ -270,8 +274,8 @@ router.get("/:id", verifyToken, async (req: Request, res: Response) => {
         .status(400)
         .json({ message: "Payment method does not contain card details" });
     }
-    const response = {
-      order,
+    let response: OrderDetailsResponse = {
+      order: order.toObject(),
       paymentMethod: {
         id: paymentMethod.id,
         brand: paymentMethod.card.brand,
@@ -280,9 +284,62 @@ router.get("/:id", verifyToken, async (req: Request, res: Response) => {
         last4: paymentMethod.card.last4,
       },
       billing_details: {
-        address: paymentMethod.billing_details.address,
+        address: paymentMethod.billing_details.address || {
+          city: null,
+          country: null,
+          line1: null,
+          line2: null,
+          postal_code: null,
+          state: null,
+        },
       },
       created: paymentIntent.created,
+      discountedTickets: [],
+    };
+
+    const discountApplication = await DiscountApplication.findOne({
+      paymentIntentId: order.paymentIntentId,
+    });
+
+    if (discountApplication) {
+      const discountedTickets = discountApplication.discountedTickets.map(
+        (discount) => ({
+          eventId: discount.eventId.toString(),
+          ticketId: discount.ticketId.toString(),
+          originalPrice: discount.originalPrice,
+          discountPerTicket: discount.discountPerTicket,
+          newPrice: discount.newPrice,
+          quantity: discount.quantity,
+          discountCode: discount.discountCode,
+        })
+      );
+      response = {
+        ...response,
+        discountedTickets: discountedTickets,
+      };
+    }
+
+    res.status(200).json(response);
+  } catch (error) {
+    console.error("Failed to fetch order:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+router.get("/", verifyToken, async (req: Request, res: Response) => {
+  const user = await User.findById(req.userId);
+  console.log(user);
+  if (!user) {
+    return res.status(404).json({ message: "User not found." });
+  }
+  try {
+    const order = await Order.find({ userId: user });
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    const response = {
+      order,
     };
 
     res.status(200).json(response);

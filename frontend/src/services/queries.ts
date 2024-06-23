@@ -86,11 +86,24 @@ export const useCurrentOrderDetail = (orderId: string) => {
   });
 };
 
+const createCartSummaryKey = (cartItems: CartItem[]) => {
+  return cartItems.map((item) => ({
+    eventId: item.eventId,
+    tickets: Object.entries(item.tickets).map(([ticketId, ticket]) => ({
+      ticketId,
+      quantity: ticket.quantity,
+    })),
+  }));
+};
+
 export const usePaymentIntent = (cartItems: CartItem[]) => {
+  const cartSummaryKey = createCartSummaryKey(cartItems);
+
   return useQuery({
-    queryKey: ["paymentIntent", cartItems],
+    queryKey: ["paymentIntent", cartSummaryKey],
     queryFn: () => createPaymentIntent(cartItems),
     enabled: cartItems.length > 0,
+    staleTime: 0,
   });
 };
 
