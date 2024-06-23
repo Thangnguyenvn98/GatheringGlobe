@@ -355,14 +355,14 @@ const EventDetail: React.FC = () => {
 
   return (
     <div className="event-detail-container p-5">
-      <div className="event-image-container bg-amber-100">
+      <div className="event-image-container flex justify-center items-center bg-amber-100">
         <img
           src={eventData.imageUrls[0]}
           alt={eventData.title}
           className="event-image rounded-lg mb-4"
         />
       </div>
-      <div className="event-info-container flex flex-col pt-9 md:flex-row justify-between items-start">
+      <div className="event-info-container justify-center flex flex-col pt-9 md:flex-row items-center">
         <div className="event-info w-full md:w-2/3 mb-4 md:mb-0">
           <h1 className="text-4xl font-bold text-black mb-2">
             {eventData.title}
@@ -400,7 +400,9 @@ const EventDetail: React.FC = () => {
                 </span>
               </div>
               <p className="text-2xl font-bold mb-2">
-                ${minPrice} - ${maxPrice}
+                {minPrice === maxPrice
+                  ? `$${minPrice}`
+                  : `$${minPrice} - $${maxPrice}`}
               </p>
               <Button
                 className="bg-orange-500 text-white px-4 py-2 rounded-lg"
