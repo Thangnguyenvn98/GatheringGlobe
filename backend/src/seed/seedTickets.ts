@@ -37,10 +37,14 @@ export const generateTickets = async (events: any[]) => {
         type === "Free"
           ? 0
           : type === "Child Ticket" || type === "Senior Ticket"
-            ? faker.number.float({ min: 10.0, max: 25.0 })
+            ? faker.number.float({ min: 10.0, max: 25.0, fractionDigits: 2 })
             : type === "Group Ticket"
-              ? faker.number.float({ min: 50.0, max: 100.0 })
-              : faker.number.float({ min: 20.0, max: 150.0 });
+              ? faker.number.float({ min: 50.0, max: 100.0, fractionDigits: 2 })
+              : faker.number.float({
+                  min: 20.0,
+                  max: 150.0,
+                  fractionDigits: 2,
+                });
       const ticket = new Ticket({
         eventId: event._id,
         seatNumber: faker.number.int({ min: 1, max: 300 }).toString(),
