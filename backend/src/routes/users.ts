@@ -215,9 +215,9 @@ router.patch("/update", verifyToken, async (req: Request, res: Response) => {
   try {
     const user = await User.findByIdAndUpdate(req.userId, req.body, { new: true }); //When { new: true } is set, The method returns the document AFTER the update is applied
     if (!user) {
-      return res.status(404).send('User not found');
+      return res.status(404).send({message: 'User not found'});
     }
-    res.json(user);
+    res.status(200).json(user).send({message: 'User information updated successfully'});
   } catch (error) {
     console.error("Failed to change user information:", error);
     res.status(500).json({ message: "Internal server error" });
