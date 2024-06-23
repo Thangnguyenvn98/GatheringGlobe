@@ -26,7 +26,8 @@ router.get("/:discountId", async (req: Request, res: Response) => {
 
 // Backend route for applying a discount
 router.post("/apply-discount", verifyToken, async (req, res) => {
-  const { cartItems, discountCode, totalCost, paymentIntentId } = req.body;
+  const { cartItems, discountCode, totalCost, paymentIntentId, discountCodes } =
+    req.body;
   const userId = req.userId;
 
   try {
@@ -87,11 +88,7 @@ router.post("/apply-discount", verifyToken, async (req, res) => {
         .status(400)
         .json({ message: "Discount usage limit exceeded." });
     }
-    // Update discount usage count
-    discount.usedCount += totalQuantityDiscounted;
-    await discount.save();
 
-    console.log(discountedTickets);
     // Calculate the new total cost
     const newTotal = totalCost - discountAmount;
     const existingDiscountApplication = await DiscountApplication.findOne({
@@ -106,6 +103,10 @@ router.post("/apply-discount", verifyToken, async (req, res) => {
       });
       await newDiscountApplication.save();
     } else {
+      //Existing discount applications
+      if (discountCodes.length === 0) {
+        existingDiscountApplication.set({ discountedTickets: [] });
+      }
       existingDiscountApplication.discountedTickets.push(...discountedTickets);
       await existingDiscountApplication.save();
     }
@@ -116,7 +117,7 @@ router.post("/apply-discount", verifyToken, async (req, res) => {
       if (!paymentIntent) {
         return res.status(400).json({ message: "Payment intent not found" });
       }
-      console.log(paymentIntent.amount);
+
       if (paymentIntent.metadata.userId !== req.userId) {
         return res.status(400).json({ message: "Payment Intent Mismatch" });
       }
@@ -139,6 +140,89 @@ router.post("/apply-discount", verifyToken, async (req, res) => {
     res
       .status(500)
       .json({ message: "An error occurred while applying the discount." });
+  }
+});
+
+router.post("/remove-discount", verifyToken, async (req, res) => {
+  const { paymentIntentId, discountCode, totalCost, totalDiscount, cartItems } =
+    req.body;
+  const userId = req.userId;
+
+  try {
+    const discountApplication = await DiscountApplication.findOne({
+      paymentIntentId,
+    });
+
+    const discount = await Discount.findOne({
+      code: discountCode,
+      isActive: true,
+    });
+
+    if (!discount) {
+      return res
+        .status(400)
+        .json({ message: "Invalid or expired discount code." });
+    }
+
+    if (!discountApplication) {
+      return res
+        .status(400)
+        .json({ message: "Discount application not found" });
+    }
+
+    const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+
+    if (!paymentIntent) {
+      return res.status(400).json({ message: "Payment intent not found" });
+    }
+
+    if (paymentIntent.metadata.userId !== userId) {
+      return res.status(400).json({ message: "Payment Intent Mismatch" });
+    }
+
+    let discountAmount = 0;
+
+    for (const item of cartItems) {
+      for (const ticketId in item.tickets) {
+        if (
+          discount?.eventId?.toString() === item.eventId &&
+          discount?.ticketId?.toString() === ticketId
+        ) {
+          const ticketDetails = item.tickets[ticketId];
+          const discountPerTicket = discount.percentage
+            ? (ticketDetails.price * discount.percentage) / 100
+            : discount.number;
+
+          discountAmount += (discountPerTicket || 0) * ticketDetails.quantity;
+        }
+      }
+    }
+    const newTotal = totalCost + discountAmount;
+    const newDiscountAmount = totalDiscount - discountAmount;
+
+    await stripe.paymentIntents.update(paymentIntentId, {
+      amount: Math.round(newTotal * 100),
+    });
+
+    for (const discountedTickets of discountApplication.discountedTickets) {
+      if (discountedTickets.discountCode === discountCode) {
+        discountApplication.discountedTickets.pull(discountedTickets);
+      }
+    }
+
+    const discountedTickets = discountApplication.discountedTickets;
+
+    res.json({
+      message: "Discount removed successfully.",
+      newTotal,
+      discountAmount: newDiscountAmount,
+      discountedTickets,
+    });
+  } catch (error) {
+    console.error("Error removing discount:", error);
+    res
+      .status(500)
+      .json({ message: "An error occurred while removing the discount." });
   }
 });
 

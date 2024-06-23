@@ -3,10 +3,11 @@ import { Separator } from "../ui/separator";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { useState } from "react";
-import { applyDiscountCode } from "@/services/api";
+import { applyDiscountCode, removeDiscountCode } from "@/services/api";
 import { DiscountedTicket } from "@/types/applyDiscount";
 import { Tag, X } from "lucide-react";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 const BookingDetailsSummary = ({
   paymentIntentId,
@@ -27,6 +28,7 @@ const BookingDetailsSummary = ({
   const [discountDetails, setDiscountDetails] = useState<DiscountedTicket[]>(
     [],
   );
+  const navigate = useNavigate();
 
   const applyDiscount = async () => {
     try {
@@ -36,6 +38,7 @@ const BookingDetailsSummary = ({
           currentTotalCost,
           discountCodeInput,
           paymentIntentId,
+          discountCodes,
         );
       console.log("discountedTickets", discountedTickets);
       toast.success(message);
@@ -51,11 +54,34 @@ const BookingDetailsSummary = ({
     }
   };
 
-  const removeDiscountCode = (code: string) => {
-    // Logic to remove a discount code and recalculate total cost
-    // This requires more complex handling to "undo" a discount application,
-    // and might involve reapplying all other discount codes.
-    console.log(code);
+  const removeDiscount = async (code: string) => {
+    try {
+      const { message, newTotal, discountedTickets, discountAmount } =
+        await removeDiscountCode(
+          cartItems,
+          currentTotalCost,
+          code,
+          paymentIntentId,
+          totalDiscount,
+        );
+      toast.success(message);
+      setCurrentTotalCost(newTotal);
+      console.log("discountedTickets", discountedTickets);
+      setDiscountDetails(discountedTickets);
+      setTotalDiscount(discountAmount);
+      setDiscountCodes(discountCodes.filter((c) => c !== code));
+    } catch (error) {
+      console.error("Error removing discount:", error);
+    }
+  };
+
+  const onUpdateCart = (
+    eventId: string,
+    ticketId: string,
+    increment: number,
+  ) => {
+    updateCart(eventId, ticketId, increment);
+    navigate(0);
   };
 
   return (
@@ -112,7 +138,7 @@ const BookingDetailsSummary = ({
                     <div className="flex items-center gap-x-2">
                       <span className="text-gray-400">Qty</span>
                       <Button
-                        onClick={() => updateCart(item.eventId, ticketId, -1)}
+                        onClick={() => onUpdateCart(item.eventId, ticketId, -1)}
                         variant={"outline"}
                         className="text-gray-500 focus:outline-none focus:bg-gray-300 p-2 rounded-l-md"
                         aria-label="Decrease ticket amount"
@@ -123,7 +149,7 @@ const BookingDetailsSummary = ({
                         {ticketDetails.quantity}
                       </span>
                       <Button
-                        onClick={() => updateCart(item.eventId, ticketId, 1)}
+                        onClick={() => onUpdateCart(item.eventId, ticketId, +1)}
                         variant={"outline"}
                         className="text-gray-500 focus:outline-none focus:bg-gray-300 p-2 rounded-l-md"
                         aria-label="Increase ticket amount"
@@ -176,7 +202,7 @@ const BookingDetailsSummary = ({
                 <Button
                   variant="ghost"
                   className="px-0"
-                  onClick={() => removeDiscountCode(code)}
+                  onClick={() => removeDiscount(code)}
                 >
                   <X />
                 </Button>
