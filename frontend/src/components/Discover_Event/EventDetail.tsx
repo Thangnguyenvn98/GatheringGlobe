@@ -17,6 +17,7 @@ const EventDetail: React.FC = () => {
     isLoading,
     error,
   } = useCurrentEventDetail(eventId || "");
+  console.log(eventData);
   const { addToCart } = useCart();
   const [ticketQuantities, setTicketQuantities] = useState<{
     [key: string]: number;
@@ -75,7 +76,12 @@ const EventDetail: React.FC = () => {
     });
 
     if (Object.keys(ticketsToAdd).length > 0) {
-      addToCart(eventId!, eventData?.title || "", ticketsToAdd);
+      addToCart(
+        eventId!,
+        eventData?.title || "",
+        eventData?.imageUrls[0] || "",
+        ticketsToAdd,
+      );
       const resetQuantities: { [key: string]: number } = {};
       Object.keys(ticketQuantities).forEach((ticketId) => {
         resetQuantities[ticketId] = 0;

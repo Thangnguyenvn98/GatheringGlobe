@@ -28,6 +28,7 @@ const Login = () => {
     try {
       await SignInUser(data);
       const redirectTo = location.state?.from || "/";
+      console.log(redirectTo);
       console.log("Redirecting to: ", location);
       navigate(redirectTo);
       toast.success("Login Success");

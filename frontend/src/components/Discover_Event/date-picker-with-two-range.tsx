@@ -18,7 +18,10 @@ function DatePickerWithRange({
   setDateFromParent: (value: DateRange | undefined) => void;
   dateFromParent?: DateRange | undefined; //allow dateFromParent to be optional
 }) {
-  const [date, setDate] = React.useState<DateRange | undefined>(dateFromParent);
+  const [date, setDate] = React.useState<DateRange | undefined>();
+  if (String(dateFromParent) !== String(date)) {
+    setDate(dateFromParent);
+  }
   const onSubmit = (data: DateRange | undefined) => {
     setDateFromParent(data);
     setDate(data);
@@ -47,7 +50,7 @@ function DatePickerWithRange({
                 format(date.from, "LLL dd, y")
               )
             ) : (
-              <span className="font-bold text-[12pt] hover:underline">
+              <span className=" font-bold text-[12pt] hover:underline">
                 All dates
               </span>
             )}

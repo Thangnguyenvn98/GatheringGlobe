@@ -9,6 +9,7 @@ import { useModal } from "@/hooks/use-modal-store";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../ui/button";
 import { CircleCheck } from "lucide-react";
+import { useEffect } from "react";
 
 export const OrderConfirmationModal = () => {
   const { isOpen, onClose, type, data } = useModal();
@@ -18,7 +19,14 @@ export const OrderConfirmationModal = () => {
   const isModalOpen = isOpen && type === "orderConfirmation";
   const onClick = () => {
     navigate(`/your-account/order-details/${orderId}`);
+    onClose();
   };
+
+  useEffect(() => {
+    if (!isOpen) {
+      onClose();
+    }
+  }, [isOpen, onClose]);
 
   return (
     <Dialog open={isModalOpen} onOpenChange={onClose}>

@@ -65,6 +65,9 @@ const formSchema = z
     location: z
       .string()
       .min(5, { message: "Location must be at least 5 characters long" }),
+    postalCode: z.string().min(4, {
+      message: "Postal code (ZIP code) must be at least 4 characters long",
+    }),
     category: z
       .string()
       .min(0, { message: "Please select an event category to display." }),
@@ -399,7 +402,10 @@ const EventForm = () => {
                 name="location"
                 render={({ field }) => (
                   <FormItem>
-                    <EventLocation name={field.name} />
+                    <EventLocation
+                      name={field.name}
+                      onChange={field.onChange}
+                    />
                   </FormItem>
                 )}
               />

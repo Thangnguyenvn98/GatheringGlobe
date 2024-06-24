@@ -159,8 +159,6 @@ const PDF = ({ orderData }: PDFProps) => {
                     {new Date(event.eventId.endTime).toLocaleString()}{" "}
                   </Text>
                   <Text style={styles.text}>{event.eventId.location}</Text>
-
-                  <Text style={styles.label}>TICKET TYPE & PRICE</Text>
                 </View>
               </View>
               <View style={styles.ticket}>
@@ -169,17 +167,21 @@ const PDF = ({ orderData }: PDFProps) => {
                   <Text style={styles.label}>ORDER DATE</Text>
                 </View>
                 <View style={styles.ticketHolder}>
-                  <Text>
-                    {orderData.firstName} {orderData.lastName}
-                  </Text>
+                  <div className="mt-2">
+                    <Text>
+                      {orderData.firstName} {orderData.lastName}
+                    </Text>
+                  </div>
                   <Text>
                     {new Date(orderData.createdAt).toLocaleDateString()}
                   </Text>
                 </View>
                 <View style={styles.ticketHolder}>
-                  <Text style={styles.label}>
-                    {ticket.ticketId.type} - ${ticket.ticketId.price}
-                  </Text>
+                  <div className="mt-2">
+                    <Text style={styles.label}>
+                      {ticket.ticketId.type} - ${ticket.ticketId.price}
+                    </Text>
+                  </div>
 
                   <Image
                     style={styles.qrCode}

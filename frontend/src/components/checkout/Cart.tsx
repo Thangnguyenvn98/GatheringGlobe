@@ -1,7 +1,7 @@
 import React from "react";
 import useCart from "@/hooks/use-cart-store";
 import { Button } from "../ui/button";
-import { Trash } from "lucide-react";
+import { LockKeyhole, Trash } from "lucide-react";
 import { Separator } from "../ui/separator";
 import { useNavigate } from "react-router-dom";
 import { useCurrentUser } from "@/services/queries";
@@ -44,7 +44,7 @@ const Cart: React.FC = () => {
   return (
     <div className="p-4 bg-white rounded-lg shadow-lg">
       <div className="flex justify-between items-center">
-        <h2 className="text-xl font-semibold mb-2">Your Cart</h2>
+        <h2 className="text-xl font-semibold mb-2">Your Cart Summary</h2>
 
         <button
           onClick={handleClearCart}
@@ -55,18 +55,27 @@ const Cart: React.FC = () => {
       </div>
       {cartItems.map((cartItem) => (
         <div key={cartItem.eventId} className="mb-6">
-          <h3 className="text-lg font-semibold mb-2">
-            Event: {cartItem.eventName}
-          </h3>
+          <div className="flex items-center gap-x-2">
+            <div className="relative h-20 w-20">
+              <img
+                src={cartItem.eventImageUrl}
+                alt={cartItem.eventName}
+                className="object-cover w-full h-full rounded-lg"
+              />
+            </div>
+            <h3 className="text-lg font-bold my-4">{cartItem.eventName}</h3>
+          </div>
+
           {cartItem.tickets &&
             Object.entries(cartItem.tickets).map(([ticketId, ticket]) => (
               <div
                 key={`${cartItem.eventId}-${ticketId}`}
                 className="flex items-center gap-x-2 justify-between mb-2"
               >
-                <span>
-                  Ticket Type: {ticket.ticketType} - ${ticket.price}
+                <span className="font-medium">
+                  {ticket.ticketType} - ${ticket.price.toFixed(2)}
                 </span>
+
                 <div className="flex items-center gap-x-2">
                   <Button
                     onClick={() =>
@@ -93,7 +102,7 @@ const Cart: React.FC = () => {
                     variant={"ghost"}
                     onClick={() => handleRemove(cartItem.eventId, ticketId)}
                   >
-                    <Trash className="w-8 h-8 " color="red" />
+                    <Trash className="w-5 h-5 " color="red" />
                   </Button>
                 </div>
               </div>
@@ -111,9 +120,10 @@ const Cart: React.FC = () => {
         </span>
         <Button
           onClick={handleCheckout}
-          className="bg-green-500 text-white px-4 py-2 rounded-lg"
+          className="bg-green-500 text-white px-4 py-2 rounded-lg gap-x-2"
         >
-          Check Out
+          <LockKeyhole />
+          <span>Checkout</span>
         </Button>
       </div>
     </div>

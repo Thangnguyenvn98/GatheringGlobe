@@ -30,7 +30,6 @@ router.post(
       return res.status(400).json({ message: errors.array() });
     }
     try {
-      console.log(req.body);
       let user = await User.findOne({
         $or: [{ email: req.body.email }, { username: req.body.username }],
       });
@@ -209,6 +208,21 @@ router.post("/logout", (req: Request, res: Response) => {
     expires: new Date(0),
   });
   res.status(200).json({ message: "Logout successful" });
+});
+
+router.patch("/update", verifyToken, async (req: Request, res: Response) => {
+  try {
+    const user = await User.findByIdAndUpdate(req.userId, req.body, {
+      new: true,
+    }); //When { new: true } is set, The method returns the document AFTER the update is applied
+    if (!user) {
+      return res.status(404).send("User not found");
+    }
+    res.json(user);
+  } catch (error) {
+    console.error("Failed to change user information:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
 });
 
 router.post("/forgetPassword", forgetPassword);

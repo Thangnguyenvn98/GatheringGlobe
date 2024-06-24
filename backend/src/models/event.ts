@@ -10,6 +10,7 @@ export type EventType = {
     capacity?: number;
     organizerId: string;
     location: string;
+    postalCode: string;
     category: string;
     eventType: string;
     artistName: string;
@@ -29,6 +30,7 @@ const eventSchema = new mongoose.Schema({
     capacity: { type: Number, required: false },
     organizerId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     location: { type: String, required: true },
+    postalCode: { type: String, required: true },
     category: { type: String, required: true },
     eventType: { type: String, required: true },
     artistName: { type: String, required: false },
