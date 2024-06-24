@@ -186,8 +186,7 @@ router.post(
 
       // Send email with QR code
       const transporter = nodemailer.createTransport({
-        host: "smtp.zohocloud.ca",
-        port: 587,
+        service: "outlook",
         auth: {
           user: process.env.USER_EMAIL,
           pass: process.env.USER_PASSWORD,
