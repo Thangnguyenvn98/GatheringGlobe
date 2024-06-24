@@ -1,131 +1,115 @@
-import React, { useEffect, useRef, useState } from "react";
-import QrScanner from "qr-scanner";
-import QrFrame from "../../assets/qr-frame.svg";
-import Order from "../../../../backend/src/models/order"; // Adjust the import path accordingly
+import { useState } from "react";
+import { Scanner } from "@yudiel/react-qr-scanner";
+import { IDetectedBarcode } from "@yudiel/react-qr-scanner";
+// import Order from "../../../../backend/src/models/order";
+import axios from "axios";
+import toast from "react-hot-toast";
 
-const QrReader: React.FC = () => {
-  const scanner = useRef<QrScanner | null>(null); // Ref for QrScanner instance
-  const videoEL = useRef<HTMLVideoElement>(null); // Ref for video element
-  const qrBoxEL = useRef<HTMLDivElement>(null); // Ref for QR box element
-  const [qrOn, setQrOn] = useState<boolean>(true); // State for QR scanner status
-  const [scannedResult, setScannedResult] = useState<string | undefined>(""); // State for scanned QR result
+interface QrCode {
+  orderId: string;
+  eventId: string;
+  ticketId: string;
+  index: number;
+}
+
+const QrReader = () => {
+  const [scannedResult, setScannedResult] = useState<
+    IDetectedBarcode[] | undefined
+  >(); // State for scanned QR result
 
   // Function to handle successful QR scan
-  const onScanSuccess = async (result: QrScanner.ScanResult) => {
-    const qrCodeId = result.data;
-    console.log(`Scan QR ID: ${qrCodeId}`);
-
-    try {
-      const order = await Order.findOne({
-        "events.tickets.ticketId": qrCodeId,
-        paymentStatus: "completed",
-      });
-
-      if (!order) {
-        throw new Error("Order not found or payment is not completed.");
+  const onScanSuccess = async (detectedCodes: IDetectedBarcode[]) => {
+    if (detectedCodes.length > 0) {
+      const qrCode = detectedCodes[0].rawValue as unknown as QrCode; // Get the raw value of the first detected QR code
+      // const qrCodeId = qrCode.console.log(`Scan QR ID: ${qrCodeId}`);
+      if (!qrCode.orderId) {
+        toast.error("Invalid QR code");
       }
+      const qrCodeId = qrCode.orderId;
 
-      const event = order.events.find((event) =>
-        event.tickets.some((ticket) => ticket.ticketId.toString() === qrCodeId),
-      );
+      try {
+        // const order = await Order.findOne({
+        //   "events.tickets.ticketId": qrCodeId,
+        //   paymentStatus: "completed",
+        // });
 
-      if (!event) {
-        throw new Error("Event not found for the given QR code.");
-      }
+        const response = await axios.get(`/api/orders/order-by-qr/${qrCodeId}`);
+        const order = response.data;
+        // Print the entire order response to inspect
+        console.log("Order details:", order);
 
-      const ticket = event.tickets.find(
-        (ticket) => ticket.ticketId.toString() === qrCodeId,
-      );
+        if (!order) {
+          throw new Error("Order not found or payment is not completed.");
+        }
 
-      if (!ticket) {
-        throw new Error("Ticket not found for the given QR code.");
-      }
+        const event = order.events.find((event: any) =>
+          event.tickets.some(
+            (ticket: any) => ticket.ticketId.toString() === qrCodeId,
+          ),
+        );
 
-      if (ticket.quantity <= 0) {
-        throw new Error("No more tickets left to use");
-      }
+        if (!event) {
+          throw new Error("Event not found for the given QR code.");
+        }
 
-      ticket.quantity -= 1;
+        const ticket = event.tickets.find(
+          (ticket: any) => ticket.ticketId.toString() === qrCodeId,
+        );
 
-      await order.save();
+        if (!ticket) {
+          throw new Error("Ticket not found for the given QR code.");
+        }
 
-      alert(
-        `Ticket for event ${event.eventId} used successfully. Remaining quantity: ${ticket.quantity}`,
-      );
-      setScannedResult(qrCodeId);
-    } catch (error: any) {
-      console.error("Error handling QR scan:", error);
-      alert(`Scan failed: ${error.message}`);
-    }
-  };
+        if (ticket.quantity <= 0) {
+          throw new Error("No more tickets left to use");
+        }
 
-  // Function to handle failed QR scan
-  const onScanFail = (error: string | Error) => {
-    console.error("QR scan failed:", error);
-  };
+        console.log(`Ticket Details: 
+          Event ID: ${event.eventId._id}, 
+          Ticket ID: ${ticket.ticketId._id}, 
+          Remaining Quantity: ${ticket.quantity}`);
 
-  useEffect(() => {
-    if (videoEL.current && !scanner.current) {
-      // Initialize QrScanner when video element is ready
-      scanner.current = new QrScanner(videoEL.current, onScanSuccess, {
-        onDecodeError: onScanFail,
-        preferredCamera: "environment", // Set preferred camera type
-        highlightScanRegion: true, // Highlight the QR code scan region
-        highlightCodeOutline: true, // Highlight the QR code outline
-        overlay: qrBoxEL.current || undefined, // Optional overlay for QR code scanning
-      });
+        ticket.quantity -= 1;
 
-      // Start the QR scanner
-      scanner.current
-        .start()
-        .then(() => setQrOn(true))
-        .catch((e) => {
-          console.error("Failed to start QR scanner:", e);
-          setQrOn(false);
+        // Backend endpoint to update the ticket quantity
+        await axios.post(`/api/orders/update-ticket-quantity/${order._id}`, {
+          eventId: event.eventId._id,
+          ticketId: ticket.ticketId._id,
+          quantity: ticket.quantity,
         });
-    }
 
-    return () => {
-      if (scanner.current) {
-        scanner.current.stop();
+        // await order.save();
+        console.log("Done the scanning ngheeeeee");
+
+        alert(
+          `Ticket for event ${event.eventId} used successfully. Remaining quantity: ${ticket.quantity}`,
+        );
+        setScannedResult(detectedCodes);
+      } catch (error: any) {
+        console.error("Error handling QR scan:", error);
+        alert(`Scan failed: ${error.message}`);
+        console.log("hello bug here");
       }
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!qrOn) {
-      alert(
-        "Camera is blocked or not accessible. Please allow camera access in your browser settings.",
-      );
+    } else {
+      console.log("No QR code here!!!!!");
     }
-  }, [qrOn]); // Dependency array ensures this effect runs whenever qrOn state changes
+  };
 
   return (
-    <div className="qr-reader">
-      <video ref={videoEL} />
-
-      <div ref={qrBoxEL} className="qr-box">
-        <img
-          src={QrFrame}
-          alt="QR Frame"
-          width={256}
-          height={256}
-          className="qr-frame"
-        />
-      </div>
-
+    <div className="flex justify-center mt-20">
+      <Scanner
+        onScan={onScanSuccess} // Called when QR code is scanned
+        styles={{
+          container: { width: 600, height: 300, position: "relative" },
+          video: { width: 600, height: 600 },
+        }}
+        allowMultiple={false}
+      />
       {scannedResult && (
-        <p
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            zIndex: 9999,
-            color: "white",
-          }}
-        >
-          Scanned Result: {scannedResult}
-        </p>
+        <div>
+          <h3>Scanned Result: </h3>
+          <pre>{JSON.stringify(scannedResult, null, 2)}</pre>
+        </div>
       )}
     </div>
   );

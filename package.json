@@ -21,6 +21,7 @@
   "author": "BinniesLite <89041460+BinniesLite@users.noreply.github.com>",
   "license": "MIT",
   "dependencies": {
+    "@yudiel/react-qr-scanner": "^2.0.4",
     "run-p": "^0.0.0"
   },
   "devDependencies": {
