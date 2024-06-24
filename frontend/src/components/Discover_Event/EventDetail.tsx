@@ -360,37 +360,44 @@ const EventDetail: React.FC = () => {
   ).toFixed(2);
 
   return (
-    <div className="event-detail-container p-5">
-      <div className="event-image-container flex justify-center items-center bg-amber-100">
-        <img
-          src={eventData.imageUrls[0]}
-          alt={eventData.title}
-          className="event-image rounded-lg mb-4"
-        />
+    <div className="event-detail-container  p-5">
+      <div className="relative mb-4">
+        <div
+          className="absolute inset-0 bg-cover bg-center flex flex-col justify-center items-center filter blur-xl rounded-lg"
+          style={{ backgroundImage: `url(${eventData.imageUrls[0]})` }}
+        ></div>
+        <div className="event-image-container flex justify-center items-center relative">
+          <img
+            src={eventData.imageUrls[0]}
+            alt={eventData.title}
+            className="event-image rounded-lg mb-4"
+          />
+        </div>
       </div>
-      <div className="event-info-container flex justify-center item-center pt-9 md:flex-row items-center">
-        <div className="event-info w-full md:w-2/3 mb-4 md:mb-0">
+      <div className="event-info-container flex justify-center items-center py-4  md:flex-row ">
+        <div className="event-info w-full md:w-3/5 mb-4 md:mb-0">
           <h1 className="text-4xl font-bold text-black mb-2">
             {eventData.title}
           </h1>
-          <p className="text-gray-600 mb-2">{eventData.location}</p>
+          <p className="text-gray-600 mb-2  ">{eventData.location}</p>
           <div className="flex items-center gap-4 mb-4">
             <p className="text-gray-600">{formatDate(eventData.startTime)}</p>
             <p className="text-gray-600">{formatDate(eventData.endTime)}</p>
           </div>
+          {/* <div className="mb-4 flex justify-center"> */}
           <div className="mb-4">
-            <h2 className="text-xl font-semibold mb-2">Date and time</h2>
+            <h2 className="text-3xl font-semibold mb-2">Date and time</h2>
             <p className="text-gray-600 mb-2">
               {formatDate(eventData.startTime)} -{" "}
               {formatDate(eventData.endTime)}
             </p>
           </div>
           <div className="mb-4">
-            <h2 className="text-xl font-semibold mb-2">Location</h2>
+            <h2 className="text-3xl font-semibold mb-2">Location</h2>
             <p className="text-gray-600 mb-2">{eventData.location}</p>
           </div>
           <div>
-            <h2 className="text-xl font-semibold mb-2">About this event</h2>
+            <h2 className="text-3xl font-semibold mb-2">About this event</h2>
             <p>{eventData.description}</p>
           </div>
         </div>
@@ -402,7 +409,7 @@ const EventDetail: React.FC = () => {
                   Early bird discount
                 </span>
                 <span className="text-xs font-bold text-gray-600 bg-orange-200 rounded-full px-2 py-1">
-                  Discount Available
+                  Discount applied
                 </span>
               </div>
               <p className="text-2xl font-bold mb-2">
@@ -469,13 +476,13 @@ const EventDetail: React.FC = () => {
                 <div>
                   <Button
                     onClick={handleAddToCart}
-                    className="bg-orange-500 text-white px-4 py-2 rounded-lg mr-2"
+                    className="bg-orange-500 text-white px-3 py-1 rounded-lg mr-1"
                   >
                     Add to Cart
                   </Button>
                   <Button
                     onClick={() => handleCheckout()}
-                    className="bg-green-500 text-white px-4 py-2 rounded-lg"
+                    className="bg-green-500 text-white px-3 py-1 rounded-lg"
                   >
                     Check Out Now
                   </Button>
