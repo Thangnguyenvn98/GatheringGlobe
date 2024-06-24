@@ -30,7 +30,6 @@ router.post(
       return res.status(400).json({ message: errors.array() });
     }
     try {
-      console.log(req.body);
       let user = await User.findOne({
         $or: [{ email: req.body.email }, { username: req.body.username }],
       });
@@ -213,7 +212,9 @@ router.post("/logout", (req: Request, res: Response) => {
 
 router.patch("/update", verifyToken, async (req: Request, res: Response) => {
   try {
-    const user = await User.findByIdAndUpdate(req.userId, req.body, { new: true }); //When { new: true } is set, The method returns the document AFTER the update is applied
+    const user = await User.findByIdAndUpdate(req.userId, req.body, {
+      new: true,
+    }); //When { new: true } is set, The method returns the document AFTER the update is applied
     if (!user) {
       return res.status(404).json({message: 'User not found'});
     }

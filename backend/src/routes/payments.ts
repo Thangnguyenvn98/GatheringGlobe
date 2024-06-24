@@ -4,6 +4,7 @@ import verifyToken from "../middleware/auth";
 import Event from "../models/event";
 import User from "../models/user";
 import Ticket from "../models/ticket";
+import DiscountApplication from "../models/discountTicketOrder";
 
 interface Ticket {
   ticketType: string;

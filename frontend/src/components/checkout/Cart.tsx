@@ -44,7 +44,7 @@ const Cart: React.FC = () => {
   return (
     <div className="p-4 bg-white rounded-lg shadow-lg">
       <div className="flex justify-between items-center">
-        <h2 className="text-xl font-semibold mb-2">Your Cart</h2>
+        <h2 className="text-xl font-semibold mb-2">Your Cart Summary</h2>
 
         <button
           onClick={handleClearCart}
@@ -63,7 +63,7 @@ const Cart: React.FC = () => {
                 className="object-cover w-full h-full rounded-lg"
               />
             </div>
-            <h3 className="text-lg font-semibold my-4">{cartItem.eventName}</h3>
+            <h3 className="text-lg font-bold my-4">{cartItem.eventName}</h3>
           </div>
 
           {cartItem.tickets &&
@@ -72,9 +72,10 @@ const Cart: React.FC = () => {
                 key={`${cartItem.eventId}-${ticketId}`}
                 className="flex items-center gap-x-2 justify-between mb-2"
               >
-                <span>
+                <span className="font-medium">
                   {ticket.ticketType} - ${ticket.price.toFixed(2)}
                 </span>
+
                 <div className="flex items-center gap-x-2">
                   <Button
                     onClick={() =>
