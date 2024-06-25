@@ -339,22 +339,12 @@ router.get("/:id", verifyToken, async (req: Request, res: Response) => {
 });
 
 router.get("/", verifyToken, async (req: Request, res: Response) => {
-  const user = await User.findById(req.userId);
-  console.log(user);
-  if (!user) {
-    return res.status(404).json({ message: "User not found." });
-  }
   try {
-    const order = await Order.find({ userId: user });
+    const order = await Order.find({userId: req.userId})
     if (!order) {
-      return res.status(404).json({ message: "Order not found" });
+      return res.status(404).json({ message: "No order found" });
     }
-
-    const response = {
-      order,
-    };
-
-    res.status(200).json(response);
+    res.status(200).json({data: order});
   } catch (error) {
     console.error("Failed to fetch order:", error);
     res.status(500).json({ message: "Internal server error" });
