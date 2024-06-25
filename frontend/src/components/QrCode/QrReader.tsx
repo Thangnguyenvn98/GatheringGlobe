@@ -26,7 +26,7 @@ const QrReader = () => {
           toast.error("No order ID found in QR code. Please try again.");
         }
         try {
-          const order = await getOrderByQrCode(qrCode.orderId);
+          const order = await getOrderByQrCode(qrCode.orderId, qrCode.eventId);
           if (!order) {
             toast.error("Order not found. Please try again.");
             return;
@@ -55,18 +55,23 @@ const QrReader = () => {
   };
 
   return (
-    <div className="flex justify-center mt-20">
-      <Scanner
-        onScan={onScanSuccess} // Called when QR code is scanned
-        styles={{
-          container: { width: 600, height: 300, position: "relative" },
-          video: { width: 600, height: 600 },
-        }}
-        allowMultiple={true}
-      />
+    <div className="bg-green-300 mb-10">
+      <h1 className=" flex justify-center text-lg font-semibold mb-2 mt-16 ">
+        {" "}
+        Scan Machine
+      </h1>
+      <div className="flex justify-center w-full mt-24">
+        <Scanner
+          onScan={onScanSuccess} // Called when QR code is scanned
+          styles={{
+            container: { width: 400, height: 100, position: "relative" },
+            video: { width: 400, height: 400 },
+          }}
+          allowMultiple={true}
+        />
+      </div>
       {scannedResult && (
         <div>
-          <h3>Scanned Result: </h3>
           <pre>{JSON.stringify(scannedResult, null, 2)}</pre>
         </div>
       )}

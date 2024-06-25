@@ -13,6 +13,7 @@ import DiscountApplication from "../models/discountTicketOrder";
 import { OrderDetailsResponse } from "../types/orderDetailsResponse";
 import Discount from "../models/discount";
 import { useTicket } from "../utils/useTicket";
+import Event from "../models/event";
 
 const stripe = new Stripe(process.env.STRIPE_API_KEY as string);
 
@@ -373,17 +374,24 @@ router.get("/", verifyToken, async (req: Request, res: Response) => {
 });
 
 router.get(
-  "/order-by-qr/:qrCodeId",
+  "/order-by-qr/:qrCodeId/event/:eventId",
   verifyToken,
   async (req: Request, res: Response) => {
-    const { qrCodeId } = req.params;
+    const {qrCodeId, eventId} = req.params;
     try {
       const order = await Order.findById(qrCodeId);
+      const eventIdOrganize = await Event.findById(eventId)
       if (!order) {
         return res
           .status(404)
           .json({ message: "Order not found or payment is not completed." });
       }
+      if (!eventIdOrganize) {
+        return res.status(404).json({message: "There is no organizer"});
+      }
+      if (eventId !== eventIdOrganize._id.toString()) {
+        return res.status(403).json({ message: "The organizer does not have this event" });
+    }
       res.json(order);
     } catch (error) {
       console.error("Error fetching order by QR code:", error);
