@@ -188,7 +188,6 @@ function App() {
           }
         />
 
-        <Route path="c" element={<EventDetail />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/qr-scanner" element={<QrReader />} />

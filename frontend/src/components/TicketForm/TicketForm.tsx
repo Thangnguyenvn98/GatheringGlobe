@@ -23,7 +23,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import axios from "axios";
-import { useCurrentUser } from "@/services/queries";
+import { useCurrentEventDetail, useCurrentUser } from "@/services/queries";
+import { Calendar } from "lucide-react";
+import { format } from "date-fns";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 const axiosInstance = axios.create({
@@ -47,10 +49,12 @@ const formSchema = z.object({
 type FormData = z.infer<typeof formSchema>;
 
 const TicketForm = () => {
-  const { data: userData } = useCurrentUser();
   const navigate = useNavigate();
   const { eventId } = useParams();
+  const { data: userData } = useCurrentUser();
+  const { data: event } = useCurrentEventDetail(eventId || "");
   const [loading, setLoading] = useState(false);
+
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -63,6 +67,10 @@ const TicketForm = () => {
     name: "tickets",
   });
 
+  const formattedStartTime = event?.startTime
+    ? format(new Date(event.startTime), "LLL dd, y h:mm a")
+    : "Invalid date";
+
   const onSubmit = async (data: FormData) => {
     try {
       setLoading(true);
@@ -70,6 +78,7 @@ const TicketForm = () => {
         `/api/events/${eventId}/tickets`,
         data.tickets,
       );
+      console.log(data.tickets);
       form.reset();
       toast.success(response.data.message);
       navigate(`/dashboard/${userData?.username}`);
@@ -87,7 +96,23 @@ const TicketForm = () => {
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <Card className="max-w-4xl mx-auto p-5">
             <CardHeader className="text-center">
-              <CardTitle>Create Tickets</CardTitle>
+              <div className="flex flex-col items-center">
+                <h2 className="text-2xl font-semibold text-gray-800 mb-4">
+                  {event?.title}
+                </h2>
+                <div className="flex items-center gap-x-4">
+                  <Calendar />
+                  <span>{formattedStartTime}</span>
+                </div>
+
+                <img
+                  src={event?.imageUrls[0]}
+                  alt={event?.title}
+                  className="w-80 h-80 object-cover rounded-lg mt-4"
+                />
+              </div>
+
+              <CardTitle className="text-xl">Create Tickets</CardTitle>
               <CardDescription>
                 Fill out the form below to create new tickets.
               </CardDescription>
@@ -156,6 +181,7 @@ const TicketForm = () => {
                       </FormItem>
                     )}
                   />
+
                   {fields.length > 1 && (
                     <Button
                       type="button"

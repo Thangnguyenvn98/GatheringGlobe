@@ -15,7 +15,6 @@ export interface EventType {
   artistName: string;
   imageUrls: string[];
   tickets: TicketType[];
-  ticketName: string;
   roomChatLink?: string;
   minPrice?: number;
 }

@@ -9,9 +9,7 @@ export type TicketType = {
   quantityAvailable: number;
   type: string;
   isFree: boolean;
-  ref: "Event",
-    required: true,
-  }
+};
 
 const ticketSchema = new mongoose.Schema({
   eventId: {
@@ -24,7 +22,7 @@ const ticketSchema = new mongoose.Schema({
   status: { type: String, required: true },
   quantityAvailable: { type: Number, required: true },
   type: { type: String, required: true },
-  isFree :{type: Boolean, required: true}, 
+  isFree: { type: Boolean, required: true },
 });
 
 const Ticket = mongoose.model<TicketType>("Ticket", ticketSchema);

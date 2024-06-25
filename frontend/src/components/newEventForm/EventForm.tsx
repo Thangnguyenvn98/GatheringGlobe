@@ -33,12 +33,7 @@ import {
 } from "@/components/ui/select";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
-const axiosInstance = axios.create({
-  baseURL: API_BASE_URL,
-  withCredentials: true,
-});
+import { createEvent } from "@/services/api";
 
 const formSchema = z
   .object({
@@ -66,8 +61,10 @@ const formSchema = z
       .min(5, { message: "Location must be at least 5 characters long" }),
     category: z
       .string()
-      .nonempty({ message: "Please select an event category" }),
-    eventType: z.string().nonempty({ message: "Please select an event type" }),
+      .min(2, { message: "Please select an event category to display." }),
+    eventType: z
+      .string()
+      .min(2, { message: "Please select an event type to display." }),
     artistName: z.string().optional(),
     imageUrls: z.array(z.string()).nonempty("At least one image is required"),
     roomChatLink: z.union([
@@ -85,7 +82,7 @@ const formSchema = z
     }
   });
 
-type FormData = z.infer<typeof formSchema>;
+export type EventFormData = z.infer<typeof formSchema>;
 
 const EventForm = () => {
   const navigate = useNavigate();
@@ -155,7 +152,7 @@ const EventForm = () => {
   ];
   const [loading, setLoading] = useState(false);
 
-  const form = useForm<FormData>({
+  const form = useForm<EventFormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       title: "",
@@ -172,22 +169,21 @@ const EventForm = () => {
     },
   });
 
-  const onSubmit = async (values: FormData) => {
+  const onSubmit = async (values: EventFormData) => {
     try {
       setLoading(true);
       console.log(values);
 
-      const response = await axiosInstance.post("/api/events/", {
+      const event = await createEvent({
         ...values,
         startTime: new Date(values.startTime).toISOString(),
         endTime: new Date(values.endTime).toISOString(),
       });
 
       form.reset();
-      toast.success(response.data.message);
-      const event = response.data;
-      navigate(`/${event._id}/tickets`);
       console.log(event);
+      navigate(`/${event._id}/tickets`);
+      toast.success(event.data.message);
     } catch (error) {
       if (axios.isAxiosError(error)) {
         toast.error(error.response?.data.message || "Something went wrong");
@@ -389,7 +385,10 @@ const EventForm = () => {
                 name="location"
                 render={({ field }) => (
                   <FormItem>
-                    <EventLocation name={field.name} />
+                    <EventLocation
+                      name={field.name}
+                      onChange={field.onChange}
+                    />
                   </FormItem>
                 )}
               />

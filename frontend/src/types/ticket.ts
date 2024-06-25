@@ -4,6 +4,7 @@ export interface TicketType {
   seatNumber?: string;
   price: number;
   quantityAvailable: number;
+  status: string;
   type: string;
   isFree: boolean;
 }
