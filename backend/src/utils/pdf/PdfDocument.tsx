@@ -45,14 +45,10 @@ export type OrderData = {
 
 interface PDFProps {
   orderData: OrderData;
-  // qrCodes: {
-  //   eventId: string;
-  //   ticketId: string;
-  //   qrCodeBase64: string;
-  // }[];
 }
 
 export type QRCode = {
+  index: number;
   eventId: string;
   ticketId: string;
   qrCodeBase64: string;
@@ -189,7 +185,8 @@ const PDF = ({ orderData }: PDFProps) => {
                       orderData.qrCodes.find(
                         (qrCode) =>
                           qrCode.eventId === event.eventId._id &&
-                          qrCode.ticketId === ticket.ticketId._id
+                          qrCode.ticketId === ticket.ticketId._id &&
+                          qrCode.index === index + 1
                       )?.qrCodeBase64 || ""
                     }
                   />

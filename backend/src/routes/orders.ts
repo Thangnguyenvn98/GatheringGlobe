@@ -12,6 +12,7 @@ import fs from "fs";
 import DiscountApplication from "../models/discountTicketOrder";
 import { OrderDetailsResponse } from "../types/orderDetailsResponse";
 import Discount from "../models/discount";
+import { useTicket } from "../utils/useTicket";
 
 const stripe = new Stripe(process.env.STRIPE_API_KEY as string);
 
@@ -102,6 +103,7 @@ router.post(
         eventOrder.tickets.push({
           ticketId: mongoose.Types.ObjectId.createFromHexString(ticketId),
           quantity,
+          ticketUsed: [],
         });
         // Generate QR code data for each ticket
         for (let i = 0; i < quantity; i++) {
@@ -112,14 +114,17 @@ router.post(
             index: i + 1, // To differentiate multiple tickets
           };
           const qrCodeString = JSON.stringify(qrCodeData);
+          console.log(qrCodeString);
           const qrCodeBase64 = await QRCode.toDataURL(qrCodeString);
           ticketQRCodeDataList.push({
             eventId,
             ticketId,
             qrCodeBase64,
+            index: i + 1,
           });
         }
       }
+      console.log(ticketQRCodeDataList);
 
       await Promise.all(ticketUpdates);
       const newOrder = new Order(order);
@@ -144,6 +149,11 @@ router.post(
       }
 
       const orderObject = populatedOrder.toObject() as OrderData;
+      const discountApplication = await DiscountApplication.findOne({
+        paymentIntentId: order.paymentIntentId,
+      });
+
+      console.log(discountApplication);
 
       const completeOrderData = {
         orderData: {
@@ -362,72 +372,60 @@ router.get("/", verifyToken, async (req: Request, res: Response) => {
   }
 });
 
-
-router.get('/order-by-qr/:qrCodeId', verifyToken, async(req: Request, res: Response) => {
-  const {qrCodeId} = req.params;
-  try {
-    const order = await Order.findOne({
-      "events.tickets.ticketId": new mongoose.Types.ObjectId(qrCodeId),
-      paymentStatus: "completed",
-    }).populate({
-      path: "events.eventId",
-      model: "Event",
-      select: "title imageUrls location startTime endTime",
-    }).populate({
-      path: "events.tickets.ticketId",
-      model: "Ticket",
-      select: "type price",
-    });
-
-    if (!order) {
-      return res.status(404).json({message: "Order not found or payment is not completed."});
+router.get(
+  "/order-by-qr/:qrCodeId",
+  verifyToken,
+  async (req: Request, res: Response) => {
+    const { qrCodeId } = req.params;
+    try {
+      const order = await Order.findById(qrCodeId);
+      if (!order) {
+        return res
+          .status(404)
+          .json({ message: "Order not found or payment is not completed." });
+      }
+      res.json(order);
+    } catch (error) {
+      console.error("Error fetching order by QR code:", error);
+      res.status(500).json({ message: "Internal server error" });
     }
-    res.json(order);
-  } catch(error) {
-    console.error("Error fetching order by QR code:", error);
-    res.status(500).json({ message: "Internal server error" });
   }
-});
+);
 
 // Route to update ticket quantity for a specific order
-router.post('/update-ticket-quantity/:orderId', verifyToken, async (req: Request, res: Response) => {
-  const { orderId } = req.params;
-  const { eventId, ticketId, quantity } = req.body;
+router.post(
+  "/update-ticket-used",
+  verifyToken,
+  async (req: Request, res: Response) => {
+    const { orderId, eventId, ticketId, index } = req.body;
 
-  if (!eventId || !ticketId || quantity === undefined) {
-    return res.status(400).json({ message: "Missing required fields: eventId, ticketId, or quantity" });
+    if (!eventId || !ticketId || index === undefined) {
+      return res.status(400).json({
+        message: "Missing required fields: eventId, ticketId, or quantity",
+      });
+    }
+
+    try {
+      // Find the order by ID
+      const order = await Order.findById(orderId);
+      if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+
+      const usedSuccessfully = await useTicket(
+        orderId,
+        ticketId,
+        index as number
+      );
+      if (!usedSuccessfully) {
+        return res.status(400).json({ message: "Ticket already used" });
+      }
+      res.status(200).json({ message: "Ticket Verified" });
+    } catch (error) {
+      console.error("Failed to update ticket quantity:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
   }
-
-  try {
-    // Find the order by ID
-    const order = await Order.findById(orderId);
-    if (!order) {
-      return res.status(404).json({ message: "Order not found" });
-    }
-
-    // Find the specific event in the order
-    const event = order.events.find(event => event.eventId.toString() === eventId);
-    if (!event) {
-      return res.status(404).json({ message: "Event not found in the order" });
-    }
-
-    // Find the specific ticket in the event
-    const ticket = event.tickets.find(ticket => ticket.ticketId.toString() === ticketId);
-    if (!ticket) {
-      return res.status(404).json({ message: "Ticket not found in the event" });
-    }
-
-    // Update the ticket quantity
-    ticket.quantity = quantity;
-
-    // Save the updated order
-    await order.save();
-
-    res.status(200).json({ message: "Ticket quantity updated successfully" });
-  } catch (error) {
-    console.error("Failed to update ticket quantity:", error);
-    res.status(500).json({ message: "Internal server error" });
-  }
-});
+);
 
 export default router;

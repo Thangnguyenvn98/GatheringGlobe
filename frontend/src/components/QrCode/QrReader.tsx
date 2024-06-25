@@ -1,11 +1,10 @@
 import { useState } from "react";
 import { Scanner } from "@yudiel/react-qr-scanner";
 import { IDetectedBarcode } from "@yudiel/react-qr-scanner";
-// import Order from "../../../../backend/src/models/order";
-import axios from "axios";
 import toast from "react-hot-toast";
+import { getOrderByQrCode, updateTicketUsed } from "@/services/api";
 
-interface QrCode {
+export interface QrCode {
   orderId: string;
   eventId: string;
   ticketId: string;
@@ -13,85 +12,45 @@ interface QrCode {
 }
 
 const QrReader = () => {
-  const [scannedResult, setScannedResult] = useState<
-    IDetectedBarcode[] | undefined
-  >(); // State for scanned QR result
+  const [scannedResult, setScannedResult] = useState<string>(""); // State for scanned QR result
 
   // Function to handle successful QR scan
   const onScanSuccess = async (detectedCodes: IDetectedBarcode[]) => {
     if (detectedCodes.length > 0) {
-      const qrCode = detectedCodes[0].rawValue as unknown as QrCode; // Get the raw value of the first detected QR code
-      // const qrCodeId = qrCode.console.log(`Scan QR ID: ${qrCodeId}`);
-      if (!qrCode.orderId) {
-        toast.error("Invalid QR code");
-      }
-      const qrCodeId = qrCode.orderId;
-
+      const rawValue = detectedCodes[0].rawValue;
+      let qrCode: QrCode;
       try {
-        // const order = await Order.findOne({
-        //   "events.tickets.ticketId": qrCodeId,
-        //   paymentStatus: "completed",
-        // });
-
-        const response = await axios.get(`/api/orders/order-by-qr/${qrCodeId}`);
-        const order = response.data;
-        // Print the entire order response to inspect
-        console.log("Order details:", order);
-
-        if (!order) {
-          throw new Error("Order not found or payment is not completed.");
+        qrCode = JSON.parse(rawValue);
+        console.log(qrCode);
+        if (!qrCode.orderId) {
+          toast.error("No order ID found in QR code. Please try again.");
         }
+        try {
+          const order = await getOrderByQrCode(qrCode.orderId);
+          if (!order) {
+            toast.error("Order not found. Please try again.");
+            return;
+          }
 
-        const event = order.events.find((event: any) =>
-          event.tickets.some(
-            (ticket: any) => ticket.ticketId.toString() === qrCodeId,
-          ),
-        );
-
-        if (!event) {
-          throw new Error("Event not found for the given QR code.");
+          const response = await updateTicketUsed(qrCode);
+          if (response) {
+            toast.success(response?.message);
+            setScannedResult(response?.message);
+          } else {
+            toast.error("Error updating ticket. Please try again.");
+          }
+        } catch (error) {
+          console.error("Error fetching order by QR code:", error);
+          toast.error("QRCode is invalid ! Please try again.");
+          setScannedResult("Invalid");
         }
-
-        const ticket = event.tickets.find(
-          (ticket: any) => ticket.ticketId.toString() === qrCodeId,
-        );
-
-        if (!ticket) {
-          throw new Error("Ticket not found for the given QR code.");
-        }
-
-        if (ticket.quantity <= 0) {
-          throw new Error("No more tickets left to use");
-        }
-
-        console.log(`Ticket Details: 
-          Event ID: ${event.eventId._id}, 
-          Ticket ID: ${ticket.ticketId._id}, 
-          Remaining Quantity: ${ticket.quantity}`);
-
-        ticket.quantity -= 1;
-
-        // Backend endpoint to update the ticket quantity
-        await axios.post(`/api/orders/update-ticket-quantity/${order._id}`, {
-          eventId: event.eventId._id,
-          ticketId: ticket.ticketId._id,
-          quantity: ticket.quantity,
-        });
-
-        // await order.save();
-        console.log("Done the scanning ngheeeeee");
-
-        alert(
-          `Ticket for event ${event.eventId} used successfully. Remaining quantity: ${ticket.quantity}`,
-        );
-        setScannedResult(detectedCodes);
-      } catch (error: any) {
-        console.error("Error handling QR scan:", error);
-        alert(`Scan failed: ${error.message}`);
-        console.log("hello bug here");
+      } catch (error) {
+        console.error("Error fetching order by QR code:", error);
+        toast.error("QRCode is invalid ! Please try again.");
+        setScannedResult("Invalid");
       }
     } else {
-      console.log("No QR code here!!!!!");
+      toast.error("No QR code detected. Please try again.");
     }
   };
 
@@ -103,7 +62,7 @@ const QrReader = () => {
           container: { width: 600, height: 300, position: "relative" },
           video: { width: 600, height: 600 },
         }}
-        allowMultiple={false}
+        allowMultiple={true}
       />
       {scannedResult && (
         <div>
