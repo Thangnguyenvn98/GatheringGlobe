@@ -29,6 +29,8 @@ import WatchChannelPage from "./components/streaming/[username]/WatchChannelPage
 import CreatorPageWrapper from "./components/streaming/[username]/CreatorPageWrapper";
 import GenerateStreamPage from "./components/streaming/keys/GenerateStreamPage.tsx";
 import BotChat from "./components/chatbot/BotChat.tsx";
+import TicketForm from "./components/TicketForm/TicketForm";
+import Dashboard from "./components/userDashboard/Dashboard";
 
 function App() {
   return (
@@ -67,6 +69,14 @@ function App() {
             element={
               <Layout>
                 <EventForm />
+              </Layout>
+            }
+          />
+          <Route
+            path="/:eventId/tickets"
+            element={
+              <Layout>
+                <TicketForm />
               </Layout>
             }
           />
@@ -169,8 +179,15 @@ function App() {
             </Layout>
           }
         />
+        <Route
+          path="/dashboard/:username"
+          element={
+            <Layout>
+              <Dashboard />
+            </Layout>
+          }
+        />
 
-        <Route path="/booking/:ticketId" element={<EventDetail />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/qr-scanner" element={<QrReader />} />

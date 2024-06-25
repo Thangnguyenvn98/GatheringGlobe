@@ -10,6 +10,7 @@ import { IngressInput } from "@/types/IngressInput";
 import { PaymentIntentResponse } from "@/types/paymentIntentResponse";
 import { Stream } from "@/types/stream";
 import { ApplyDiscountResponse } from "@/types/applyDiscount";
+import { EventFormData } from "@/components/newEventForm/EventForm";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 export const axiosInstance = axios.create({
@@ -206,6 +207,11 @@ export const getBlockUser = async (userId: string) => {
 
 export const signOutUser = async () => {
   const response = await axiosInstance.post("/api/users/logout");
+  return response.data;
+};
+
+export const createEvent = async (data: EventFormData) => {
+  const response = await axiosInstance.post("/api/events", data);
   return response.data;
 };
 
