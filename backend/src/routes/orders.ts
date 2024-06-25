@@ -11,6 +11,7 @@ import createPDF, { OrderData } from "../utils/pdf/PdfDocument";
 import fs from "fs";
 import DiscountApplication from "../models/discountTicketOrder";
 import { OrderDetailsResponse } from "../types/orderDetailsResponse";
+import Discount from "../models/discount";
 
 const stripe = new Stripe(process.env.STRIPE_API_KEY as string);
 
@@ -185,8 +186,7 @@ router.post(
 
       // Send email with QR code
       const transporter = nodemailer.createTransport({
-        host: "smtp.zohocloud.ca",
-        port: 587,
+        service: "outlook",
         auth: {
           user: process.env.USER_EMAIL,
           pass: process.env.USER_PASSWORD,
@@ -313,6 +313,18 @@ router.get("/:id", verifyToken, async (req: Request, res: Response) => {
           discountCode: discount.discountCode,
         })
       );
+      for (const discount of discountedTickets) {
+        const discountObject = await Discount.findOne({
+          code: discount.discountCode,
+          ticketId: discount.ticketId,
+          eventId: discount.eventId,
+        });
+        if (discountObject) {
+          const usedCount = discount.quantity;
+          discountObject.usedCount += usedCount;
+          await discountObject.save();
+        }
+      }
       response = {
         ...response,
         discountedTickets: discountedTickets,
@@ -327,22 +339,12 @@ router.get("/:id", verifyToken, async (req: Request, res: Response) => {
 });
 
 router.get("/", verifyToken, async (req: Request, res: Response) => {
-  const user = await User.findById(req.userId);
-  console.log(user);
-  if (!user) {
-    return res.status(404).json({ message: "User not found." });
-  }
   try {
-    const order = await Order.find({ userId: user });
+    const order = await Order.find({userId: req.userId})
     if (!order) {
-      return res.status(404).json({ message: "Order not found" });
+      return res.status(404).json({ message: "No order found" });
     }
-
-    const response = {
-      order,
-    };
-
-    res.status(200).json(response);
+    res.status(200).json({data: order});
   } catch (error) {
     console.error("Failed to fetch order:", error);
     res.status(500).json({ message: "Internal server error" });
