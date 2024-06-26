@@ -6,6 +6,10 @@ import useCart from "@/hooks/use-cart-store";
 import { Button } from "../ui/button";
 import { useNavigate } from "react-router-dom";
 import { useCurrentUser } from "@/services/queries";
+import sanitizeHtml from "sanitize-html";
+import { format } from "date-fns";
+import { CalendarCheck2, MapPin } from "lucide-react";
+import { UserAvatar } from "../ui/user-avatar";
 
 const EventDetail: React.FC = () => {
   const { eventId } = useParams<{ eventId: string }>();
@@ -126,12 +130,33 @@ const EventDetail: React.FC = () => {
     return <div>No event data found.</div>;
   }
 
+  const sanitizedDescription = sanitizeHtml(eventData?.description, {
+    allowedTags: sanitizeHtml.defaults.allowedTags.concat([
+      "b",
+      "i",
+      "u",
+      "s",
+      "ul",
+      "li",
+      "ol",
+    ]),
+    allowedAttributes: {
+      "*": ["style"],
+      a: ["href", "name", "target"],
+      img: ["src"],
+    },
+    allowedSchemes: ["http", "https", "mailto"],
+  });
+  const eventDate = format(eventData?.startTime, "EEEE, MMM dd");
+
   const minPrice = Math.min(
     ...eventData.tickets.map((ticket: TicketType) => ticket.price),
   ).toFixed(2);
   const maxPrice = Math.max(
     ...eventData.tickets.map((ticket: TicketType) => ticket.price),
   ).toFixed(2);
+
+  const eventLocation = eventData?.location.split(",");
 
   return (
     <div className="event-detail-container  p-5">
@@ -150,29 +175,53 @@ const EventDetail: React.FC = () => {
       </div>
       <div className="event-info-container flex justify-center items-center py-4  md:flex-row ">
         <div className="event-info w-full md:w-3/5 mb-4 md:mb-0">
-          <h1 className="text-4xl font-bold text-black mb-2">
+          <p className="text-gray-600 text-xl">{eventDate}</p>
+
+          <h1 className="text-6xl font-bold text-black mb-2">
             {eventData.title}
           </h1>
-          <p className="text-gray-600 mb-2  ">{eventData.location}</p>
-          <div className="flex items-center gap-4 mb-4">
-            <p className="text-gray-600">{formatDate(eventData.startTime)}</p>
-            <p className="text-gray-600">{formatDate(eventData.endTime)}</p>
-          </div>
-          {/* <div className="mb-4 flex justify-center"> */}
-          <div className="mb-4">
+
+          <div className="mb-4 mt-10">
             <h2 className="text-3xl font-semibold mb-2">Date and time</h2>
-            <p className="text-gray-600 mb-2">
-              {formatDate(eventData.startTime)} -{" "}
+            <div className="text-gray-600 mb-2 flex items-center gap-x-2">
+              <CalendarCheck2 />
+              Starts on {formatDate(eventData.startTime)} -{" "}
               {formatDate(eventData.endTime)}
-            </p>
+            </div>
           </div>
-          <div className="mb-4">
+          <div className="mb-4 mt-14">
             <h2 className="text-3xl font-semibold mb-2">Location</h2>
-            <p className="text-gray-600 mb-2">{eventData.location}</p>
+            <div className="text-gray-600 mb-2 flex items-center gap-x-4">
+              <MapPin fill="black" color="white" className="w-8 h-8" />
+              <div className="flex flex-col">
+                <span className="font-semibold text-black">
+                  {eventLocation[0]}
+                </span>
+                <span> {eventData?.location}</span>
+              </div>
+            </div>
           </div>
-          <div>
+          <div className="mt-14">
             <h2 className="text-3xl font-semibold mb-2">About this event</h2>
-            <p>{eventData.description}</p>
+            <div
+              dangerouslySetInnerHTML={{ __html: sanitizedDescription }}
+            ></div>
+          </div>
+          <div className="mt-14">
+            <h2 className="text-3xl font-semibold mb-2">Organized by</h2>
+            <div className="bg-slate-200 rounded-xl max-w-80 p-4 mt-10">
+              <div className="flex items-center gap-x-4">
+                <UserAvatar
+                  username={eventData?.organizerId?.username}
+                  imageUrl={
+                    eventData?.organizerId?.imageUrl || eventData.imageUrls[0]
+                  }
+                />
+                <h2 className="text-lg font-semibold">
+                  {eventData?.organizerId?.username}
+                </h2>
+              </div>
+            </div>
           </div>
         </div>
         <div className="get-ticket-box sticky top-4 w-full md:w-1/3">

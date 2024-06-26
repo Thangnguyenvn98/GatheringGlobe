@@ -4,6 +4,7 @@ import User from "../models/user";
 import Event, { EventType } from "../models/event"; // this is the model <-------
 import Ticket from "../models/ticket";
 import mongoose from "mongoose";
+import Discount, { DiscountType } from "../models/discount";
 
 const router = express.Router();
 
@@ -152,8 +153,7 @@ router.post(
   verifyToken,
   async (req: Request, res: Response) => {
     const { eventId } = req.params;
-    const tickets = req.body;
-    console.log("Tickets:", tickets);
+    const { tickets } = req.body;
 
     if (!Array.isArray(tickets) || tickets.length === 0) {
       return res.status(400).json({
@@ -167,26 +167,16 @@ router.post(
         return res.status(404).json({ message: "Event not found." });
       }
 
-      const createdTickets = [];
-
       for (const ticketData of tickets) {
-        const {
-          type,
-          price,
-          quantityAvailable,
-          seatNumber,
-        } = ticketData;
+        const { type, price, quantityAvailable, seatNumber, discount } =
+          ticketData;
 
-        if (
-          !type ||
-          price == null ||
-          quantityAvailable  == null
-        ) {
+        if (!type || price == null || quantityAvailable == null) {
           return res
             .status(400)
             .json({ message: "Missing required ticket details." });
         }
-const isFree = price === 0;
+        const isFree = price === 0 || price === 0.0 || price === 0.0;
         const ticket = new Ticket({
           eventId,
           status: "active",
@@ -199,14 +189,44 @@ const isFree = price === 0;
 
         await ticket.save();
         event.tickets.push(ticket._id);
-        createdTickets.push(ticket);
+
+        if (discount) {
+          const {
+            code,
+            discount: amount,
+            type,
+            validUntil,
+            usageLimit,
+          } = discount;
+          if (!code || !amount || !validUntil || !usageLimit) {
+            return res
+              .status(400)
+              .json({ message: "Missing required discount details." });
+          }
+          let discountData: DiscountType = {
+            eventId: new mongoose.Types.ObjectId(event._id),
+            ticketId: ticket._id,
+            code,
+            validUntil,
+            isActive: true,
+            usageLimit,
+            usedCount: 0,
+          };
+          if (type === "percentage") {
+            discountData = { ...discountData, percentage: amount };
+          } else if (type === "number") {
+            discountData = { ...discountData, number: amount };
+          }
+
+          const createdDiscount = new Discount(discountData);
+          await createdDiscount.save();
+        }
       }
 
       await event.save();
 
       return res.status(201).json({
         message: "Tickets created successfully",
-        tickets: createdTickets,
       });
     } catch (error) {
       console.error("Failed to create tickets:", error);
@@ -215,57 +235,80 @@ const isFree = price === 0;
   }
 );
 
-router.delete("/:ticketId/deleteTicket", verifyToken, async (req: Request, res: Response) => {
-  try {
-    const userId = req.userId
-    const ticket = await Ticket.findById(req.query.ticketId)
-    if (!ticket){
-      return res.status(404).send({message: 'Ticket not found'});
+router.delete(
+  "/:ticketId/deleteTicket",
+  verifyToken,
+  async (req: Request, res: Response) => {
+    try {
+      const userId = req.userId;
+      const ticket = await Ticket.findById(req.query.ticketId);
+      if (!ticket) {
+        return res.status(404).send({ message: "Ticket not found" });
+      }
+      const event = await Event.findOneAndUpdate(
+        { _id: ticket.eventId, organizerId: userId },
+        { $pull: { tickets: req.query.ticketId } },
+        { new: true } // Return the updated document
+      );
+      if (!event) {
+        return res.status(404).send({
+          message: "Event of this ticket not found/not created by this user",
+        });
+      }
+      await Ticket.findByIdAndDelete(req.query.ticketId);
+      res
+        .status(200)
+        .json({ message: "Ticket deleted successfully", deleted: ticket });
+    } catch (error) {
+      console.log("Fail to delete ticket", error);
+      res.status(500).send({ message: "Internal server error" });
     }
-    const event = await Event.findOneAndUpdate(
-      { _id: ticket.eventId, organizerId: userId },
-      { $pull: { tickets: req.query.ticketId } },
-      { new: true } // Return the updated document
-    );
-    if (!event) {
-      return res.status(404).send({message: 'Event of this ticket not found/not created by this user'});
-    }
-    await Ticket.findByIdAndDelete(req.query.ticketId)
-    res.status(200).json({message: 'Ticket deleted successfully', deleted: ticket});
-  } catch (error) {
-    console.log("Fail to delete ticket", error)
-    res.status(500).send({message: "Internal server error"});
   }
+);
 
-});
-
-router.patch("/:ticketId/updateTicket", verifyToken, async (req: Request, res: Response) => {
-  try {
-    const userId = req.userId
-    let ticket = await Ticket.findById(req.query.ticketId)
-    if (!ticket){
-      return res.status(404).send({message: 'Ticket not found'});
+router.patch(
+  "/:ticketId/updateTicket",
+  verifyToken,
+  async (req: Request, res: Response) => {
+    try {
+      const userId = req.userId;
+      let ticket = await Ticket.findById(req.query.ticketId);
+      if (!ticket) {
+        return res.status(404).send({ message: "Ticket not found" });
+      }
+      const event = await Event.findOne({
+        _id: ticket.eventId,
+        organizerId: userId,
+      });
+      if (!event) {
+        return res.status(404).send({
+          message: "Event of this ticket not found/not created by this user",
+        });
+      }
+      ticket = await Ticket.findByIdAndUpdate(req.query.ticketId, req.body, {
+        new: true,
+      });
+      res
+        .status(200)
+        .json({ message: "Ticket updated successfully", updated: ticket });
+    } catch (error) {
+      console.log("Fail to update ticket", error);
+      res.status(500).send({ message: "Internal server error" });
     }
-    const event = await Event.findOne(
-      { _id: ticket.eventId, organizerId: userId },
-    );
-    if (!event) {
-      return res.status(404).send({message: 'Event of this ticket not found/not created by this user'});
-    }
-    ticket = await Ticket.findByIdAndUpdate(req.query.ticketId, req.body, {new: true})
-    res.status(200).json({message: 'Ticket updated successfully', updated: ticket});
-  } catch (error) {
-    console.log("Fail to update ticket", error)
-    res.status(500).send({message: "Internal server error"});
   }
-
-});
+);
 
 router.get("/:eventId/details", async (req: Request, res: Response) => {
   try {
     const { eventId } = req.params;
     // Populate the 'tickets' field when fetching the event
-    const event = await Event.findById(eventId).populate("tickets").exec();
+    const event = await Event.findById(eventId)
+      .populate({
+        path: "organizerId",
+        select: "username imageUrl",
+      })
+      .populate("tickets")
+      .exec();
 
     if (!event) {
       return res.status(404).json({ message: "Event not found" });
@@ -453,58 +496,72 @@ router.get("/filter", async (req: Request, res: Response) => {
   }
 });
 
-router.delete("/:eventId/deleteEvent", verifyToken, async (req: Request, res: Response) => {
-  try {
-    const userId = req.userId
-    const event = await Event.findOneAndDelete({
-      $and: [
-        { organizerId: userId },
-        { _id: req.query.eventId }
-      ]
-    })
+router.delete(
+  "/:eventId/deleteEvent",
+  verifyToken,
+  async (req: Request, res: Response) => {
+    try {
+      const userId = req.userId;
+      const event = await Event.findOneAndDelete({
+        $and: [{ organizerId: userId }, { _id: req.query.eventId }],
+      });
 
-    if (!event) {
-      return res.status(404).json({message: 'Event not found/not created by this user'});
+      if (!event) {
+        return res
+          .status(404)
+          .json({ message: "Event not found/not created by this user" });
+      }
+      await Ticket.deleteMany({ eventId: req.query.eventId });
+      res
+        .status(200)
+        .json({ message: "Event deleted successfully", deleted: event });
+    } catch (error) {
+      console.log("Fail to delete event", error);
+      res.status(500).send({ message: "Internal server error" });
     }
-    await Ticket.deleteMany({ eventId: req.query.eventId })
-    res.status(200).json({message: 'Event deleted successfully', deleted: event});
-  } catch (error) {
-    console.log("Fail to delete event", error);
-    res.status(500).send({ message: "Internal server error" });
   }
-});
+);
 
-router.patch("/:eventId/updateEvent", verifyToken, async (req: Request, res: Response) => {
-  try {
-    const event = await Event.findOneAndUpdate(
-      {$and: [
-        { organizerId: req.userId },
-        { _id: req.query.eventId }
-      ]}, 
-      req.body, 
-      { new: true });
+router.patch(
+  "/:eventId/updateEvent",
+  verifyToken,
+  async (req: Request, res: Response) => {
+    try {
+      const event = await Event.findOneAndUpdate(
+        { $and: [{ organizerId: req.userId }, { _id: req.query.eventId }] },
+        req.body,
+        { new: true }
+      );
 
-    if (!event) {
-      return res.status(404).json({message: 'Event not found/not created by this user'});
+      if (!event) {
+        return res
+          .status(404)
+          .json({ message: "Event not found/not created by this user" });
+      }
+      res
+        .status(200)
+        .json({ message: "Event updated successfully", updated: event });
+    } catch (error) {
+      console.error("Failed to update event:", error);
+      res.status(500).json({ message: "Internal server error" });
     }
-    res.status(200).json({message: 'Event updated successfully', updated: event});
-  } catch (error) {
-    console.error("Failed to update event:", error);
-    res.status(500).json({ message: "Internal server error" });
   }
-});
+);
 
 //route to fetch all event created by the given user
 router.get("/fetch", verifyToken, async (req: Request, res: Response) => {
   try {
-    const event = await Event.find(
-        { organizerId: req.userId },
-      );
+    const event = await Event.find({ organizerId: req.userId });
 
     if (!event) {
-      return res.status(404).json({message: 'Event not found/not created by this user'});
+      return res
+        .status(404)
+        .json({ message: "Event not found/not created by this user" });
     }
-    res.status(200).json({message: 'Event created by this user fetched successfully', event: event});
+    res.status(200).json({
+      message: "Event created by this user fetched successfully",
+      event: event,
+    });
   } catch (error) {
     console.error("Failed to fetch event:", error);
     res.status(500).json({ message: "Internal server error" });

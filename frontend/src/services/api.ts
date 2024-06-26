@@ -11,6 +11,7 @@ import { PaymentIntentResponse } from "@/types/paymentIntentResponse";
 import { Stream } from "@/types/stream";
 import { ApplyDiscountResponse } from "@/types/applyDiscount";
 import { EventFormData } from "@/components/newEventForm/EventForm";
+import { TicketFormData } from "@/components/TicketForm/TicketForm";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 export const axiosInstance = axios.create({
@@ -212,6 +213,14 @@ export const signOutUser = async () => {
 
 export const createEvent = async (data: EventFormData) => {
   const response = await axiosInstance.post("/api/events", data);
+  return response.data;
+};
+
+export const createTicket = async (data: TicketFormData, eventId: string) => {
+  const response = await axiosInstance.post(
+    `/api/events/${eventId}/tickets`,
+    data,
+  );
   return response.data;
 };
 

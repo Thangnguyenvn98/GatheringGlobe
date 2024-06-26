@@ -122,7 +122,7 @@ function EventLocation({ name = "", onChange }: EventLocationProps) {
 
   return (
     <div className="relative">
-      <div className="p-0 mx-0 text-[12pt] text-black text-sm font-medium">
+      <div className="p-0 mx-0 my-2  text-[12pt] text-black text-sm font-medium">
         Postal code*
       </div>
       <div className="flex items-center">
@@ -149,13 +149,13 @@ function EventLocation({ name = "", onChange }: EventLocationProps) {
           </ul>
         )}
       </div>
-      <div className="p-0 mx-0 text-[12pt] text-black text-sm font-medium">
+      <div className="p-0 mx-0 my-2 text-[12pt] text-black text-sm font-medium">
         City*
       </div>
       <div className="flex items-center">
         <Input id="city" readOnly value={city} placeholder="Location city" />
       </div>
-      <div className="p-0 mx-0 text-[12pt] text-black text-sm font-medium">
+      <div className="p-0 mx-0 my-2  text-[12pt] text-black text-sm font-medium">
         State/Province*
       </div>
       <div className="flex items-center">
@@ -166,7 +166,7 @@ function EventLocation({ name = "", onChange }: EventLocationProps) {
           placeholder="Location state/province"
         />
       </div>
-      <div className="p-0 mx-0 text-[12pt] text-black text-sm font-medium">
+      <div className="p-0 mx-0  my-2  text-[12pt] text-black text-sm font-medium">
         Country*
       </div>
       <div className="flex items-center">
