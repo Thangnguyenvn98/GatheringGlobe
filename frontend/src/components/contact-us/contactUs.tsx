@@ -99,7 +99,7 @@ const ContactUs = () => {
               service.
             </p>
           </div>
-          <div className="flex flex-col p-4 bg-white rounded-lg gap-y-4 ">
+          <div className="flex flex-col p-4 bg-white rounded-lg gap-y-4 min-w-[600px] ">
             <h2 className="font-bold text-2xl">Contact Us</h2>
             <h2>Please provide your contact information.</h2>
             <div className="flex flex-col mt-6 gap-y-4">

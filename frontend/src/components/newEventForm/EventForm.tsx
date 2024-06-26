@@ -34,6 +34,7 @@ import {
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { createEvent } from "@/services/api";
+import Tiptap from "../tiptap";
 
 const formSchema = z
   .object({
@@ -183,7 +184,7 @@ const EventForm = () => {
       form.reset();
       console.log(event);
       navigate(`/${event._id}/tickets`);
-      toast.success(event.data.message);
+      toast.success("Event created successfully!");
     } catch (error) {
       if (axios.isAxiosError(error)) {
         toast.error(error.response?.data.message || "Something went wrong");
@@ -269,14 +270,14 @@ const EventForm = () => {
                 />
               </div>
 
-              <div className="space-y-1">
+              <div className="space-y-1 w-full">
                 <FormField
                   control={form.control}
                   name="endTime"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>End Time* </FormLabel>
-                      <FormControl>
+                      <FormControl className="w-full">
                         <Input
                           type="datetime-local"
                           value={field.value}
@@ -301,7 +302,11 @@ const EventForm = () => {
                   <FormItem>
                     <FormLabel>Description* </FormLabel>
                     <FormControl>
-                      <Input {...field} />
+                      <Tiptap
+                        description={field.value}
+                        onChange={field.onChange}
+                        width="810px"
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

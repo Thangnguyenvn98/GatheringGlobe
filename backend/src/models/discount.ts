@@ -1,5 +1,17 @@
 import mongoose from "mongoose";
 
+export interface DiscountType {
+  eventId: mongoose.Types.ObjectId;
+  ticketId: mongoose.Types.ObjectId;
+  code: string;
+  percentage?: number;
+  number?: number;
+  validUntil: Date;
+  isActive: boolean;
+  usageLimit: number;
+  usedCount: number;
+}
+
 const discountSchema = new mongoose.Schema({
   eventId: { type: mongoose.Schema.Types.ObjectId, ref: "Event" },
   ticketId: { type: mongoose.Schema.Types.ObjectId, ref: "Ticket" },

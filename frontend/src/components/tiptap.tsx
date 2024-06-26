@@ -7,9 +7,14 @@ import Underline from "@tiptap/extension-underline";
 interface TiptapProps {
   description: string;
   onChange: (value: string) => void;
+  width?: string;
 }
 
-const Tiptap: React.FC<TiptapProps> = ({ description, onChange }) => {
+const Tiptap: React.FC<TiptapProps> = ({
+  description,
+  onChange,
+  width = "400px",
+}) => {
   const editor = useEditor({
     extensions: [
       StarterKit.configure({ heading: false }),
@@ -22,8 +27,8 @@ const Tiptap: React.FC<TiptapProps> = ({ description, onChange }) => {
     content: description,
     editorProps: {
       attributes: {
-        class:
-          "prose [&_ol]:list-decimal [&_ul]:list-disc rounded-md border min-h-[150px] border-input",
+        class: `prose [&_ol]:list-decimal [&_ul]:list-disc rounded-md border min-h-[300px] border-input p-2`,
+        style: `min-width:${width}`,
       },
     },
     onUpdate({ editor }) {
@@ -31,7 +36,7 @@ const Tiptap: React.FC<TiptapProps> = ({ description, onChange }) => {
     },
   });
   return (
-    <div className="flex flex-col justify-stretch min-h-[250px] gap-y-4">
+    <div className="flex flex-col min-h-[250px] gap-y-4 w-full">
       <Toolbar editor={editor} />
       <EditorContent editor={editor} />
     </div>
