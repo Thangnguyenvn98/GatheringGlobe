@@ -40,9 +40,10 @@ function Pageheader() {
       toast.error("Logout failed");
     }
   };
+
   return (
     <>
-      <div className=" navbar-container flex md:hidden left-0 ">
+      <div className="navbar-container flex md:hidden left-0 ">
         <DropdownMenu>
           <DropdownMenuTrigger className="w-full bg-transparent text-green-800">
             <svg
@@ -65,7 +66,7 @@ function Pageheader() {
         </DropdownMenu>
       </div>
 
-      <div className=" navbar-container flex flex-col w-full fixed bg-opacity-100 z-30 p-4 px-10">
+      <div className="navbar-container flex flex-col w-full fixed bg-opacity-100 z-30 p-4 px-10">
         <div className="flex justify-between w-full items-center">
           <div className="relative flex items-center">
             <Link to="/">
@@ -96,6 +97,12 @@ function Pageheader() {
             </Link>
           </div>
           <div className="flex items-center gap-x-4">
+            <Button
+              onClick={() => navigate("/create-new-event")}
+              className="text-lg text-green-800 bg-white hover:bg-gray-100 px-3 py-2 rounded-md"
+            >
+              Create Event
+            </Button>
             <DropdownMenu modal={false}>
               <DropdownMenuTrigger asChild>
                 <Button className="relative" variant={"outline"}>
