@@ -80,10 +80,10 @@ function Pageheader() {
               Discover
             </Link>
             <Link
-              to="/community"
+              to="/community-chat"
               className="text-green-600 hover:text-neutral-800 "
             >
-              Community
+              Chat Room
             </Link>
             <Link to="/about" className="text-green-600 hover:text-neutral-800">
               About Us
