@@ -1,8 +1,7 @@
-/* MainContent.css */
 .center-container {
   display: flex;
-  justify-content: center;
-  align-items: center;
+  justify-content: flex-end; /* Align items to the right */
+  align-items: flex-start; /* Align items to the top */
   flex-direction: column;
   min-height: 100vh;
   padding: 16px;
@@ -12,8 +11,7 @@
 .inner-container {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  margin-left: -80px; /* Adjust this value to move it to the left */
+  align-items: flex-start; /* Keep items aligned to the top */
 }
 
 .event-card-container {

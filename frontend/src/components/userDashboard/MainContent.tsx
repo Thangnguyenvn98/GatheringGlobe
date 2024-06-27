@@ -2,7 +2,6 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import EventCard from "../shared/EventCard";
 import { EventType } from "@/types/event";
-import "./MainContent.css";
 
 interface MainContentProps {
   events: EventType[];
@@ -16,13 +15,13 @@ const MainContent: React.FC<MainContentProps> = ({ events }) => {
   };
 
   return (
-    <div className="center-container">
-      <div className="inner-container">
+    <div className="flex justify-center items-start min-h-screen p-4 w-full">
+      <div className="flex flex-col items-center w-full max-w-2xl">
         {events.length === 0 ? (
           <p>No events found</p>
         ) : (
           events.map((event) => (
-            <div key={event._id} className="event-card-container">
+            <div key={event._id} className="w-full mb-4">
               <EventCard event={event} onClick={() => handleClick(event)} />
             </div>
           ))
