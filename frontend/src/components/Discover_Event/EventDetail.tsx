@@ -173,7 +173,7 @@ const EventDetail: React.FC = () => {
           />
         </div>
       </div>
-      <div className="event-info-container flex justify-center items-center py-4  md:flex-row ">
+      <div className="event-info-container flex justify-center items-start  py-4  md:flex-row ">
         <div className="event-info w-full md:w-3/5 mb-4 md:mb-0">
           <p className="text-gray-600 text-xl">{eventDate}</p>
 
@@ -248,7 +248,7 @@ const EventDetail: React.FC = () => {
               </Button>
             </div>
           ) : (
-            <div className="bg-white p-4 rounded-lg shadow-lg">
+            <div className="add-ticket-box bg-white p-4 rounded-lg shadow-lg">
               <h3 className="text-xl font-bold mb-2">Tickets</h3>
               {eventData.tickets.map((ticket: TicketType) => (
                 <div key={ticket._id} className="mb-1">
