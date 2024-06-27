@@ -1,0 +1,23 @@
+/* MainContent.css */
+.center-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  min-height: 100vh;
+  padding: 16px;
+  width: 100%;
+}
+
+.inner-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-left: -80px; /* Adjust this value to move it to the left */
+}
+
+.event-card-container {
+  width: 100%;
+  max-width: 640px; /* max-width for each EventCard container */
+  margin-bottom: 16px; /* space between cards */
+}

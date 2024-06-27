@@ -2,6 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import EventCard from "../shared/EventCard";
 import { EventType } from "@/types/event";
+import "./MainContent.css"; // Import the CSS file
 
 interface MainContentProps {
   events: EventType[];
@@ -15,18 +16,18 @@ const MainContent: React.FC<MainContentProps> = ({ events }) => {
   };
 
   return (
-    <div>
-      {events.length === 0 ? (
-        <p>No events found</p>
-      ) : (
-        events.map((event) => (
-          <EventCard
-            key={event._id}
-            event={event}
-            onClick={() => handleClick(event)}
-          />
-        ))
-      )}
+    <div className="center-container">
+      <div className="inner-container">
+        {events.length === 0 ? (
+          <p>No events found</p>
+        ) : (
+          events.map((event) => (
+            <div key={event._id} className="event-card-container">
+              <EventCard event={event} onClick={() => handleClick(event)} />
+            </div>
+          ))
+        )}
+      </div>
     </div>
   );
 };
