@@ -62,9 +62,13 @@ const EventCard = ({
           From $
           {Math.min(...event.tickets.map((ticket) => ticket.price)).toFixed(2)}
         </p>
-        {/* <p className="text-base text-gray-700">
-          {truncateDescription(event.description, 18)}
-        </p> */}
+        <div>
+          {event.tickets.map((ticket, index) => (
+            <p key={index}>
+              {ticket.type}: ${ticket.price.toFixed(2)}
+            </p>
+          ))}
+        </div>
       </div>
     </Link>
   );
