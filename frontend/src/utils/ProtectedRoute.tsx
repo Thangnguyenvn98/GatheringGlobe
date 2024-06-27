@@ -8,7 +8,6 @@ const ProtectedRoute: React.FC = () => {
   if (isLoading) {
     return <div>Loading...</div>;
   }
-  console.log(data);
   const isAuthenticated = isSuccess && data && !!data.userId;
 
   return isAuthenticated ? <Outlet /> : <Navigate to="/register" replace />;
