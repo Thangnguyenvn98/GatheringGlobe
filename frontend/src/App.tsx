@@ -31,6 +31,7 @@ import GenerateStreamPage from "./components/streaming/keys/GenerateStreamPage.t
 import BotChat from "./components/chatbot/BotChat.tsx";
 import TicketForm from "./components/TicketForm/TicketForm";
 import Dashboard from "./components/userDashboard/Dashboard";
+import MyOrders from "./components/order/MyOrders.tsx";
 
 function App() {
   return (
@@ -117,6 +118,22 @@ function App() {
               </Layout>
             }
           />
+          <Route
+            path="/dashboard/:username"
+            element={
+              <Layout>
+                <Dashboard />
+              </Layout>
+            }
+          />
+          <Route
+            path="your-account/order-history/:username"
+            element={
+              <Layout backgroundColor="bg-white">
+                <MyOrders />
+              </Layout>
+            }
+          />
         </Route>
 
         <Route path="*" element={<Navigate to="/" />} />
@@ -128,6 +145,7 @@ function App() {
             </Layout>
           }
         />
+
         <Route
           path="/help"
           element={
@@ -176,14 +194,6 @@ function App() {
           element={
             <Layout showChatBot={true}>
               <WatchChannelPage />
-            </Layout>
-          }
-        />
-        <Route
-          path="/dashboard/:username"
-          element={
-            <Layout>
-              <Dashboard />
             </Layout>
           }
         />

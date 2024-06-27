@@ -20,6 +20,7 @@ import {
   getStreamDetails,
   validateToken,
   fetchEventFiltered,
+  getAllUserOrders,
 } from "./api";
 import { useSocket } from "@/components/providers/socket-provider";
 import { CartItem } from "@/hooks/use-cart-store";
@@ -83,6 +84,14 @@ export const useCurrentOrderDetail = (orderId: string) => {
     queryKey: ["order", orderId],
     queryFn: () => getOrderDetailsById(orderId),
     enabled: !!orderId,
+  });
+};
+
+export const useGetAllOrdersPagination = (page = 1) => {
+  return useQuery({
+    queryKey: ["orders", page],
+    queryFn: () => getAllUserOrders(page),
+    placeholderData: keepPreviousData,
   });
 };
 

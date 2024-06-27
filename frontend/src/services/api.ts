@@ -12,6 +12,7 @@ import { Stream } from "@/types/stream";
 import { ApplyDiscountResponse } from "@/types/applyDiscount";
 import { EventFormData } from "@/components/newEventForm/EventForm";
 import { TicketFormData } from "@/components/TicketForm/TicketForm";
+import { AllOrderResponse } from "@/types/AllOrderResponse";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 export const axiosInstance = axios.create({
@@ -233,6 +234,13 @@ export const getOrderDetailsById = async (
   orderId: string,
 ): Promise<OrderDetailsByIdResponse> => {
   const response = await axiosInstance.get(`/api/orders/${orderId}`);
+  return response.data;
+};
+
+export const getAllUserOrders = async (
+  page: number,
+): Promise<AllOrderResponse> => {
+  const response = await axiosInstance.get(`/api/orders?page=${page}`);
   return response.data;
 };
 

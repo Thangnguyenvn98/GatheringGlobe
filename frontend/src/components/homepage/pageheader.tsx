@@ -138,6 +138,13 @@ function Pageheader() {
                         My Events
                       </Link>
                     </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <Link
+                        to={`/your-account/order-history/${userData.username}`}
+                      >
+                        My Orders
+                      </Link>
+                    </DropdownMenuItem>
                   </DropdownMenuGroup>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem

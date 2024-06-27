@@ -8,6 +8,7 @@ import { DiscountedTicket } from "@/types/applyDiscount";
 import { Tag, X } from "lucide-react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const BookingDetailsSummary = ({
   paymentIntentId,
@@ -50,6 +51,10 @@ const BookingDetailsSummary = ({
       setTotalDiscount(updatedTotalDiscount);
       setDiscountCodeInput("");
     } catch (error) {
+      if (axios.isAxiosError(error)) {
+        toast.error(error.response?.data.message);
+      }
+
       console.error("Error applying discount:", error);
     }
   };
@@ -71,6 +76,10 @@ const BookingDetailsSummary = ({
       setTotalDiscount(discountAmount);
       setDiscountCodes(discountCodes.filter((c) => c !== code));
     } catch (error) {
+      if (axios.isAxiosError(error)) {
+        toast.error(error.response?.data.message);
+      }
+
       console.error("Error removing discount:", error);
     }
   };
