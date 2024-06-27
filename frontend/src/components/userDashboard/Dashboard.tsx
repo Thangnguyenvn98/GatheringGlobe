@@ -1,28 +1,53 @@
 import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import SideBar from "./SideBar";
 import MainContent from "./MainContent";
 import { EventType } from "@/types/event";
-// import UserProfile from "../streaming/[username]/UserProfile";
 import { axiosInstance } from "@/services/api";
 
 const Dashboard = () => {
-  // const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [events, setEvents] = useState<EventType[]>([]);
+  const [filteredEvents, setFilteredEvents] = useState<EventType[]>([]);
+  const [searchParams, setSearchParams] = useSearchParams();
 
   useEffect(() => {
     async function fetchData() {
-      const result = await axiosInstance.get("/api/allEvents");
-      console.log(result);
-      setEvents(result.data);
+      try {
+        const result = await axiosInstance.get("/api/allEvents");
+        if (Array.isArray(result.data)) {
+          setEvents(result.data);
+        } else {
+          console.error("API response is not an array:", result.data);
+          setEvents([]);
+        }
+      } catch (error) {
+        console.error("Failed to fetch events:", error);
+        setEvents([]);
+      }
     }
+
     fetchData();
   }, []);
 
+  useEffect(() => {
+    const now = new Date();
+    const category = searchParams.get("category") || "all-events";
+
+    let filtered = events;
+
+    if (category === "past-events") {
+      filtered = events.filter((event) => new Date(event.endTime) < now);
+    } else if (category === "upcoming-events") {
+      filtered = events.filter((event) => new Date(event.startTime) > now);
+    }
+
+    setFilteredEvents(filtered);
+  }, [events, searchParams]);
+
   return (
     <div className="flex">
-      <SideBar />
-      <MainContent events={events} />
-      {/* <UserProfile /> */}
+      <SideBar onSelectCategory={(category) => setSearchParams({ category })} />
+      <MainContent events={filteredEvents} />
     </div>
   );
 };

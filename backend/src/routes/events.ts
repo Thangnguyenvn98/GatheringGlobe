@@ -235,6 +235,7 @@ router.post(
   }
 );
 
+
 router.delete(
   "/:ticketId/deleteTicket",
   verifyToken,
@@ -283,7 +284,7 @@ router.patch(
       if (!event) {
         return res.status(404).send({
           message: "Event of this ticket not found/not created by this user",
-        });
+      });
       }
       ticket = await Ticket.findByIdAndUpdate(req.query.ticketId, req.body, {
         new: true,
