@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import "./EventCard.css";
 import { EventType } from "@/types/event";
 
@@ -9,6 +9,8 @@ const EventCard = ({
   event: EventType | undefined;
   onClick: () => void;
 }) => {
+  const location = useLocation(); // Use useLocation to get the current route
+
   // Ensure event is defined before rendering
   if (!event) {
     return <div>Loading...</div>; // Render a fallback UI while event data is being loaded
@@ -30,14 +32,6 @@ const EventCard = ({
     );
   };
 
-  // const truncateDescription = (description: string, wordLimit: number) => {
-  //   const words = description.split(" ");
-  //   if (words.length > wordLimit) {
-  //     return words.slice(0, wordLimit).join(" ") + "...";
-  //   }
-  //   return description;
-  // };
-
   return (
     <Link
       to={eventLink}
@@ -54,21 +48,27 @@ const EventCard = ({
 
       <div className="flex-1 flex flex-col justify-center pl-4">
         <h1 className="text-xl font-bold text-black">{event.title}</h1>
-        <div className="text-base text-gray-600 ">
+        <div className="text-base text-gray-600">
           <p>{formatDate(event.startTime)}</p>
           <p>{event.location}</p>
         </div>
-        <p className="text-base text-black font-semibold">
-          From $
-          {Math.min(...event.tickets.map((ticket) => ticket.price)).toFixed(2)}
-        </p>
-        <div>
-          {event.tickets.map((ticket, index) => (
-            <p key={index}>
-              {ticket.type}: ${ticket.price.toFixed(2)}
-            </p>
-          ))}
-        </div>
+
+        {location.pathname.includes("/dashboard") ? ( // Check if the path includes '/dashboard'
+          <div className="text-base text-black font-semibold">
+            {event.tickets.map((ticket, index) => (
+              <p key={index}>
+                {ticket.type}: ${ticket.price.toFixed(2)}
+              </p>
+            ))}
+          </div>
+        ) : (
+          <p className="text-base text-black font-semibold">
+            From $
+            {Math.min(...event.tickets.map((ticket) => ticket.price)).toFixed(
+              2,
+            )}
+          </p>
+        )}
       </div>
     </Link>
   );

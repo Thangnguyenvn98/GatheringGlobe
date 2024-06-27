@@ -2,7 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import EventCard from "../shared/EventCard";
 import { EventType } from "@/types/event";
-import "./MainContent.css"; // Import the CSS file
+import "./MainContent.css";
 
 interface MainContentProps {
   events: EventType[];
