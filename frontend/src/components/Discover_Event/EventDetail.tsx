@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useCurrentEventDetail } from "@/services/queries";
 import { TicketType } from "@/types/ticket";
 import useCart from "@/hooks/use-cart-store";
@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { useCurrentUser } from "@/services/queries";
 import sanitizeHtml from "sanitize-html";
 import { format } from "date-fns";
-import { CalendarCheck2, MapPin } from "lucide-react";
+import { CalendarCheck2, FilePenLine, MapPin } from "lucide-react";
 import { UserAvatar } from "../ui/user-avatar";
 
 const EventDetail: React.FC = () => {
@@ -158,6 +158,8 @@ const EventDetail: React.FC = () => {
 
   const eventLocation = eventData?.location.split(",");
 
+  const isAuthor = currentUser?._id === eventData?.organizerId._id;
+
   return (
     <div className="event-detail-container  p-5">
       <div className="relative mb-4">
@@ -201,7 +203,7 @@ const EventDetail: React.FC = () => {
               </div>
             </div>
           </div>
-          <div className="mt-14">
+          <div className="mt-14 max-w-2xl break-words">
             <h2 className="text-3xl font-semibold mb-2">About this event</h2>
             <div
               dangerouslySetInnerHTML={{ __html: sanitizedDescription }}
@@ -225,6 +227,18 @@ const EventDetail: React.FC = () => {
           </div>
         </div>
         <div className="get-ticket-box sticky top-4 w-full md:w-1/3">
+          {isAuthor && (
+            <div className="absolute -top-20">
+              <Link
+                className="flex items-center gap-x-2 p-4 hover:bg-slate-300 rounded-lg bg-white"
+                to={`/my-event/${eventId}/edit/`}
+              >
+                <FilePenLine className="w-8 h-8" />
+                <h2>Edit Event</h2>
+              </Link>
+            </div>
+          )}
+
           {!showTickets ? (
             <div className="bg-white p-4 rounded-lg shadow-lg text-center">
               <div className="flex justify-center items-center mb-2">

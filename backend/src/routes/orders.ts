@@ -148,7 +148,6 @@ router.post(
       const completeOrderData = {
         orderData: {
           _id: orderObject._id.toString(),
-          userId: orderObject.userId.toString(),
           events: orderObject.events.map((event) => ({
             eventId: {
               _id: event.eventId._id.toString(),
@@ -168,17 +167,49 @@ router.post(
             })),
           })),
           totalPrice: orderObject.totalPrice,
-          paymentStatus: orderObject.paymentStatus,
           firstName: orderObject.firstName,
           lastName: orderObject.lastName,
           email: orderObject.email,
-          paymentMethodId: orderObject.paymentMethodId,
-          paymentIntentId: orderObject.paymentIntentId,
           createdAt: orderObject.createdAt,
-          updatedAt: orderObject.updatedAt,
           qrCodes: ticketQRCodeDataList, // Add QR codes list
         },
       };
+
+      const discountApplication = await DiscountApplication.findOne({
+        paymentIntentId: populatedOrder.paymentIntentId,
+      });
+
+      if (discountApplication) {
+        completeOrderData.orderData.events =
+          completeOrderData.orderData.events.map((event) => {
+            return {
+              ...event,
+              tickets: event.tickets.map((ticket) => {
+                // Find the discount for this specific ticket if it exists
+                const discount = discountApplication.discountedTickets.find(
+                  (dt) =>
+                    dt.eventId.toString() === event.eventId._id.toString() &&
+                    dt.ticketId.toString() === ticket.ticketId._id.toString()
+                );
+
+                // If a discount is found, update the ticket price; otherwise, leave it as is
+                if (discount) {
+                  return {
+                    ...ticket,
+                    ticketId: {
+                      ...ticket.ticketId,
+                      originalPrice: discount.originalPrice,
+                      price: discount.newPrice, // updating to the new discounted price
+                      discountCode: discount.discountCode,
+                    },
+                  };
+                } else {
+                  return ticket;
+                }
+              }),
+            };
+          });
+      }
 
       const filePath = `${__dirname}/ticket.pdf`;
 

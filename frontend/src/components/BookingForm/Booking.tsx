@@ -14,6 +14,7 @@ const Booking = () => {
     data: paymentIntentData,
     isError,
     isLoading,
+    error,
   } = usePaymentIntent(cartItems);
 
   if (cartItems.length === 0) {
@@ -41,6 +42,7 @@ const Booking = () => {
   }
 
   if (isError) {
+    console.log("Error loading payment intent", error);
     return (
       <div className="flex flex-col flex-1 justify-center items-center">
         <ServerCrash className="h-7 w-7 text-zinc-500 my-4" />

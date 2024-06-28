@@ -32,6 +32,7 @@ import BotChat from "./components/chatbot/BotChat.tsx";
 import TicketForm from "./components/TicketForm/TicketForm";
 import Dashboard from "./components/userDashboard/Dashboard";
 import MyOrders from "./components/order/MyOrders.tsx";
+import EventEdit from "./components/Discover_Event/EventEdit.tsx";
 
 function App() {
   return (
@@ -131,6 +132,14 @@ function App() {
             element={
               <Layout backgroundColor="bg-white">
                 <MyOrders />
+              </Layout>
+            }
+          />
+          <Route
+            path="my-event/:eventId/edit/"
+            element={
+              <Layout backgroundColor="bg-white">
+                <EventEdit />
               </Layout>
             }
           />
