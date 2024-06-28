@@ -263,10 +263,10 @@ const EventCard = ({
   };
 
   return (
-    <div className="event-card-container flex mb-5 bg-white shadow-md rounded-lg p-4 cursor-pointer hover:shadow-lg transition-shadow duration-300">
+    <div className="event-card-container flex flex-col mb-5 bg-white shadow-md rounded-lg p-4 cursor-pointer hover:shadow-lg transition-shadow duration-300">
       <div className="flex w-full">
-        <Link to={eventLink} className="flex w-full" onClick={onClick}>
-          <div className="w-1/4">
+        <Link to={eventLink} className="flex w-full">
+          <div onClick={onClick} className="w-[200px] h-[200px] relative">
             <img
               src={event.imageUrls[0]} // Assuming the first URL is the primary image
               alt={event.title}
