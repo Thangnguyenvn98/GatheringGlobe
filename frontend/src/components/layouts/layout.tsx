@@ -19,7 +19,7 @@ const Layout = ({
   return (
     //wrap this around so that everything inside have access to the api
     <APIProvider apiKey={apikey}>
-      <div>
+      <>
         <Map
           defaultZoom={3}
           defaultCenter={{ lat: 22.54992, lng: 0 }}
@@ -29,13 +29,18 @@ const Layout = ({
         />
         <div className="flex flex-col min-h-screen">
           <Pageheader />
-          <div className={cn("flex-1 mt-[184px]", backgroundColor)}>
+          <div
+            className={cn(
+              "flex-1 mt-[184px] overflow-visible",
+              backgroundColor,
+            )}
+          >
             {children}
           </div>
           <Footer />
         </div>
         {showChatBot && <BotChat />}
-      </div>
+      </>
     </APIProvider>
   );
 };
