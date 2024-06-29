@@ -41,6 +41,8 @@ const orderSchema = new mongoose.Schema(
               ref: "Ticket",
               required: true,
             },
+            originalPrice: { type: Number, required: false },
+            newPrice: { type: Number, required: false },
             quantity: { type: Number, required: true },
             ticketUsed: {
               type: [Number],

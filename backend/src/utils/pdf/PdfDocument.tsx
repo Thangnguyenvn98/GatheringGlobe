@@ -27,6 +27,8 @@ export type OrderData = {
         _id: string;
         type: string;
         price: number;
+        originalPrice: number;
+        newPrice: number;
       };
       quantity: number;
     }[];
@@ -128,7 +130,7 @@ const styles = StyleSheet.create({
 });
 
 const PDF = ({ orderData }: PDFProps) => {
-  console.log(orderData);
+  console.log("This is the orderData", orderData);
   return (
     <Document>
       {/* {map here} */}
@@ -177,6 +179,12 @@ const PDF = ({ orderData }: PDFProps) => {
                     <Text style={styles.label}>
                       {ticket.ticketId.type} - ${ticket.ticketId.price}
                     </Text>
+                    <Text>
+                      Original Price: ${ticket.ticketId.originalPrice}
+                    </Text>
+                    <div className="mt-10">
+                      <Text>New Price: ${ticket.ticketId.newPrice}</Text>
+                    </div>
                   </div>
 
                   <Image

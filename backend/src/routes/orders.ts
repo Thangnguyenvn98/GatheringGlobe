@@ -174,6 +174,8 @@ router.post(
                 _id: ticket.ticketId._id.toString(),
                 type: ticket.ticketId.type,
                 price: ticket.ticketId.price,
+                originalPrice: 0,
+                newPrice: 0,
               },
               quantity: ticket.quantity,
             })),
