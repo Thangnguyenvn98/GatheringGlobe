@@ -27,6 +27,10 @@ export type OrderDetailsByIdResponse = {
         startTime: string;
         endTime: string;
         imageUrls: string[];
+        organizerId: {
+          username: string;
+          email: string;
+        };
       };
       tickets: Array<{
         ticketId: {

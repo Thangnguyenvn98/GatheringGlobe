@@ -3,8 +3,8 @@ export interface TicketType {
   eventId: string;
   seatNumber?: string;
   price: number;
-  status: string;
   quantityAvailable: number;
+  status: string;
   type: string;
   isFree: boolean;
 }

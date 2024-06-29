@@ -22,7 +22,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import toast from "react-hot-toast";
-import EventLocation from "./eventloc";
+import EventLocation from "../newEventForm/eventloc";
 import ImageUpload from "../chatRoom/ImageUpload";
 import {
   Select,
@@ -85,7 +85,7 @@ const formSchema = z
 
 export type EventFormData = z.infer<typeof formSchema>;
 
-const EventForm = () => {
+const EventEdit = () => {
   const navigate = useNavigate();
   const categoriesList = [
     "Music",
@@ -454,4 +454,4 @@ const EventForm = () => {
   );
 };
 
-export default EventForm;
+export default EventEdit;

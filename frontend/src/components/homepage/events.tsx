@@ -45,11 +45,14 @@ function Events() {
         style={{ transform: `translate3d(${-index * 100}%, 0, 0)` }}
       >
         {images.map((image, index) => (
-          <div key={index} className="w-full inline-block h-[700px] relative">
+          <div
+            key={index}
+            className="w-full inline-block 2xl:h-[700px] md:h-[300px] relative"
+          >
             <img
               src={image}
               alt="event"
-              className="w-full h-[700px] object-cover"
+              className="w-full 2xl:h-[700px] md:h-[300px] object-fill"
             />
           </div>
         ))}

@@ -159,7 +159,6 @@ router.post(
       const completeOrderData = {
         orderData: {
           _id: orderObject._id.toString(),
-          userId: orderObject.userId.toString(),
           events: orderObject.events.map((event) => ({
             eventId: {
               _id: event.eventId._id.toString(),
@@ -181,17 +180,49 @@ router.post(
             })),
           })),
           totalPrice: orderObject.totalPrice,
-          paymentStatus: orderObject.paymentStatus,
           firstName: orderObject.firstName,
           lastName: orderObject.lastName,
           email: orderObject.email,
-          paymentMethodId: orderObject.paymentMethodId,
-          paymentIntentId: orderObject.paymentIntentId,
           createdAt: orderObject.createdAt,
-          updatedAt: orderObject.updatedAt,
           qrCodes: ticketQRCodeDataList, // Add QR codes list
         },
       };
+
+      // const discountApplication = await DiscountApplication.findOne({
+      //   paymentIntentId: populatedOrder.paymentIntentId,
+      // });
+
+      if (discountApplication) {
+        completeOrderData.orderData.events =
+          completeOrderData.orderData.events.map((event) => {
+            return {
+              ...event,
+              tickets: event.tickets.map((ticket) => {
+                // Find the discount for this specific ticket if it exists
+                const discount = discountApplication.discountedTickets.find(
+                  (dt) =>
+                    dt.eventId.toString() === event.eventId._id.toString() &&
+                    dt.ticketId.toString() === ticket.ticketId._id.toString()
+                );
+
+                // If a discount is found, update the ticket price; otherwise, leave it as is
+                if (discount) {
+                  return {
+                    ...ticket,
+                    ticketId: {
+                      ...ticket.ticketId,
+                      originalPrice: discount.originalPrice,
+                      price: discount.newPrice, // updating to the new discounted price
+                      discountCode: discount.discountCode,
+                    },
+                  };
+                } else {
+                  return ticket;
+                }
+              }),
+            };
+          });
+      }
 
       const filePath = `${__dirname}/ticket.pdf`;
 
@@ -199,9 +230,7 @@ router.post(
 
       // Send email with QR code
       const transporter = nodemailer.createTransport({
-        // host: "smtp.zohocloud.ca",
         service: "outlook",
-        port: 587,
         auth: {
           user: process.env.USER_EMAIL,
           pass: process.env.USER_PASSWORD,
@@ -258,7 +287,12 @@ router.get("/:id", verifyToken, async (req: Request, res: Response) => {
       .populate({
         path: "events.eventId",
         model: "Event",
-        select: "title imageUrls location startTime endTime", // Fields we want to populate to get
+        select: "title imageUrls startTime endTime organizerID",
+        populate: {
+          path: "organizerId",
+          model: "User",
+          select: "username email",
+        },
       })
       .populate({
         path: "events.tickets.ticketId",
@@ -353,22 +387,43 @@ router.get("/:id", verifyToken, async (req: Request, res: Response) => {
 });
 
 router.get("/", verifyToken, async (req: Request, res: Response) => {
-  const user = await User.findById(req.userId);
-  console.log(user);
-  if (!user) {
-    return res.status(404).json({ message: "User not found." });
-  }
   try {
-    const order = await Order.find({ userId: user });
-    if (!order) {
-      return res.status(404).json({ message: "Order not found" });
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+    const skip = (page - 1) * limit;
+    const totalOrders = await Order.countDocuments({ userId: req.userId });
+
+    const orders = await Order.find({ userId: req.userId })
+      .sort({ createdAt: -1 })
+      .select("-paymentIntentId -paymentMethodId -updatedAt -__v")
+      .skip(skip)
+      .limit(limit)
+      .populate({
+        path: "events.eventId",
+        model: "Event",
+        select: "title imageUrls startTime", // Fields we want to populate to get
+      })
+      .populate({
+        path: "events.tickets.ticketId",
+        model: "Ticket",
+        select: "type ",
+      })
+      .exec();
+
+    if (!orders || orders.length === 0) {
+      return res.status(404).json({ message: "No orders found" });
     }
+    const totalPages = Math.ceil(totalOrders / limit);
 
-    const response = {
-      order,
-    };
-
-    res.status(200).json(response);
+    res.status(200).json({
+      pagination: {
+        totalOrders,
+        page,
+        totalPages,
+        limit,
+      },
+      orders,
+    });
   } catch (error) {
     console.error("Failed to fetch order:", error);
     res.status(500).json({ message: "Internal server error" });

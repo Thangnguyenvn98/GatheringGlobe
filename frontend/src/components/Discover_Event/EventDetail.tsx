@@ -1,15 +1,18 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useCurrentEventDetail } from "@/services/queries";
 import { TicketType } from "@/types/ticket";
 import useCart from "@/hooks/use-cart-store";
 import { Button } from "../ui/button";
 import { useNavigate } from "react-router-dom";
 import { useCurrentUser } from "@/services/queries";
+import sanitizeHtml from "sanitize-html";
+import { format } from "date-fns";
+import { CalendarCheck2, FilePenLine, MapPin } from "lucide-react";
+import { UserAvatar } from "../ui/user-avatar";
 
 const EventDetail: React.FC = () => {
   const { eventId } = useParams<{ eventId: string }>();
-  useParams<{ eventId: string }>();
   const navigate = useNavigate();
   const { data: currentUser } = useCurrentUser();
   const {
@@ -23,6 +26,7 @@ const EventDetail: React.FC = () => {
     [key: string]: number;
   }>({});
   const [totalCost, setTotalCost] = useState<number>(0);
+  const [showTickets, setShowTickets] = useState<boolean>(false);
 
   useEffect(() => {
     if (eventData && eventData.tickets) {
@@ -53,7 +57,7 @@ const EventDetail: React.FC = () => {
         total += (quantities[ticket._id] || 0) * ticket.price;
       });
     }
-    setTotalCost(total);
+    setTotalCost(Number(total.toFixed(2)));
   };
 
   const handleAddToCart = () => {
@@ -100,6 +104,20 @@ const EventDetail: React.FC = () => {
     console.log("Checkout");
   };
 
+  const formatDate = (dateString: string) => {
+    const options: Intl.DateTimeFormatOptions = {
+      weekday: "short",
+      month: "short",
+      day: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+      hour12: true,
+    };
+    return new Intl.DateTimeFormat("en-US", options).format(
+      new Date(dateString),
+    );
+  };
+
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -112,95 +130,203 @@ const EventDetail: React.FC = () => {
     return <div>No event data found.</div>;
   }
 
+  const sanitizedDescription = sanitizeHtml(eventData?.description, {
+    allowedTags: sanitizeHtml.defaults.allowedTags.concat([
+      "b",
+      "i",
+      "u",
+      "s",
+      "ul",
+      "li",
+      "ol",
+    ]),
+    allowedAttributes: {
+      "*": ["style"],
+      a: ["href", "name", "target"],
+      img: ["src"],
+    },
+    allowedSchemes: ["http", "https", "mailto"],
+  });
+  const eventDate = format(eventData?.startTime, "EEEE, MMM dd");
+
+  const minPrice = Math.min(
+    ...eventData.tickets.map((ticket: TicketType) => ticket.price),
+  ).toFixed(2);
+  const maxPrice = Math.max(
+    ...eventData.tickets.map((ticket: TicketType) => ticket.price),
+  ).toFixed(2);
+
+  const eventLocation = eventData?.location.split(",");
+
+  const isAuthor = currentUser?._id === eventData?.organizerId._id;
+
   return (
-    <div className="flex flex-col md:flex-row p-6">
-      <div className="flex-1">
-        <img
-          src={eventData.imageUrls[0]}
-          alt={eventData.title}
-          className="rounded-lg mb-4"
-        />
-        <h1 className="text-2xl font-bold mb-2">{eventData.title}</h1>
-        <p className="text-gray-600 mb-2">{eventData.location}</p>
-        <p className="text-gray-600 mb-2">
-          {new Date(eventData.startTime).toLocaleString()}
-        </p>
-        <p className="text-gray-600 mb-2">
-          {new Date(eventData.endTime).toLocaleString()}
-        </p>
-        <div className="mb-4">
-          {eventData.categories?.map((tag: string) => (
-            <span
-              key={tag}
-              className="inline-block bg-blue-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2"
-            >
-              {tag}
-            </span>
-          ))}
+    <div className="event-detail-container  p-5">
+      <div className="relative mb-4">
+        <div
+          className="absolute inset-0 bg-cover bg-center flex flex-col justify-center items-center filter blur-xl rounded-lg"
+          style={{ backgroundImage: `url(${eventData.imageUrls[0]})` }}
+        ></div>
+        <div className="event-image-container flex justify-center items-center relative">
+          <img
+            src={eventData.imageUrls[0]}
+            alt={eventData.title}
+            className="event-image rounded-lg mb-4"
+          />
         </div>
-        <h2 className="text-xl font-semibold mb-2">About this event</h2>
-        <p>{eventData.description}</p>
       </div>
-      <div className="flex-1">
-        <div className="bg-gray-100 p-6 rounded-lg shadow-lg">
-          <h3 className="text-lg font-semibold mb-2">Tickets</h3>
-          {eventData.tickets.map((ticket: TicketType) => (
-            <div key={ticket._id} className="mb-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center">
-                  <span>{ticket.type} - </span>
-                  <span className={`${ticket.price === 0 ? "font-bold" : ""}`}>
-                    {ticket.price === 0 ? "Free" : `$${ticket.price}`}
-                  </span>
+      <div className="event-info-container flex justify-center items-center py-4  md:flex-row ">
+        <div className="event-info w-full md:w-3/5 mb-4 md:mb-0">
+          <p className="text-gray-600 text-xl">{eventDate}</p>
+
+          <h1 className="text-6xl font-bold text-black mb-2">
+            {eventData.title}
+          </h1>
+
+          <div className="mb-4 mt-10">
+            <h2 className="text-3xl font-semibold mb-2">Date and time</h2>
+            <div className="text-gray-600 mb-2 flex items-center gap-x-2">
+              <CalendarCheck2 />
+              Starts on {formatDate(eventData.startTime)} -{" "}
+              {formatDate(eventData.endTime)}
+            </div>
+          </div>
+          <div className="mb-4 mt-14">
+            <h2 className="text-3xl font-semibold mb-2">Location</h2>
+            <div className="text-gray-600 mb-2 flex items-center gap-x-4">
+              <MapPin fill="black" color="white" className="w-8 h-8" />
+              <div className="flex flex-col">
+                <span className="font-semibold text-black">
+                  {eventLocation[0]}
+                </span>
+                <span> {eventData?.location}</span>
+              </div>
+            </div>
+          </div>
+          <div className="mt-14 max-w-2xl break-words">
+            <h2 className="text-3xl font-semibold mb-2">About this event</h2>
+            <div
+              dangerouslySetInnerHTML={{ __html: sanitizedDescription }}
+            ></div>
+          </div>
+          <div className="mt-14">
+            <h2 className="text-3xl font-semibold mb-2">Organized by</h2>
+            <div className="bg-slate-200 rounded-xl max-w-80 p-4 mt-10">
+              <div className="flex items-center gap-x-4">
+                <UserAvatar
+                  username={eventData?.organizerId?.username}
+                  imageUrl={
+                    eventData?.organizerId?.imageUrl || eventData.imageUrls[0]
+                  }
+                />
+                <h2 className="text-lg font-semibold">
+                  {eventData?.organizerId?.username}
+                </h2>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="get-ticket-box sticky top-4 w-full md:w-1/3">
+          {isAuthor && (
+            <div className="absolute -top-20">
+              <Link
+                className="flex items-center gap-x-2 p-4 hover:bg-slate-300 rounded-lg bg-white"
+                to={`/my-event/${eventId}/edit/`}
+              >
+                <FilePenLine className="w-8 h-8" />
+                <h2>Edit Event</h2>
+              </Link>
+            </div>
+          )}
+
+          {!showTickets ? (
+            <div className="bg-white p-4 rounded-lg shadow-lg text-center">
+              <div className="flex justify-center items-center mb-2">
+                <span className="text-xs font-bold text-gray-600 bg-orange-200 rounded-full px-2 py-1 mr-2">
+                  Early bird discount
+                </span>
+                <span className="text-xs font-bold text-gray-600 bg-orange-200 rounded-full px-2 py-1">
+                  Discount applied
+                </span>
+              </div>
+              <p className="text-2xl font-bold mb-2">
+                {minPrice === maxPrice
+                  ? `$${minPrice}`
+                  : `$${minPrice} - $${maxPrice}`}
+              </p>
+              <Button
+                className="bg-orange-500 text-white px-4 py-2 rounded-lg"
+                onClick={() => setShowTickets(true)}
+              >
+                Get tickets
+              </Button>
+            </div>
+          ) : (
+            <div className="bg-white p-4 rounded-lg shadow-lg">
+              <h3 className="text-xl font-bold mb-2">Tickets</h3>
+              {eventData.tickets.map((ticket: TicketType) => (
+                <div key={ticket._id} className="mb-1">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center">
+                      <span className="mr-2">{ticket.type}</span>
+                      <span
+                        className={`${ticket.price === 0 ? "font-bold" : ""}`}
+                      >
+                        {ticket.price === 0
+                          ? "Free"
+                          : `$${Number(ticket.price).toFixed(2)}`}
+                      </span>
+                    </div>
+                    <div className="flex items-center">
+                      <Button
+                        variant={"outline"}
+                        onClick={() => handleTicketAmountChange(ticket._id, -1)}
+                        className="text-gray-500 focus:outline-none focus:bg-gray-300 p-2 rounded-l-md"
+                        disabled={ticketQuantities[ticket._id] <= 0}
+                        aria-label="Decrease ticket amount"
+                      >
+                        -
+                      </Button>
+                      <span className="bg-white text-black mx-2 p-2 w-8 text-center">
+                        {ticketQuantities[ticket._id]}
+                      </span>
+                      <Button
+                        variant={"outline"}
+                        onClick={() => handleTicketAmountChange(ticket._id, 1)}
+                        className="text-gray-500 focus:outline-none focus:bg-gray-300 p-2 rounded-r-md"
+                        aria-label="Increase ticket amount"
+                      >
+                        +
+                      </Button>
+                    </div>
+                  </div>
                 </div>
-                <div className="flex items-center">
+              ))}
+              <div className="flex justify-between items-center mt-4">
+                <span className="text-gray-800 font-bold">
+                  Total:{" "}
+                  {new Intl.NumberFormat("en-US", {
+                    style: "currency",
+                    currency: "USD",
+                  }).format(totalCost)}
+                </span>
+                <div>
                   <Button
-                    variant={"outline"}
-                    onClick={() => handleTicketAmountChange(ticket._id, -1)}
-                    className="text-gray-500 focus:outline-none focus:bg-gray-300 p-2 rounded-l-md"
-                    disabled={ticketQuantities[ticket._id] <= 0}
-                    aria-label="Decrease ticket amount"
+                    onClick={handleAddToCart}
+                    className="bg-orange-500 text-white px-3 py-1 rounded-lg mr-1"
                   >
-                    -
+                    Add to Cart
                   </Button>
-                  <span className=" bg-white text-black mx-2 p-2 w-8 text-center">
-                    {ticketQuantities[ticket._id]}
-                  </span>
                   <Button
-                    variant={"outline"}
-                    onClick={() => handleTicketAmountChange(ticket._id, 1)}
-                    className="text-gray-500 focus:outline-none focus:bg-gray-300 p-2 rounded-r-md"
-                    aria-label="Increase ticket amount"
+                    onClick={() => handleCheckout()}
+                    className="bg-green-500 text-white px-3 py-1 rounded-lg"
                   >
-                    +
+                    Check Out Now
                   </Button>
                 </div>
               </div>
             </div>
-          ))}
-          <div className="flex justify-between items-center mt-4">
-            <span className="text-gray-800 font-bold">
-              Total:{" "}
-              {new Intl.NumberFormat("en-US", {
-                style: "currency",
-                currency: "USD",
-              }).format(totalCost)}
-            </span>
-            <div>
-              <Button
-                onClick={handleAddToCart}
-                className="bg-orange-500 text-white px-4 py-2 rounded-lg mr-2"
-              >
-                Add to Cart
-              </Button>
-              <Button
-                onClick={() => handleCheckout()}
-                className="bg-green-500 text-white px-4 py-2 rounded-lg"
-              >
-                Check Out Now
-              </Button>
-            </div>
-          </div>
+          )}
         </div>
       </div>
     </div>

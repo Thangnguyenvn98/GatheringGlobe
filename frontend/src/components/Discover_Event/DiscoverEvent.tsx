@@ -1,17 +1,15 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import EventList from "./EventList";
 import FilterSection from "./FilterSection";
 import { useFilterParams } from "@/services/queries";
-import { useRef, useState } from "react";
 import EventPaginationButton from "../homepage/homepageEventPagination";
 import { useSearchParams } from "react-router-dom";
 import queryString from "query-string";
 import SearchMap from "./SearchMap";
+
 const DiscoverEvent: React.FC = () => {
   let [searchParams, setSearchParams] = useSearchParams();
-  const [page, setPage] = useState(
-    searchParams.get("page") ? searchParams.get("page") : "1",
-  );
+  const [page, setPage] = useState(searchParams.get("page") || "1");
 
   const allSearchParams = queryString.stringify(
     Object.fromEntries(searchParams),
@@ -27,40 +25,36 @@ const DiscoverEvent: React.FC = () => {
     searchParams.set("page", String(newPage));
     setSearchParams(searchParams);
 
-    useEffect(() => {
-      console.log("page in search params change");
-      setPage(searchParams.get("page") ? searchParams.get("page") : "1");
-    }, [searchParams]);
-
     if (topOfListRef.current) {
       const yOffset = -200;
       const y =
         topOfListRef.current.getBoundingClientRect().top +
         window.scrollY +
         yOffset;
-
       window.scrollTo({ top: y, behavior: "smooth" });
     }
   };
 
+  useEffect(() => {
+    setPage(searchParams.get("page") || "1");
+  }, [searchParams]);
+
   return (
-    <div className="">
+    <div>
       <div className="grid grid-cols-6 ps-8 pt-8">
         <FilterSection />
         <div className="col-span-4 lg:col-span-3">
           <div className="flex flex-col mb-2">
-            <div>
-              <EventList
-                isPending={isPending}
-                isError={isError}
-                eventdatas={data?.eventMatched}
-                topOfListRef={topOfListRef}
-              />
-            </div>
+            <EventList
+              isPending={isPending}
+              isError={isError}
+              eventdatas={data?.eventMatched || []}
+              topOfListRef={topOfListRef}
+            />
             <EventPaginationButton
-              currentPage={parseInt(String(page))}
+              currentPage={parseInt(page)}
               onPageChange={handlePageChange}
-              totalPages={data?.pagination?.totalPages}
+              totalPages={data?.pagination?.totalPages || 1}
               isPlaceholderData={isPlaceholderData}
             />
           </div>
