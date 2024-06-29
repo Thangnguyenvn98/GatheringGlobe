@@ -39,6 +39,7 @@ export type OrderDetailsByIdResponse = {
           type: string;
         };
         quantity: number;
+        ticketUsed?: number[];
         _id: string;
       }>;
     }>;

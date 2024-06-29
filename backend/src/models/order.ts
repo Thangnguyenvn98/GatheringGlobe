@@ -8,6 +8,7 @@ export type OrderType = {
     tickets: {
       ticketId: mongoose.Types.ObjectId;
       quantity: number;
+      ticketUsed: number[];
     }[];
   }[];
   totalPrice: number;
@@ -40,7 +41,13 @@ const orderSchema = new mongoose.Schema(
               ref: "Ticket",
               required: true,
             },
+            originalPrice: { type: Number, required: false },
+            newPrice: { type: Number, required: false },
             quantity: { type: Number, required: true },
+            ticketUsed: {
+              type: [Number],
+              default: [],
+            },
           },
         ],
       },

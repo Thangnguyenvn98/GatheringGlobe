@@ -10,6 +10,7 @@ import { IngressInput } from "@/types/IngressInput";
 import { PaymentIntentResponse } from "@/types/paymentIntentResponse";
 import { Stream } from "@/types/stream";
 import { ApplyDiscountResponse } from "@/types/applyDiscount";
+import { QrCode } from "@/components/QrCode/QrReader";
 import { EventFormData } from "@/components/newEventForm/EventForm";
 import { TicketFormData } from "@/components/TicketForm/TicketForm";
 import { AllOrderResponse } from "@/types/AllOrderResponse";
@@ -305,6 +306,26 @@ export const resetPassword = async (
 
 export const fetchEventFiltered = async (params: any) => {
   const response = await axiosInstance.get(`/api/events/filter/?${params}`);
+  return response.data;
+};
+
+export const getEventsCreatedByUser = async () => {
+  const response = await axiosInstance.get("/api/events/fetch");
+  return response.data;
+};
+
+export const getOrderByQrCode = async (qrCodeId: string, eventId: string) => {
+  const response = await axiosInstance.get(
+    `/api/orders/order-by-qr/${qrCodeId}/event/${eventId}`,
+  );
+  return response.data;
+};
+
+export const updateTicketUsed = async (qrCode: QrCode) => {
+  const response = await axiosInstance.post(
+    `/api/orders/update-ticket-used`,
+    qrCode,
+  );
   return response.data;
 };
 

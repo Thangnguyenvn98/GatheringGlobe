@@ -44,6 +44,7 @@ interface PDFProps {
 }
 
 export type QRCode = {
+  index: number;
   eventId: string;
   ticketId: string;
   qrCodeBase64: string;
@@ -112,7 +113,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     width: 100,
     height: 100,
-    marginLeft: 80,
+    marginLeft: 0,
   },
   ticketImage: {
     marginTop: 20,
@@ -138,7 +139,7 @@ const PDF = ({ orderData }: PDFProps) => {
                 key={`${event.eventId._id}-${ticket.ticketId._id}-${index}`}
               >
                 <View style={styles.header}>
-                  <Text>{event.eventId.title} • </Text>
+                  <Text>{event.eventId.title}</Text>
                   <Text style={styles.ticketNo}>{orderData._id}</Text>
                 </View>
 
@@ -190,7 +191,8 @@ const PDF = ({ orderData }: PDFProps) => {
                       orderData.qrCodes.find(
                         (qrCode) =>
                           qrCode.eventId === event.eventId._id &&
-                          qrCode.ticketId === ticket.ticketId._id
+                          qrCode.ticketId === ticket.ticketId._id &&
+                          qrCode.index === index + 1
                       )?.qrCodeBase64 || ""
                     }
                   />
@@ -212,6 +214,7 @@ const PDF = ({ orderData }: PDFProps) => {
                     REFUNDS.
                   </Text>
                 </View>
+
                 {event.eventId.imageUrls[0] && (
                   <Image
                     style={styles.ticketImage}
