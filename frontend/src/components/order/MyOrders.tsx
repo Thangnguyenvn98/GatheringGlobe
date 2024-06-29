@@ -1,6 +1,6 @@
 import { useGetAllOrdersPagination } from "@/services/queries";
 import { format } from "date-fns";
-import { Loader2, ServerCrash } from "lucide-react";
+import { Frown, Loader2, ServerCrash } from "lucide-react";
 import { Button } from "../ui/button";
 import { Link } from "react-router-dom";
 import { useState } from "react";
@@ -19,7 +19,7 @@ const MyOrders = () => {
 
   if (isLoading) {
     return (
-      <div className="flex flex-col flex-1 justify-center items-center">
+      <div className="flex flex-col flex-1 justify-center items-center min-h-[500px]">
         <Loader2 className="h-7 w-7 text-zinc-500 animate-spin my-4" />
         <p className="text-xs text-zinc-500 dark:text-zinc-400">
           Loading Your Orders
@@ -30,11 +30,14 @@ const MyOrders = () => {
 
   if (isError) {
     return (
-      <div className="flex flex-col flex-1 justify-center items-center">
+      <div className="flex flex-col flex-1 justify-center items-center min-h-[500px]">
         <ServerCrash className="h-7 w-7 text-zinc-500 my-4" />
-        <p className="text-xs text-zinc-500 dark:text-zinc-400">
-          Something went wrong!
-        </p>
+        <div className="flex items-center gap-x-2">
+          <p className="text-2xl text-zinc-500 dark:text-zinc-400">
+            Look like you have no orders yet
+          </p>
+          <Frown color="red" className="h-8 w-8" />
+        </div>
       </div>
     );
   }
