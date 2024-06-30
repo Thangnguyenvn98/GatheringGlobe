@@ -14,7 +14,7 @@ export interface QrCode {
 
 const QrReader = () => {
   const [scannedResult, setScannedResult] = useState<string>(""); // State for scanned QR result
-  const [checkBox, setCheckBox] = useState<boolean>(false);
+  const [checkBox] = useState<boolean>(false);
 
   // Function to handle successful QR scan
   const onScanSuccess = async (detectedCodes: IDetectedBarcode[]) => {
