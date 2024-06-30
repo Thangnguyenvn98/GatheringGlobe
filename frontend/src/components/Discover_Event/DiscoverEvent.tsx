@@ -5,7 +5,7 @@ import { useFilterParams } from "@/services/queries";
 import EventPaginationButton from "../homepage/homepageEventPagination";
 import { useSearchParams } from "react-router-dom";
 import queryString from "query-string";
-import SearchMap from "./SearchMap";
+// import SearchMap from "./SearchMap";
 
 const DiscoverEvent: React.FC = () => {
   let [searchParams, setSearchParams] = useSearchParams();
@@ -59,9 +59,9 @@ const DiscoverEvent: React.FC = () => {
             />
           </div>
         </div>
-        <div className="hidden lg:flex">
+        {/* <div className="hidden lg:flex">
           <SearchMap />
-        </div>
+        </div> */}
       </div>
     </div>
   );
