@@ -3,6 +3,7 @@ import { Scanner } from "@yudiel/react-qr-scanner";
 import { IDetectedBarcode } from "@yudiel/react-qr-scanner";
 import toast from "react-hot-toast";
 import { getOrderByQrCode, updateTicketUsed } from "@/services/api";
+import { Box, XCircle } from "lucide-react";
 
 export interface QrCode {
   orderId: string;
@@ -13,6 +14,7 @@ export interface QrCode {
 
 const QrReader = () => {
   const [scannedResult, setScannedResult] = useState<string>(""); // State for scanned QR result
+  const [checkBox, setCheckBox] = useState<boolean>(false);
 
   // Function to handle successful QR scan
   const onScanSuccess = async (detectedCodes: IDetectedBarcode[]) => {
@@ -53,28 +55,54 @@ const QrReader = () => {
       toast.error("No QR code detected. Please try again.");
     }
   };
+  const handleCheckBoxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setCheckBox(event.target.checked);
+    console.log("Checkbox checked:", event.target.checked);
+  };
 
   return (
-    <div className="bg-green-300 mb-10">
-      <h1 className=" flex justify-center text-lg font-semibold mb-2 mt-16 ">
-        {" "}
-        Scan Machine
-      </h1>
-      <div className="flex justify-center w-full mt-24">
-        <Scanner
-          onScan={onScanSuccess} // Called when QR code is scanned
-          styles={{
-            container: { width: 400, height: 100, position: "relative" },
-            video: { width: 400, height: 400 },
-          }}
-          allowMultiple={true}
-        />
-      </div>
-      {scannedResult && (
-        <div>
-          <pre>{JSON.stringify(scannedResult, null, 2)}</pre>
+    <div>
+      <div>
+        <h1 className=" flex justify-center text-4xl font-semibold mb-2 mt-16 text-lime-500">
+          {" "}
+          Scan Machine
+        </h1>
+        <div className="flex justify-center w-full mt-24">
+          <Scanner
+            onScan={onScanSuccess} // Called when QR code is scanned
+            styles={{
+              container: { width: 400, height: 100, position: "relative" },
+              video: { width: 400, height: 400 },
+            }}
+            allowMultiple={true}
+          />
         </div>
-      )}
+        <div className="flex justify-center items-center mt-96">
+          {scannedResult === "Valid" ? (
+            <label className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                checked={checkBox}
+                readOnly
+                className="mr-2"
+              />
+              <span>Ticket Validated</span>
+            </label>
+          ) : (
+            scannedResult === "Invalid" && (
+              <div className="flex items-center space-x-2">
+                <XCircle className="text-red-500" size={32} />
+                <span>Invalid QR Code</span>
+              </div>
+            )
+          )}
+        </div>
+        {scannedResult && (
+          <div className="mt-4 flex justify-center">
+            <pre>{JSON.stringify(scannedResult, null, 2)}</pre>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
