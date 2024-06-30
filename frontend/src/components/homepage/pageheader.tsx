@@ -13,7 +13,7 @@ import { Button } from "../ui/button";
 import GatheringGlobe from "../../images/GatheringGlobe.png";
 import SearchForm from "../navbar/searchbar";
 import { Link, useNavigate } from "react-router-dom";
-import { CircleUserRound, LogOut, ShoppingCart } from "lucide-react";
+import { CircleUserRound, LogOut, ShoppingCart, Plus } from "lucide-react";
 import { signOutUser } from "@/services/api";
 import toast from "react-hot-toast";
 import { useCurrentUser } from "@/services/queries";
@@ -86,6 +86,18 @@ function Pageheader() {
             >
               Chat Room
             </Link>
+            <Link
+              to="/stream/channel/watch/all"
+              className="text-green-600 hover:text-neutral-800 "
+            >
+              Watch Stream
+            </Link>
+            {/* <Link
+              to={userData ? `/stream/${userData.username}/watch` : ""}
+              className="text-green-600 hover:text-neutral-800 "
+            >
+              Watch Stream
+            </Link> */}
             <Link to="/about" className="text-green-600 hover:text-neutral-800">
               About Us
             </Link>
@@ -97,12 +109,34 @@ function Pageheader() {
             </Link>
           </div>
           <div className="flex items-center gap-x-4">
-            <Button
-              onClick={() => navigate("/create-new-event")}
-              className="text-lg text-green-800 bg-white hover:bg-gray-100 px-3 py-2 rounded-md"
-            >
-              Create Event
-            </Button>
+            {" "}
+            <DropdownMenu modal={false}>
+              <DropdownMenuTrigger asChild>
+                <Button variant={"profile"}>
+                  <Plus className="h-6 w-6 text-green-800" />
+                </Button>
+              </DropdownMenuTrigger>
+
+              <DropdownMenuContent
+                align="end"
+                className="w-65 flex flex-col items-center"
+              >
+                <DropdownMenuGroup>
+                  <DropdownMenuItem>
+                    <Link to={`/dashboard/${userData?.username ?? ""}`}>
+                      Create New Event
+                    </Link>
+                  </DropdownMenuItem>
+
+                  <DropdownMenuItem>
+                    <Link to={`/u/${userData?.username ?? ""}/create-stream`}>
+                      Create New Stream
+                    </Link>
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+                <DropdownMenuSeparator />
+              </DropdownMenuContent>
+            </DropdownMenu>
             <DropdownMenu modal={false}>
               <DropdownMenuTrigger asChild>
                 <Button className="relative" variant={"outline"}>
