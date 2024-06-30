@@ -123,7 +123,9 @@ function Pageheader() {
               >
                 <DropdownMenuGroup>
                   <DropdownMenuItem>
-                    <Link to={`/dashboard/${userData?.username ?? ""}`}>
+                    <Link
+                      to={`/u/${userData?.username ?? ""}/create-new-event`}
+                    >
                       Create New Event
                     </Link>
                   </DropdownMenuItem>
