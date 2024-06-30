@@ -6,7 +6,9 @@ const isTicketUsed = async (
   ticketId: string,
   index: number
 ) => {
-  const order = await Order.findById(orderId);
+  const order = await Order.findOne({
+    _id: orderId as unknown as mongoose.Types.ObjectId,
+  });
   if (!order) {
     return false;
   }
@@ -33,7 +35,9 @@ export const useTicket = async (
   if (used) {
     return false;
   }
-  const order = await Order.findById(orderId);
+  const order = await Order.findOne({
+    _id: orderId as unknown as mongoose.Types.ObjectId,
+  });
   if (!order) {
     return false;
   }

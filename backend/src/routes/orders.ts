@@ -150,11 +150,6 @@ router.post(
       }
 
       const orderObject = populatedOrder.toObject() as OrderData;
-      const discountApplication = await DiscountApplication.findOne({
-        paymentIntentId: order.paymentIntentId,
-      });
-
-      console.log(discountApplication);
 
       const completeOrderData = {
         orderData: {
@@ -173,8 +168,6 @@ router.post(
                 _id: ticket.ticketId._id.toString(),
                 type: ticket.ticketId.type,
                 price: ticket.ticketId.price,
-                originalPrice: 0,
-                newPrice: 0,
               },
               quantity: ticket.quantity,
             })),
@@ -188,9 +181,9 @@ router.post(
         },
       };
 
-      // const discountApplication = await DiscountApplication.findOne({
-      //   paymentIntentId: populatedOrder.paymentIntentId,
-      // });
+      const discountApplication = await DiscountApplication.findOne({
+        paymentIntentId: order.paymentIntentId,
+      });
 
       if (discountApplication) {
         completeOrderData.orderData.events =
@@ -236,16 +229,6 @@ router.post(
           pass: process.env.USER_PASSWORD,
         },
       });
-
-      const qrCodeHTML = ticketQRCodeDataList
-        .map((data) => {
-          return `<div>
-                  <p>Event ID: ${data.eventId}</p>
-                  <p>Ticket ID: ${data.ticketId}</p>
-                  <img src="${data.qrCodeBase64}" alt="QR Code" />
-                </div>`;
-        })
-        .join("");
 
       const mailOptions = {
         from: process.env.USER_EMAIL,
@@ -434,21 +417,23 @@ router.get(
   "/order-by-qr/:qrCodeId/event/:eventId",
   verifyToken,
   async (req: Request, res: Response) => {
-    const {qrCodeId, eventId} = req.params;
+    const { qrCodeId, eventId } = req.params;
     try {
       const order = await Order.findById(qrCodeId);
-      const eventIdOrganize = await Event.findById(eventId)
+      const eventIdOrganize = await Event.findById(eventId);
       if (!order) {
         return res
           .status(404)
           .json({ message: "Order not found or payment is not completed." });
       }
       if (!eventIdOrganize) {
-        return res.status(404).json({message: "There is no organizer"});
+        return res.status(404).json({ message: "There is no organizer" });
       }
       if (eventId !== eventIdOrganize._id.toString()) {
-        return res.status(403).json({ message: "The organizer does not have this event" });
-    }
+        return res
+          .status(403)
+          .json({ message: "The organizer does not have this event" });
+      }
       res.json(order);
     } catch (error) {
       console.error("Error fetching order by QR code:", error);
@@ -485,7 +470,7 @@ router.post(
       if (!usedSuccessfully) {
         return res.status(400).json({ message: "Ticket already used" });
       }
-      res.status(200).json({ message: "Ticket Verified" });
+      res.status(200).json({ message: "Ticket is verified!" });
     } catch (error) {
       console.error("Failed to update ticket quantity:", error);
       res.status(500).json({ message: "Internal server error" });

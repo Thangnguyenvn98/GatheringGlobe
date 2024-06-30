@@ -309,6 +309,11 @@ export const fetchEventFiltered = async (params: any) => {
   return response.data;
 };
 
+export const getEventsCreatedByUser = async () => {
+  const response = await axiosInstance.get("/api/events/fetch");
+  return response.data;
+};
+
 export const getOrderByQrCode = async (qrCodeId: string, eventId: string) => {
   const response = await axiosInstance.get(
     `/api/orders/order-by-qr/${qrCodeId}/event/${eventId}`,

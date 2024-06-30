@@ -139,7 +139,7 @@ const PDF = ({ orderData }: PDFProps) => {
                 key={`${event.eventId._id}-${ticket.ticketId._id}-${index}`}
               >
                 <View style={styles.header}>
-                  <Text>{event.eventId.title} • </Text>
+                  <Text>{event.eventId.title}</Text>
                   <Text style={styles.ticketNo}>{orderData._id}</Text>
                 </View>
 

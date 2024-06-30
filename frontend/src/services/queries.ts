@@ -21,6 +21,7 @@ import {
   validateToken,
   fetchEventFiltered,
   getAllUserOrders,
+  getEventsCreatedByUser,
 } from "./api";
 import { useSocket } from "@/components/providers/socket-provider";
 import { CartItem } from "@/hooks/use-cart-store";
@@ -94,6 +95,13 @@ export const useGetAllOrdersPagination = (page = 1) => {
     placeholderData: keepPreviousData,
   });
 };
+
+export function useGetUserEvents() {
+  return useQuery({
+    queryKey: ["userEvents"],
+    queryFn: getEventsCreatedByUser,
+  });
+}
 
 export const usePaymentIntent = (cartItems: CartItem[]) => {
   return useQuery({
