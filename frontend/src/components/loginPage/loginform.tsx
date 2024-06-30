@@ -15,7 +15,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { AxiosError } from "axios";
-import Google from "../../images/google.jpg";
 
 const Login = () => {
   const navigate = useNavigate();
