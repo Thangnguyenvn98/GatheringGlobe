@@ -1,10 +1,18 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import "./EventCard.css";
 import { EventType } from "@/types/event";
-import { Ticket, Pencil, Trash2 } from "lucide-react";
+import { Ticket, Pencil, Trash2, ScanBarcode } from "lucide-react";
 import axios from "axios";
 import { Button } from "../ui/button";
 import { useCurrentUser } from "@/services/queries";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const EventCard = ({
   event,
@@ -140,11 +148,27 @@ const EventCard = ({
         </Link>
         {location.pathname.includes("/dashboard") && (
           <div className="ml-2 flex flex-col justify-center self-start gap-1 py-2">
-            <Button onClick={handleUpdate} className="bg-yellow-500 text-white">
-              <Pencil className="w-5 h-5" />
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger>
+                <Button
+                  onClick={handleUpdate}
+                  className="bg-yellow-500 text-white"
+                >
+                  <Pencil className="w-5 h-5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuLabel>Edit</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>Event </DropdownMenuItem>
+                <DropdownMenuItem>Tickets</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             <Button onClick={handleDelete} className="bg-red-500 text-white">
               <Trash2 className="w-5 h-5" />
+            </Button>
+            <Button onClick={handleUpdate} className="bg-gray-500 text-white">
+              <ScanBarcode className="w-6 h-6" />
             </Button>
           </div>
         )}
