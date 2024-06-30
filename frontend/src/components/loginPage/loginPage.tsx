@@ -22,7 +22,7 @@ const LoginPage = () => {
               src={GatheringGlobe}
               alt="GatheringGlobe Logo"
               className="justify-items-start my-20 "
-              style={{ width: "200px", height: "200px" }}
+              style={{ width: "200px", height: "100px" }}
             />
           </Link>
 
