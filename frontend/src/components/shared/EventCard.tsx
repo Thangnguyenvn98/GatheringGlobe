@@ -46,20 +46,6 @@ const EventCard = ({
     return colors[index % colors.length];
   };
 
-  const deleteEvent = async (eventId: string) => {
-    try {
-      const response = await axios.delete(`/api/events/${eventId}/deleteEvent`);
-      console.log(response.data.message);
-      // handle successful deletion, e.g., update state or UI
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.error("Failed to delete event", error.response?.data.message);
-      } else {
-        console.error("Failed to delete event", error);
-      }
-    }
-  };
-
   const updateEvent = async (eventId: string, updatedData: any) => {
     try {
       const response = await axios.patch(
@@ -76,11 +62,24 @@ const EventCard = ({
       }
     }
   };
+  const deleteEvent = async (eventId: string) => {
+    try {
+      const response = await axios.delete(`/api/events/${eventId}/deleteEvent`);
+      console.log(response.data.message);
+      // handle successful deletion, e.g., update state or UI
+      navigate(`/dashboard/${userData?.username ?? ""}`);
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error("Failed to delete event", error.response?.data.message);
+      } else {
+        console.error("Failed to delete event", error);
+      }
+    }
+  };
 
   const handleDelete = async () => {
     if (window.confirm("Are you sure you want to delete this event?")) {
       await deleteEvent(event._id);
-      navigate(`/dashboard/${userData?.username ?? ""}`);
     }
   };
 
