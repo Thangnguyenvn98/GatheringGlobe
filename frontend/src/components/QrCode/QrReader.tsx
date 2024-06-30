@@ -1,92 +1,129 @@
-import QrScanner from "qr-scanner";
-import QrFrame from "../../assets/qr-frame.svg";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
+import { Scanner } from "@yudiel/react-qr-scanner";
+import { IDetectedBarcode } from "@yudiel/react-qr-scanner";
+import toast from "react-hot-toast";
+import { getOrderByQrCode, updateTicketUsed } from "@/services/api";
+import axios from "axios";
+import { useGetUserEvents } from "@/services/queries";
+import { Frown, Loader2, ServerCrash } from "lucide-react";
+
+export interface QrCode {
+  orderId: string;
+  eventId: string;
+  ticketId: string;
+  index: number;
+}
 
 const QrReader = () => {
-  // QR Sates
-  const scanner = useRef<QrScanner>();
-  const videoEL = useRef<HTMLVideoElement>(null);
-  const qrBoxEL = useRef<HTMLDivElement>(null);
-  const [qrOn, setQrOn] = useState<boolean>(true);
+  const [scannedResult, setScannedResult] = useState<string>("");
 
-  // Result
-  const [scannedResult, setScannedResult] = useState<string | undefined>("");
+  const { data, isLoading, isError } = useGetUserEvents();
+  console.log(data);
+  if (isLoading) {
+    return (
+      <div className="flex flex-col flex-1 justify-center items-center min-h-[500px]">
+        <Loader2 className="h-7 w-7 text-zinc-500 animate-spin my-4" />
+        <p className="text-xs text-zinc-500 dark:text-zinc-400">
+          Loading Your Orders
+        </p>
+      </div>
+    );
+  }
 
-  // Scanner
-  const onScanSuccess = (result: QrScanner.ScanResult) => {
-    console.log(result);
-    // Handle success
-    setScannedResult(result?.data);
-  };
-  // Handle fail
-  const onScanFail = (error: string | Error) => {
-    console.log(error);
-  };
+  if (isError) {
+    return (
+      <div className="flex flex-col flex-1 justify-center items-center min-h-[500px]">
+        <ServerCrash className="h-7 w-7 text-zinc-500 my-4" />
+        <div className="flex items-center gap-x-2">
+          <p className="text-2xl text-zinc-500 dark:text-zinc-400">
+            Look like you haven't created any events yet. Please create an event
+            first.
+          </p>
+          <Frown color="red" className="h-8 w-8" />
+        </div>
+      </div>
+    );
+  }
 
-  useEffect(() => {
-    if (videoEL?.current && !scanner.current) {
-      scanner.current = new QrScanner(videoEL?.current, onScanSuccess, {
-        onDecodeError: onScanFail,
-        // environment: back camera, user: front camera
-        preferredCamera: "environment",
-        highlightScanRegion: true,
-        highlightCodeOutline: true,
-        overlay: qrBoxEL?.current || undefined,
-      });
-      // Start Qr Scanner
-      scanner?.current
-        ?.start()
-        .then(() => setQrOn(true))
-        .catch((e) => {
-          if (e) {
-            setQrOn(false);
-          }
-        });
-    }
-    // This will remove the QR Scanner from rendering and using camera when it is closed or removed from the UI
-    return () => {
-      if (!videoEL?.current) {
-        scanner?.current?.stop();
+  // Function to handle successful QR scan
+  const onScanSuccess = async (detectedCodes: IDetectedBarcode[]) => {
+    if (detectedCodes.length > 0) {
+      const rawValue = detectedCodes[0].rawValue;
+      let qrCode: QrCode;
+      try {
+        qrCode = JSON.parse(rawValue);
+        console.log(qrCode);
+        if (!qrCode.orderId) {
+          toast.error("No order ID found in QR code. Please try again.");
+        }
+      } catch (error) {
+        toast.error("Invalid QR Codes. Please try again!");
+        return;
       }
-    };
-  }, []);
 
-  // Handle when camera is not allowed in users' computer
-  useEffect(() => {
-    if (!qrOn) {
-      alert(
-        "Camera is blocked or not accessible. Please allow camera in your browser",
-      );
+      const order = await getOrderByQrCode(qrCode.orderId, qrCode.eventId);
+      if (!order) {
+        toast.error("Order not found. Please try again.");
+        return;
+      }
+      try {
+        const response = await updateTicketUsed(qrCode);
+        if (response) {
+          toast.success(response?.message);
+          setScannedResult("Verified");
+        }
+      } catch (error) {
+        console.error("Error updating ticket used:", error);
+        if (axios.isAxiosError(error)) {
+          toast.error(error.response?.data.message);
+          setScannedResult(error.response?.data.message);
+        }
+      }
+    } else {
+      toast.error("No QR code detected. Please try again.");
     }
-  }, [qrOn]);
+    setTimeout(() => {
+      setScannedResult("");
+    }, 2000);
+  };
+
   return (
-    <div className="qr-reader">
-      {/* QR */}
-      <video ref={videoEL}></video>
-      <div ref={qrBoxEL} className="qr-box">
-        <img
-          src={QrFrame}
-          alt="QR Frame"
-          width={256}
-          height={256}
-          className="qr-frame"
+    <div className="bg-white pt-4">
+      <h1 className="text-center text-4xl font-bold">Scan Tickets</h1>
+      <p className="text-center text-2xl">
+        Use the scanner below to check in your attendees.
+      </p>
+
+      <div className="flex flex-col items-center mt-10">
+        <div className="flex items-center gap-x-2 relative max-w-[300px] w-full">
+          <h2 className="text-lg">Ticket Status: </h2>
+          {scannedResult && (
+            <h2
+              className={`${scannedResult === "Verified" ? "text-green-500 font-bold" : "text-red-500 font-bold"}`}
+            >
+              {scannedResult}!
+            </h2>
+          )}
+        </div>
+        <Scanner
+          onScan={onScanSuccess} // Called when QR code is scanned
+          styles={{
+            container: {
+              width: 300,
+              height: 300,
+              position: "relative",
+              marginTop: 20,
+              marginBottom: 20,
+            },
+            video: {
+              width: 300,
+              height: 300,
+            },
+          }}
+          allowMultiple={true}
+          scanDelay={2000}
         />
       </div>
-
-      {/* Show data result if scanned is success */}
-      {scannedResult && (
-        <p
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            zIndex: 99999,
-            color: "white",
-          }}
-        >
-          Scanned Result: {scannedResult}
-        </p>
-      )}
     </div>
   );
 };

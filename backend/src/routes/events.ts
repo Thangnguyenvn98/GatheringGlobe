@@ -586,7 +586,7 @@ router.get("/fetch", verifyToken, async (req: Request, res: Response) => {
   try {
     const event = await Event.find({ organizerId: req.userId });
 
-    if (!event) {
+    if (!event || event.length === 0) {
       return res
         .status(404)
         .json({ message: "Event not found/not created by this user" });

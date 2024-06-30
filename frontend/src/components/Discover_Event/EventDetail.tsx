@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useCurrentEventDetail } from "@/services/queries";
 import { TicketType } from "@/types/ticket";
 import useCart from "@/hooks/use-cart-store";
@@ -13,6 +13,7 @@ import {
   MapPin,
   ChevronLeft,
   ChevronRight,
+  FilePenLine,
 } from "lucide-react";
 import { UserAvatar } from "../ui/user-avatar";
 
@@ -176,9 +177,11 @@ const EventDetail: React.FC = () => {
     );
   };
 
+  const isAuthor = currentUser?._id === eventData?.organizerId._id;
+
   return (
     <div className="event-detail-container pt-2 p-5">
-      <div className="relative mb-4 ">
+      <div className="relative mb-4 flex justify-center mx-20 ">
         <div
           className="absolute inset-0 bg-cover bg-center flex flex-col justify-center items-center filter blur-xl rounded-lg w-[80%]"
           style={{
@@ -188,7 +191,7 @@ const EventDetail: React.FC = () => {
             transform: "translateX(-50%)",
           }}
         ></div>
-        <div className="event-image-container flex justify-center items-center relative">
+        <div className="max-w-[900px]  flex justify-center items-center relative">
           <img
             src={eventData.imageUrls[currentImageIndex]}
             alt={eventData.title}
@@ -212,11 +215,11 @@ const EventDetail: React.FC = () => {
           )}
         </div>
       </div>
-      <div className="event-info-container flex justify-center items-start py-4 md:flex-row ">
-        <div className="event-info w-full md:w-3/5 mb-4 md:mb-0">
+      <div className="flex flex-col md:flex-row py-4 mx-10 ">
+        <div className="w-full md:w-3/5 mb-4 md:mb-0 pr-4">
           <p className="text-gray-600 text-xl">{eventDate}</p>
 
-          <h1 className="text-6xl font-bold text-black mb-2">
+          <h1 className="text-6xl font-bold text-black mb-2 max-w-[700px]">
             {eventData.title}
           </h1>
 
@@ -240,7 +243,7 @@ const EventDetail: React.FC = () => {
               </div>
             </div>
           </div>
-          <div className="mt-14">
+          <div className="mt-14 break-words">
             <h2 className="text-3xl font-semibold mb-2">About this event</h2>
             <div
               dangerouslySetInnerHTML={{ __html: sanitizedDescription }}
@@ -263,7 +266,19 @@ const EventDetail: React.FC = () => {
             </div>
           </div>
         </div>
-        <div className="get-ticket-box sticky top-4 w-full md:w-1/3">
+
+        <div className="w-full md:w-2/5 md:sticky md:top-44 md:self-start">
+          {isAuthor && (
+            <div className="absolute z-50 top-0 -left-40">
+              <Link
+                className="flex items-center gap-x-2 p-4 hover:bg-slate-300 rounded-lg bg-white"
+                to={`/my-event/${eventId}/edit/`}
+              >
+                <FilePenLine className="w-8 h-8" />
+                <h2>Edit Event</h2>
+              </Link>
+            </div>
+          )}
           {!showTickets ? (
             <div className="bg-white p-4 rounded-lg shadow-lg text-center">
               <div className="flex justify-center items-center mb-2">
