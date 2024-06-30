@@ -13,6 +13,8 @@ import { Button } from "@/components/ui/button";
 import axios from "axios";
 import { useForm } from "react-hook-form";
 // import { useNavigate } from "react-router-dom";
+import forgot from "../../images/forgot.jpg";
+import { Link } from "react-router-dom";
 
 const ForgotPassword = () => {
   // const navigate = useNavigate();
@@ -59,10 +61,20 @@ const ForgotPassword = () => {
           Discover, host, and buy event tickets with us
         </CardDescription>
       </CardHeader>
+      <Link to="/">
+        <img
+          src={forgot}
+          alt="Forgot password Image"
+          className="justify-items-start my-20 "
+          style={{ width: "100%", height: "500px" }}
+        />
+      </Link>
       <form onSubmit={handleSubmit(onSubmit)}>
         <CardContent className="space-y-2">
           <div className="space-y-1">
-            <Label htmlFor="email">Enter your email</Label>
+            <Label className="" htmlFor="email">
+              Enter your email
+            </Label>
             <Input
               id="email"
               placeholder="Enter your email"
@@ -70,9 +82,9 @@ const ForgotPassword = () => {
             />
           </div>
         </CardContent>
-        <CardFooter>
+        <CardFooter className="justify-center">
           <Button
-            className="w-full mb-2 rounded-full"
+            className="w-80 mb-2 rounded-full"
             type="submit"
             disabled={isSubmitting}
           >
