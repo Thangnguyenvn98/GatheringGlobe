@@ -71,12 +71,17 @@ const MainContent: React.FC<MainContentProps> = ({
             </div>
           ))
         )}
-        <EventPaginationButton
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={onPageChange}
-          isPlaceholderData={false}
-        />
+        <div
+          className="mt-4 w-full flex"
+          style={{ justifyContent: "flex-start", marginRight: "130px" }}
+        >
+          <EventPaginationButton
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={onPageChange}
+            isPlaceholderData={false}
+          />
+        </div>
       </div>
     </div>
   );
