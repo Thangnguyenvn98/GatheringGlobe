@@ -8,7 +8,12 @@ import { useNavigate } from "react-router-dom";
 import { useCurrentUser } from "@/services/queries";
 import sanitizeHtml from "sanitize-html";
 import { format } from "date-fns";
-import { CalendarCheck2, MapPin } from "lucide-react";
+import {
+  CalendarCheck2,
+  MapPin,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import { UserAvatar } from "../ui/user-avatar";
 
 const EventDetail: React.FC = () => {
@@ -27,6 +32,7 @@ const EventDetail: React.FC = () => {
   }>({});
   const [totalCost, setTotalCost] = useState<number>(0);
   const [showTickets, setShowTickets] = useState<boolean>(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState<number>(0);
 
   useEffect(() => {
     if (eventData && eventData.tickets) {
@@ -158,22 +164,55 @@ const EventDetail: React.FC = () => {
 
   const eventLocation = eventData?.location.split(",");
 
+  const nextImage = () => {
+    setCurrentImageIndex((prevIndex) =>
+      prevIndex + 1 < eventData.imageUrls.length ? prevIndex + 1 : 0,
+    );
+  };
+
+  const prevImage = () => {
+    setCurrentImageIndex((prevIndex) =>
+      prevIndex - 1 >= 0 ? prevIndex - 1 : eventData.imageUrls.length - 1,
+    );
+  };
+
   return (
-    <div className="event-detail-container  p-5">
-      <div className="relative mb-4">
+    <div className="event-detail-container pt-2 p-5">
+      <div className="relative mb-4 ">
         <div
-          className="absolute inset-0 bg-cover bg-center flex flex-col justify-center items-center filter blur-xl rounded-lg"
-          style={{ backgroundImage: `url(${eventData.imageUrls[0]})` }}
+          className="absolute inset-0 bg-cover bg-center flex flex-col justify-center items-center filter blur-xl rounded-lg w-[80%]"
+          style={{
+            backgroundImage: `url(${eventData.imageUrls[currentImageIndex]})`,
+            width: "80%",
+            left: "50%",
+            transform: "translateX(-50%)",
+          }}
         ></div>
         <div className="event-image-container flex justify-center items-center relative">
           <img
-            src={eventData.imageUrls[0]}
+            src={eventData.imageUrls[currentImageIndex]}
             alt={eventData.title}
-            className="event-image rounded-lg mb-4"
+            className="event-image rounded-lg mb-4 h-[550px] "
           />
+          {eventData.imageUrls.length > 1 && (
+            <>
+              <button
+                className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-gray-800 bg-opacity-50 text-white p-2 rounded-full"
+                onClick={prevImage}
+              >
+                <ChevronLeft className="w-6 h-6" />
+              </button>
+              <button
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-gray-800 bg-opacity-50 text-white p-2 rounded-full"
+                onClick={nextImage}
+              >
+                <ChevronRight className="w-6 h-6" />
+              </button>
+            </>
+          )}
         </div>
       </div>
-      <div className="event-info-container flex justify-center items-start  py-4  md:flex-row ">
+      <div className="event-info-container flex justify-center items-start py-4 md:flex-row ">
         <div className="event-info w-full md:w-3/5 mb-4 md:mb-0">
           <p className="text-gray-600 text-xl">{eventDate}</p>
 
