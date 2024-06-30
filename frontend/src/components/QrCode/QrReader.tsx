@@ -3,7 +3,7 @@ import { Scanner } from "@yudiel/react-qr-scanner";
 import { IDetectedBarcode } from "@yudiel/react-qr-scanner";
 import toast from "react-hot-toast";
 import { getOrderByQrCode, updateTicketUsed } from "@/services/api";
-import { Box, XCircle } from "lucide-react";
+import { XCircle } from "lucide-react";
 
 export interface QrCode {
   orderId: string;
@@ -54,10 +54,6 @@ const QrReader = () => {
     } else {
       toast.error("No QR code detected. Please try again.");
     }
-  };
-  const handleCheckBoxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setCheckBox(event.target.checked);
-    console.log("Checkbox checked:", event.target.checked);
   };
 
   return (
