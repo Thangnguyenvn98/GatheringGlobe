@@ -3,8 +3,6 @@ import "./global.css";
 import DiscoverEvent from "./components/Discover_Event/DiscoverEvent";
 import EventDetail from "./components/Discover_Event/EventDetail";
 import AboutUs from "./components/aboutUs/about-us";
-import EventForm from "./components/newEventForm/EventForm";
-
 import ChatPage from "./components/chatRoom/Chat";
 import Homepage from "./components/homepage/homepage";
 import { SocketProvider } from "./components/providers/socket-provider";
@@ -32,7 +30,7 @@ import BotChat from "./components/chatbot/BotChat.tsx";
 import TicketForm from "./components/TicketForm/TicketForm";
 import Dashboard from "./components/userDashboard/Dashboard";
 import MyOrders from "./components/order/MyOrders.tsx";
-import EventEdit from "./components/Discover_Event/EventEdit.tsx";
+import EventPage from "./components/Discover_Event/EventPage.tsx";
 
 function App() {
   return (
@@ -69,8 +67,8 @@ function App() {
           <Route
             path="/create-new-event"
             element={
-              <Layout>
-                <EventForm />
+              <Layout backgroundColor="bg-white">
+                <EventPage />
               </Layout>
             }
           />
@@ -139,7 +137,7 @@ function App() {
             path="my-event/:eventId/edit/"
             element={
               <Layout backgroundColor="bg-white">
-                <EventEdit />
+                <EventPage />
               </Layout>
             }
           />

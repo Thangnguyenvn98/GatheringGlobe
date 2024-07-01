@@ -30,14 +30,6 @@ const EventCard = ({
     );
   };
 
-  // const truncateDescription = (description: string, wordLimit: number) => {
-  //   const words = description.split(" ");
-  //   if (words.length > wordLimit) {
-  //     return words.slice(0, wordLimit).join(" ") + "...";
-  //   }
-  //   return description;
-  // };
-
   return (
     <Link
       to={eventLink}
@@ -56,7 +48,7 @@ const EventCard = ({
         <h1 className="text-xl font-bold text-black">{event.title}</h1>
         <div className="text-base text-gray-600 ">
           <p>{formatDate(event.startTime)}</p>
-          <p>{event.location}</p>
+          <p>{event.location.fullAddress}</p>
         </div>
         <p className="text-base text-black font-semibold">
           From $

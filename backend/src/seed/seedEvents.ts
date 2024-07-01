@@ -30,6 +30,11 @@ export const generateEvents = async (numEvents: number, users: any[]) => {
     const endTime = new Date(
       startTime.getTime() + faker.number.int({ min: 3600000, max: 86400000 })
     );
+    const city = faker.location.city();
+    const country = faker.location.country();
+    const postalCode = faker.location.zipCode();
+    const province = faker.location.state();
+    const fullAddress = `${city}, ${province}, ${country}, ${postalCode}`;
     const event = new Event({
       title: faker.music.songName(),
       description: faker.lorem.paragraphs(2),
@@ -37,7 +42,13 @@ export const generateEvents = async (numEvents: number, users: any[]) => {
       endTime: endTime,
       capacity: faker.number.int({ min: 100, max: 500 }),
       organizerId: randomUser._id, // Link to a random user as organizer
-      location: faker.location.city(),
+      location: {
+        city: city,
+        country: country,
+        postalCode: postalCode,
+        state: province,
+        fullAddress: fullAddress,
+      },
       category: faker.helpers.arrayElement([
         "Music",
         "Art",

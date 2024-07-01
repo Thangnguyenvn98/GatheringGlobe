@@ -1,3 +1,4 @@
+import { joinLocation } from "./../utils/joinLocation";
 import Stripe from "stripe";
 import express, { Request, Response } from "express";
 import verifyToken from "../middleware/auth";

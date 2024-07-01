@@ -1,9 +1,7 @@
 import express, { Request, Response } from "express";
 import verifyToken from "../middleware/auth";
 import User from "../models/user";
-import Event, { EventType } from "../models/event"; // this is the model <-------
-import Ticket from "../models/ticket";
-import mongoose from "mongoose";
+import Event from "../models/event"; // this is the model <-------
 
 const router = express.Router();
 router.get("/", verifyToken, async (req: Request, res: Response) => {

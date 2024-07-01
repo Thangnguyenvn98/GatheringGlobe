@@ -7,6 +7,7 @@ import ReactPDF, {
   StyleSheet,
   Image,
 } from "@react-pdf/renderer";
+import { LocationType } from "../../models/event";
 
 // Define TypeScript types
 export type OrderData = {
@@ -18,7 +19,7 @@ export type OrderData = {
       imageUrls: string[];
       startTime: string;
       endTime: string;
-      location: string;
+      location?: LocationType;
     };
     tickets: {
       ticketId: {
@@ -150,7 +151,9 @@ const PDF = ({ orderData }: PDFProps) => {
                       {new Date(event.eventId.startTime).toLocaleString()} -{" "}
                       {new Date(event.eventId.endTime).toLocaleString()}
                     </Text>
-                    <Text style={styles.text}>{event.eventId.location}</Text>
+                    <Text style={styles.text}>
+                      {event.eventId.location?.fullAddress}
+                    </Text>
 
                     <Text style={styles.label}>TICKET TYPE & PRICE</Text>
                     <Text style={styles.text}>
