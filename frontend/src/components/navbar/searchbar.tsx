@@ -67,7 +67,7 @@ function SearchForm() {
       <div className="border-r-black border-r-[1px] p-1">
         <DatePickerWithRange setDateFromParent={setDate} />
       </div>
-      <SearchByKeyword setKeywordFromParent={setKeyword} />
+      <SearchByKeyword setKeywordFromParent={setKeyword} onSubmit={onSubmit} />
       <div className="p-1">
         <Button
           type="submit"

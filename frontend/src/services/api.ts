@@ -218,6 +218,14 @@ export const createEvent = async (data: EventFormData) => {
   return response.data;
 };
 
+export const editEvent = async (data: EventFormData, eventId: string) => {
+  const response = await axiosInstance.put(
+    `/api/events/${eventId}/updateEvent`,
+    data,
+  );
+  return response.data;
+};
+
 export const createTicket = async (data: TicketFormData, eventId: string) => {
   const response = await axiosInstance.post(
     `/api/events/${eventId}/tickets`,

@@ -163,8 +163,6 @@ const EventDetail: React.FC = () => {
     ...eventData.tickets.map((ticket: TicketType) => ticket.price),
   ).toFixed(2);
 
-  const eventLocation = eventData?.location.split(",");
-
   const nextImage = () => {
     setCurrentImageIndex((prevIndex) =>
       prevIndex + 1 < eventData.imageUrls.length ? prevIndex + 1 : 0,
@@ -215,8 +213,8 @@ const EventDetail: React.FC = () => {
           )}
         </div>
       </div>
-      <div className="flex flex-col md:flex-row py-4 mx-10 ">
-        <div className="w-full md:w-3/5 mb-4 md:mb-0 pr-4">
+      <div className="flex flex-col md:flex-row md:justify-center 2xl:gap-x-6 2xl:flex-row 2xl:justify-center py-4 mx-10 ">
+        <div className="w-full md:w-3/5 mb-4 md:mb-0 pr-4 2xl:w-1/3">
           <p className="text-gray-600 text-xl">{eventDate}</p>
 
           <h1 className="text-6xl font-bold text-black mb-2 max-w-[700px]">
@@ -237,9 +235,9 @@ const EventDetail: React.FC = () => {
               <MapPin fill="black" color="white" className="w-8 h-8" />
               <div className="flex flex-col">
                 <span className="font-semibold text-black">
-                  {eventLocation[0]}
+                  {eventData?.location.city}
                 </span>
-                <span> {eventData?.location}</span>
+                <span> {eventData?.location.fullAddress}</span>
               </div>
             </div>
           </div>
@@ -267,18 +265,7 @@ const EventDetail: React.FC = () => {
           </div>
         </div>
 
-        <div className="w-full md:w-2/5 md:sticky md:top-44 md:self-start">
-          {isAuthor && (
-            <div className="absolute z-50 top-0 -left-40">
-              <Link
-                className="flex items-center gap-x-2 p-4 hover:bg-slate-300 rounded-lg bg-white"
-                to={`/my-event/${eventId}/edit/`}
-              >
-                <FilePenLine className="w-8 h-8" />
-                <h2>Edit Event</h2>
-              </Link>
-            </div>
-          )}
+        <div className="w-full md:w-2/5 md:sticky md:top-44 md:self-start xl:w-[80%] 2xl:max-w-[600px]">
           {!showTickets ? (
             <div className="bg-white p-4 rounded-lg shadow-lg text-center">
               <div className="flex justify-center items-center mb-2">
@@ -365,6 +352,17 @@ const EventDetail: React.FC = () => {
                   </Button>
                 </div>
               </div>
+            </div>
+          )}
+          {isAuthor && (
+            <div className="relative z-50 top-10 max-w-[150px]">
+              <Link
+                className="flex items-center gap-x-2 p-4 hover:bg-slate-300 rounded-lg bg-white"
+                to={`/my-event/${eventId}/edit/`}
+              >
+                <FilePenLine className="w-8 h-8" />
+                <h2>Edit Event</h2>
+              </Link>
             </div>
           )}
         </div>

@@ -58,7 +58,7 @@ const EventList = ({
                       "EEE, MMM dd, yyyy hh:mm a",
                     )}
                   </h3>
-                  <h3 className="">{event.location}</h3>
+                  <h3 className="">{event.location.fullAddress}</h3>
                   <h3 className="font-semibold">
                     From ${event.minPrice?.toFixed(2)}
                   </h3>

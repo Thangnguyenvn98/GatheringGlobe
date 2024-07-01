@@ -120,7 +120,7 @@ const EventCard = ({
             <h1 className="text-xl font-bold text-black">{event.title}</h1>
             <div className="text-base text-gray-600">
               <p>{formatDate(event.startTime)}</p>
-              <p>{event.location}</p>
+              <p>{event.location.fullAddress}</p>
             </div>
 
             {location.pathname.includes("/dashboard") ? ( // Check if the path includes '/dashboard'

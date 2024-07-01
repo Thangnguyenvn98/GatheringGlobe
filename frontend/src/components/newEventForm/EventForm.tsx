@@ -24,6 +24,7 @@ import { Button } from "@/components/ui/button";
 import toast from "react-hot-toast";
 import EventLocation from "./eventloc";
 import ImageUpload from "../chatRoom/ImageUpload";
+import { categoriesList, eventTypesList } from "@/utils/categoriesEventList";
 import {
   Select,
   SelectContent,
@@ -33,8 +34,10 @@ import {
 } from "@/components/ui/select";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { createEvent } from "@/services/api";
+import { createEvent, editEvent } from "@/services/api";
 import Tiptap from "../tiptap";
+import { EventDetails } from "@/types/eventDetails";
+import { LocationType } from "@/types/event";
 
 const formSchema = z
   .object({
@@ -57,9 +60,20 @@ const formSchema = z
       .number()
       .positive({ message: "Capacity must be a positive number" })
       .int({ message: "Capacity must be an integer" }),
-    location: z
-      .string()
-      .min(5, { message: "Location must be at least 5 characters long" }),
+    location: z.object({
+      city: z
+        .string()
+        .min(2, { message: "City must be at least 2 characters" }),
+      country: z
+        .string()
+        .min(2, { message: "Country must be at least 2 characters" }),
+      postalCode: z
+        .string()
+        .min(2, { message: "Postal code must be at least 2 characters" }),
+      state: z
+        .string()
+        .min(2, { message: "state must be at least 2 characters" }),
+    }),
     category: z
       .string()
       .min(2, { message: "Please select an event category to display." }),
@@ -85,89 +99,44 @@ const formSchema = z
 
 export type EventFormData = z.infer<typeof formSchema>;
 
-const EventForm = () => {
+interface EventFormProps {
+  initialData?: EventDetails | undefined;
+}
+
+const EventForm = ({ initialData }: EventFormProps) => {
   const navigate = useNavigate();
-  const categoriesList = [
-    "Music",
-    "Movies",
-    "Books",
-    "Sports",
-    "Technology",
-    "Travel",
-    "Food",
-    "Fashion",
-    "Art",
-    "Science",
-    "Politics",
-    "History",
-    "Education",
-    "Health",
-    "Finance",
-    "Gaming",
-    "Lifestyle",
-    "Parenting",
-    "Pets",
-    "Gardening",
-  ];
-  const eventTypesList = [
-    "Party",
-    "Conference",
-    "Concert",
-    "Festival",
-    "Seminar",
-    "Workshop",
-    "Meetup",
-    "Networking",
-    "Exhibition",
-    "Tradeshow",
-    "Convention",
-    "Summit",
-    "Gala",
-    "Fundraiser",
-    "Awards",
-    "Screening",
-    "Premiere",
-    "Launch",
-    "Fair",
-    "Expo",
-    "Charity",
-    "Sports",
-    "Competition",
-    "Tournament",
-    "Hackathon",
-    "Webinar",
-    "Virtual Event",
-    "Livestream",
-    "Auction",
-    "Sale",
-    "Open House",
-    "Tour",
-    "Tasting",
-    "Masterclass",
-    "Retreat",
-    "Camp",
-    "Cruise",
-    "Rally",
-    "Parade",
-    "Marathon",
-  ];
+
   const [loading, setLoading] = useState(false);
 
   const form = useForm<EventFormData>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      title: "",
-      category: "",
-      eventType: "",
-      description: "",
-      startTime: format(new Date(), "yyyy-MM-dd'T'HH:mm"),
-      endTime: format(new Date(), "yyyy-MM-dd'T'HH:mm"),
-      imageUrls: [],
-      roomChatLink: "",
-      artistName: "",
-      capacity: 0,
-      location: "",
-    },
+    defaultValues: initialData
+      ? {
+          ...initialData,
+          startTime: format(
+            new Date(initialData.startTime),
+            "yyyy-MM-dd'T'HH:mm",
+          ),
+          endTime: format(new Date(initialData.endTime), "yyyy-MM-dd'T'HH:mm"),
+        }
+      : {
+          title: "",
+          category: "",
+          eventType: "",
+          description: "",
+          startTime: format(new Date(), "yyyy-MM-dd'T'HH:mm"),
+          endTime: format(new Date(), "yyyy-MM-dd'T'HH:mm"),
+          imageUrls: [],
+          roomChatLink: "",
+          artistName: "",
+          capacity: 0,
+          location: {
+            city: "",
+            country: "",
+            postalCode: "",
+            state: "",
+          },
+        },
   });
 
   const onSubmit = async (values: EventFormData) => {
@@ -175,16 +144,31 @@ const EventForm = () => {
       setLoading(true);
       console.log(values);
 
-      const event = await createEvent({
-        ...values,
-        startTime: new Date(values.startTime).toISOString(),
-        endTime: new Date(values.endTime).toISOString(),
-      });
+      if (initialData) {
+        const event = await editEvent(
+          {
+            ...values,
+            startTime: new Date(values.startTime).toISOString(),
+            endTime: new Date(values.endTime).toISOString(),
+          },
+          initialData._id,
+        );
+        if (event?.updated) {
+          navigate(`/dashboard/${initialData.organizerId.username}`);
+          toast.success("Event updated successfully!");
+        }
+      } else {
+        const event = await createEvent({
+          ...values,
+          startTime: new Date(values.startTime).toISOString(),
+          endTime: new Date(values.endTime).toISOString(),
+        });
+        console.log(event);
+        navigate(`/${event._id}/tickets`);
+        toast.success("Event created successfully!");
+      }
 
       form.reset();
-      console.log(event);
-      navigate(`/${event._id}/tickets`);
-      toast.success("Event created successfully!");
     } catch (error) {
       if (axios.isAxiosError(error)) {
         toast.error(error.response?.data.message || "Something went wrong");
@@ -198,14 +182,21 @@ const EventForm = () => {
     }
   };
 
+  const cardTitle = initialData ? "Edit Event" : "Create New Event";
+  const cardDescription = initialData
+    ? "Edit the form below to update the event."
+    : "Fill out the form below to schedule a new event.";
+  const buttonText = initialData ? "Update Event" : "Create Event";
+  const loadingText = initialData ? "Updating..." : "Creating...";
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <Card className="max-w-4xl mx-auto p-5">
           <CardHeader className="text-center">
-            <CardTitle>Create New Event</CardTitle>
-            <CardDescription>
-              Fill out the form below to schedule a new event.
+            <CardTitle className="text-2xl font-bold">{cardTitle}</CardTitle>
+            <CardDescription className="text-lg">
+              {cardDescription}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -388,11 +379,24 @@ const EventForm = () => {
               <FormField
                 control={form.control}
                 name="location"
-                render={({ field }) => (
+                render={({}) => (
                   <FormItem>
                     <EventLocation
-                      name={field.name}
-                      onChange={field.onChange}
+                      initialValues={{
+                        city: initialData?.location?.city || "",
+                        country: initialData?.location?.country || "",
+                        postalCode: initialData?.location?.postalCode || "",
+                        state: initialData?.location?.state || "",
+                      }}
+                      onChange={(value: LocationType) => {
+                        form.setValue("location.city", value.city || "");
+                        form.setValue("location.country", value.country || "");
+                        form.setValue(
+                          "location.postalCode",
+                          value.postalCode || "",
+                        );
+                        form.setValue("location.state", value.state || "");
+                      }}
                     />
                   </FormItem>
                 )}
@@ -444,7 +448,7 @@ const EventForm = () => {
                 className="flex bg-green-500 hover:bg-green-600 text-white w-full"
                 disabled={loading}
               >
-                {loading ? "Creating..." : "Create Event"}
+                {loading ? loadingText : buttonText}
               </Button>
             </div>
           </CardFooter>
