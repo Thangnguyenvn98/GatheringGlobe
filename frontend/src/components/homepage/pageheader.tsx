@@ -13,7 +13,7 @@ import { Button } from "../ui/button";
 import GatheringGlobe from "../../images/GatheringGlobe.png";
 import SearchForm from "../navbar/searchbar";
 import { Link, useNavigate } from "react-router-dom";
-import { CircleUserRound, LogOut, ShoppingCart } from "lucide-react";
+import { CircleUserRound, LogOut, ShoppingCart, Plus } from "lucide-react";
 import { signOutUser } from "@/services/api";
 import toast from "react-hot-toast";
 import { useCurrentUser } from "@/services/queries";
@@ -40,9 +40,10 @@ function Pageheader() {
       toast.error("Logout failed");
     }
   };
+
   return (
     <>
-      <div className=" navbar-container flex md:hidden left-0 ">
+      <div className="navbar-container flex md:hidden left-0 ">
         <DropdownMenu>
           <DropdownMenuTrigger className="w-full bg-transparent text-green-800">
             <svg
@@ -65,7 +66,7 @@ function Pageheader() {
         </DropdownMenu>
       </div>
 
-      <div className=" navbar-container flex flex-col w-full fixed bg-opacity-100 z-30 p-4 px-10">
+      <div className="navbar-container flex flex-col w-full fixed bg-opacity-100 z-30 p-4 px-10">
         <div className="flex justify-between w-full items-center">
           <div className="relative flex items-center">
             <Link to="/">
@@ -80,11 +81,23 @@ function Pageheader() {
               Discover
             </Link>
             <Link
-              to="/community"
+              to="/community-chat"
               className="text-green-600 hover:text-neutral-800 "
             >
-              Community
+              Chat Room
             </Link>
+            <Link
+              to="/stream/channel/watch/all"
+              className="text-green-600 hover:text-neutral-800 "
+            >
+              Watch Stream
+            </Link>
+            {/* <Link
+              to={userData ? `/stream/${userData.username}/watch` : ""}
+              className="text-green-600 hover:text-neutral-800 "
+            >
+              Watch Stream
+            </Link> */}
             <Link to="/about" className="text-green-600 hover:text-neutral-800">
               About Us
             </Link>
@@ -96,6 +109,36 @@ function Pageheader() {
             </Link>
           </div>
           <div className="flex items-center gap-x-4">
+            {" "}
+            <DropdownMenu modal={false}>
+              <DropdownMenuTrigger asChild>
+                <Button variant={"profile"}>
+                  <Plus className="h-6 w-6 text-green-800" />
+                </Button>
+              </DropdownMenuTrigger>
+
+              <DropdownMenuContent
+                align="end"
+                className="w-65 flex flex-col items-center"
+              >
+                <DropdownMenuGroup>
+                  <DropdownMenuItem>
+                    <Link
+                      to={`/u/${userData?.username ?? ""}/create-new-event`}
+                    >
+                      Create New Event
+                    </Link>
+                  </DropdownMenuItem>
+
+                  <DropdownMenuItem>
+                    <Link to={`/u/${userData?.username ?? ""}/create-stream`}>
+                      Create New Stream
+                    </Link>
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+                <DropdownMenuSeparator />
+              </DropdownMenuContent>
+            </DropdownMenu>
             <DropdownMenu modal={false}>
               <DropdownMenuTrigger asChild>
                 <Button className="relative" variant={"outline"}>

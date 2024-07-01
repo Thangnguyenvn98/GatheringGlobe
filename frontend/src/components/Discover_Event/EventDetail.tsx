@@ -8,7 +8,13 @@ import { useNavigate } from "react-router-dom";
 import { useCurrentUser } from "@/services/queries";
 import sanitizeHtml from "sanitize-html";
 import { format } from "date-fns";
-import { CalendarCheck2, FilePenLine, MapPin } from "lucide-react";
+import {
+  CalendarCheck2,
+  MapPin,
+  ChevronLeft,
+  ChevronRight,
+  FilePenLine,
+} from "lucide-react";
 import { UserAvatar } from "../ui/user-avatar";
 
 const EventDetail: React.FC = () => {
@@ -27,6 +33,7 @@ const EventDetail: React.FC = () => {
   }>({});
   const [totalCost, setTotalCost] = useState<number>(0);
   const [showTickets, setShowTickets] = useState<boolean>(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState<number>(0);
 
   useEffect(() => {
     if (eventData && eventData.tickets) {
@@ -158,21 +165,54 @@ const EventDetail: React.FC = () => {
 
   const eventLocation = eventData?.location.split(",");
 
+  const nextImage = () => {
+    setCurrentImageIndex((prevIndex) =>
+      prevIndex + 1 < eventData.imageUrls.length ? prevIndex + 1 : 0,
+    );
+  };
+
+  const prevImage = () => {
+    setCurrentImageIndex((prevIndex) =>
+      prevIndex - 1 >= 0 ? prevIndex - 1 : eventData.imageUrls.length - 1,
+    );
+  };
+
   const isAuthor = currentUser?._id === eventData?.organizerId._id;
 
   return (
-    <div className="p-5">
-      <div className="relative mb-4 flex justify-center mx-20">
+    <div className="event-detail-container pt-2 p-5">
+      <div className="relative mb-4 flex justify-center mx-20 ">
         <div
-          className="absolute mx-10 inset-0 bg-cover bg-center flex flex-col justify-center items-center filter blur-lg rounded-lg"
-          style={{ backgroundImage: `url(${eventData.imageUrls[0]})` }}
+          className="absolute inset-0 bg-cover bg-center flex flex-col justify-center items-center filter blur-xl rounded-lg w-[80%]"
+          style={{
+            backgroundImage: `url(${eventData.imageUrls[currentImageIndex]})`,
+            width: "80%",
+            left: "50%",
+            transform: "translateX(-50%)",
+          }}
         ></div>
         <div className="max-w-[900px]  flex justify-center items-center relative">
           <img
-            src={eventData.imageUrls[0]}
+            src={eventData.imageUrls[currentImageIndex]}
             alt={eventData.title}
-            className="object-cover h-[450px] w-[900px] mb-4 rounded-xl"
+            className="event-image rounded-lg mb-4 h-[550px] "
           />
+          {eventData.imageUrls.length > 1 && (
+            <>
+              <button
+                className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-gray-800 bg-opacity-50 text-white p-2 rounded-full"
+                onClick={prevImage}
+              >
+                <ChevronLeft className="w-6 h-6" />
+              </button>
+              <button
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-gray-800 bg-opacity-50 text-white p-2 rounded-full"
+                onClick={nextImage}
+              >
+                <ChevronRight className="w-6 h-6" />
+              </button>
+            </>
+          )}
         </div>
       </div>
       <div className="flex flex-col md:flex-row py-4 mx-10 ">
@@ -262,7 +302,7 @@ const EventDetail: React.FC = () => {
               </Button>
             </div>
           ) : (
-            <div className="bg-white p-4 rounded-lg shadow-lg">
+            <div className="add-ticket-box bg-white p-4 rounded-lg shadow-lg">
               <h3 className="text-xl font-bold mb-2">Tickets</h3>
               {eventData.tickets.map((ticket: TicketType) => (
                 <div key={ticket._id} className="mb-1">

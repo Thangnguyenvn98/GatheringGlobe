@@ -235,6 +235,7 @@ router.post(
   }
 );
 
+
 router.delete(
   "/:ticketId/deleteTicket",
   verifyToken,
@@ -265,6 +266,38 @@ router.delete(
     }
   }
 );
+router.delete(
+  "/:eventId/deleteEvent",
+  verifyToken,
+  async (req: Request, res: Response) => {
+    try {
+      const userId = req.userId;
+      const { eventId } = req.params; // Extract eventId from params
+
+      // Find and delete the event
+      const event = await Event.findOneAndDelete({
+        organizerId: userId,
+        _id: eventId,
+      });
+
+      if (!event) {
+        return res
+          .status(404)
+          .json({ message: "Event not found/not created by this user" });
+      }
+
+      // Delete all tickets associated with the event
+      await Ticket.deleteMany({ eventId });
+
+      res
+        .status(200)
+        .json({ message: "Event deleted successfully", deleted: event });
+    } catch (error) {
+      console.log("Fail to delete event", error);
+      res.status(500).send({ message: "Internal server error" });
+    }
+  }
+);
 
 router.patch(
   "/:ticketId/updateTicket",
@@ -283,7 +316,7 @@ router.patch(
       if (!event) {
         return res.status(404).send({
           message: "Event of this ticket not found/not created by this user",
-        });
+      });
       }
       ticket = await Ticket.findByIdAndUpdate(req.query.ticketId, req.body, {
         new: true,
