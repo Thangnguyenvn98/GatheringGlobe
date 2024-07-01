@@ -265,7 +265,7 @@ const EventDetail: React.FC = () => {
           </div>
         </div>
 
-        <div className="w-full md:w-2/5 md:sticky md:top-44 md:self-start xl:w-[80%] 2xl:max-w-[600px]">
+        <div className="w-full md:w-2/5 md:sticky md:top-44 md:self-start lg:max-w-[600px] 2xl:max-w-[600px]">
           {!showTickets ? (
             <div className="bg-white p-4 rounded-lg shadow-lg text-center">
               <div className="flex justify-center items-center mb-2">
