@@ -6,18 +6,17 @@ import {
   CarouselPrevious,
 } from "../ui/carousel";
 import { Card, CardContent } from "../ui/card";
-import AvatarImg from "../../images/avatar.png";
-import SmilingGuy from "../../images/guy_smiling.jpg";
-import SittingGuy from "../../images/guy_phone_smile.jpg";
+import sarah from "../../images/avatar.png";
+import john from "../../images/john.jpg";
+import emily from "../../images/emily.jpg";
 
 function Testimonials() {
   const contents: string[] = [
-    '"Joining this platform has been a game-changer for me! I\'ve connected with like-minded individuals, attended amazing events, and made unforgettable memories. Highly recommend!"- Sarah Smith',
-    "\"Since joining this platform, my life has taken a positive turn. I've met incredible people who share my interests, participated in fantastic events, and created lasting memories. I can't recommend it enough!\" - Mark Johnson",
-    "\"This platform has truly transformed my social life. I've found a supportive community, enjoyed unforgettable events, and built meaningful connections. It's been an amazing experience!\" - David Williams",
+    '"Joining this platform has been a game-changer for me! I\'ve connected with like-minded individuals, attended amazing events, and made unforgettable memories. Highly recommend!" - Sarah Smith',
+    '"This platform has expanded my network and opened up countless opportunities. The community is vibrant and supportive. Absolutely love it!" - John Doe',
+    '"I have found this platform incredibly useful for both professional and personal growth. The events are top-notch and the people you meet are fantastic. Five stars!" - Emily Johnson',
   ];
-
-  const images: string[] = [AvatarImg, SmilingGuy, SittingGuy];
+  const images: string[] = [sarah, john, emily];
 
   return (
     <div className="w-full flex justify-center">
