@@ -8,7 +8,7 @@ const Timer = () => {
   const [minutes, setMinutes] = useState(0);
 
   useEffect(() => {
-    const target = new Date("08/21/2024 23:59:59");
+    const target = new Date("07/06/2024 23:59:59");
     const interval = setInterval(() => {
       const now = new Date();
       const difference = target.getTime() - now.getTime();
@@ -35,9 +35,18 @@ const Timer = () => {
   return (
     <div>
       {EventTime ? (
-        <>
-          <h1>Gathering Time!</h1>
-        </>
+        <div
+          style={{
+            backgroundImage: `url("${bg}")`,
+            backgroundSize: "cover",
+            backgroundRepeat: "no-repeat",
+          }}
+          className="flex flex-col h-[400px]"
+        >
+          <h1 className="text-4xl text-white font-serif mx-auto my-auto">
+            It's Gathering Time!
+          </h1>
+        </div>
       ) : (
         <>
           <div

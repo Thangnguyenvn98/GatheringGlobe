@@ -17,6 +17,7 @@ function Testimonials() {
     '"I have found this platform incredibly useful for both professional and personal growth. The events are top-notch and the people you meet are fantastic. Five stars!" - Emily Johnson',
   ];
   const images: string[] = [sarah, john, emily];
+
   return (
     <div className="w-full flex justify-center">
       <div className="w-[90%] relative mx-auto">
