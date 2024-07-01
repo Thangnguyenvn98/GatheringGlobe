@@ -163,8 +163,6 @@ const EventDetail: React.FC = () => {
     ...eventData.tickets.map((ticket: TicketType) => ticket.price),
   ).toFixed(2);
 
-  const eventLocation = eventData?.location.split(",");
-
   const nextImage = () => {
     setCurrentImageIndex((prevIndex) =>
       prevIndex + 1 < eventData.imageUrls.length ? prevIndex + 1 : 0,
