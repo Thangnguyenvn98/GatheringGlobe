@@ -21,7 +21,9 @@
   "author": "BinniesLite <89041460+BinniesLite@users.noreply.github.com>",
   "license": "MIT",
   "dependencies": {
-    "run-p": "^0.0.0"
+    "@radix-ui/react-radio-group": "^1.2.0",
+    "run-p": "^0.0.0",
+    "sanitize-html": "^2.13.0"
   },
   "devDependencies": {
     "husky": "^8.0.0",

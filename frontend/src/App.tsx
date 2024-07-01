@@ -65,7 +65,7 @@ function App() {
           />
 
           <Route
-            path="/create-new-event"
+            path="/u/:username/create-new-event"
             element={
               <Layout backgroundColor="bg-white">
                 <EventPage />
