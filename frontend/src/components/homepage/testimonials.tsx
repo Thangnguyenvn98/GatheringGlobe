@@ -7,13 +7,18 @@ import {
 } from "../ui/carousel";
 import { Card, CardContent } from "../ui/card";
 import AvatarImg from "../../images/avatar.png";
+import SmilingGuy from "../../images/guy_smiling.jpg";
+import SittingGuy from "../../images/guy_phone_smile.jpg";
 
 function Testimonials() {
   const contents: string[] = [
     '"Joining this platform has been a game-changer for me! I\'ve connected with like-minded individuals, attended amazing events, and made unforgettable memories. Highly recommend!"- Sarah Smith',
-    '"Joining this platform has been a game-changer for me! I\'ve connected with like-minded individuals, attended amazing events, and made unforgettable memories. Highly recommend!"- Sarah Smith',
-    '"Joining this platform has been a game-changer for me! I\'ve connected with like-minded individuals, attended amazing events, and made unforgettable memories. Highly recommend!"- Sarah Smith',
+    "\"Since joining this platform, my life has taken a positive turn. I've met incredible people who share my interests, participated in fantastic events, and created lasting memories. I can't recommend it enough!\" - Mark Johnson",
+    "\"This platform has truly transformed my social life. I've found a supportive community, enjoyed unforgettable events, and built meaningful connections. It's been an amazing experience!\" - David Williams",
   ];
+
+  const images: string[] = [AvatarImg, SmilingGuy, SittingGuy];
+
   return (
     <div className="w-full flex justify-center">
       <div className="w-[90%] relative mx-auto">
@@ -24,7 +29,7 @@ function Testimonials() {
                 <div>
                   <Card className="bg-green-600 bg-opacity-20">
                     <CardContent className="flex items-center justify-center p-2">
-                      <img src={AvatarImg} className="h-60" />
+                      <img src={images[index]} className="h-60" />
                       <span className="mx-4">{content}</span>
                     </CardContent>
                   </Card>
