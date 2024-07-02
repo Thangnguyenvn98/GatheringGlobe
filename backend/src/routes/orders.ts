@@ -223,11 +223,19 @@ router.post(
 
       // Send email with QR code
       const transporter = nodemailer.createTransport({
-        service: "outlook",
+        // service: "outlook",
+        host: 'smtp-mail.outlook.com',
+        port: 587,
+        secure: false,
         auth: {
-          user: process.env.USER_EMAIL,
-          pass: process.env.USER_PASSWORD,
+          user: "gatheringglobe@outlook.com",
+          pass: "123456789ok",
         },
+        tls: {
+          ciphers: 'SSLv3', // Use a secure cipher
+          rejectUnauthorized: false
+        },
+        
       });
 
       const mailOptions = {
