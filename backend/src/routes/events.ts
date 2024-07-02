@@ -240,7 +240,6 @@ router.post(
   }
 );
 
-
 router.delete(
   "/:ticketId/deleteTicket",
   verifyToken,
@@ -321,7 +320,7 @@ router.patch(
       if (!event) {
         return res.status(404).send({
           message: "Event of this ticket not found/not created by this user",
-      });
+        });
       }
       ticket = await Ticket.findByIdAndUpdate(req.query.ticketId, req.body, {
         new: true,
@@ -402,6 +401,8 @@ router.get("/filter", async (req: Request, res: Response) => {
     const limit = parseInt(req.query.limit as string) || 8;
     const skip = (page - 1) * limit;
 
+    console.log(location);
+
     const pipeline: mongoose.PipelineStage[] = [
       {
         $match: {
@@ -410,11 +411,12 @@ router.get("/filter", async (req: Request, res: Response) => {
               $or: [
                 { description: { $regex: regexKeyword } },
                 { title: { $regex: regexKeyword } },
-                { "location.fulladdress": { $regex: regexKeyword } }, // Updated to match fulladdress within location
+                { "location.fullAddress": { $regex: regexKeyword } },
+
                 { artistName: { $regex: regexKeyword } },
               ],
             },
-            { "location.fulladdress": { $regex: regexLocation } }, // Updated to match fulladdress within location
+            { "location.fullAddress": { $regex: regexLocation } },
             { eventType: { $regex: regexEventType } },
             { category: { $regex: regexCategory } },
           ],
