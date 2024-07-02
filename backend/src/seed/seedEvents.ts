@@ -6,9 +6,17 @@ const categories = [
   "city",
   "tech",
   "people",
-  "animals",
   "food",
   "sports",
+  "education",
+  "fitness",
+  "nightlife",
+  "music",
+  "fashion",
+  "entertainment",
+  "travel",
+  "finance",
+  "pets",
 ];
 
 export const generateEvents = async (numEvents: number, users: any[]) => {
@@ -18,8 +26,8 @@ export const generateEvents = async (numEvents: number, users: any[]) => {
     const imageUrls = Array.from({ length: 5 }, () => {
       // Randomize category and optionally size for each image
       const category = faker.helpers.arrayElement(categories);
-      const width = faker.number.int({ min: 300, max: 800 });
-      const height = faker.number.int({ min: 300, max: 1200 });
+      const width = faker.number.int({ min: 600, max: 800 });
+      const height = faker.number.int({ min: 400, max: 1200 });
       return faker.image.urlLoremFlickr({ category, width, height });
     });
     const refDate = new Date();
@@ -51,7 +59,11 @@ export const generateEvents = async (numEvents: number, users: any[]) => {
       },
       category: faker.helpers.arrayElement([
         "Music",
+        "Comedy",
         "Art",
+        "Food And Drink",
+        "Fitness",
+        "Nightlife",
         "Technology",
         "Sports",
         "Books",
@@ -59,6 +71,7 @@ export const generateEvents = async (numEvents: number, users: any[]) => {
         "Fashion",
         "Politics",
         "Parenting",
+        "Entertainment",
         "Pets",
         "Gardening",
         "Gaming",
