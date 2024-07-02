@@ -26,6 +26,7 @@ import {
 import { useSocket } from "@/components/providers/socket-provider";
 import { CartItem } from "@/hooks/use-cart-store";
 import { IngressInput } from "@/types/IngressInput";
+import { EventDetails } from "@/types/eventDetails";
 
 export function useRooms() {
   return useQuery({
@@ -73,7 +74,7 @@ export const useCurrentUserById = (userId: string) => {
 };
 
 export const useCurrentEventDetail = (eventId: string) => {
-  return useQuery({
+  return useQuery<EventDetails>({
     queryKey: ["event", eventId],
     queryFn: () => getEventById(eventId),
     enabled: !!eventId,

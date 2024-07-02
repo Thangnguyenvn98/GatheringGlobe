@@ -5,6 +5,7 @@ import Event, { EventType } from "../models/event"; // this is the model <------
 import Ticket from "../models/ticket";
 import mongoose from "mongoose";
 import Discount, { DiscountType } from "../models/discount";
+import { joinLocation } from "../utils/joinLocation";
 
 const router = express.Router();
 
@@ -122,6 +123,7 @@ router.post("/", verifyToken, async (req: Request, res: Response) => {
         "An event with the same title, start time and location already exists!",
     });
   }
+  const fullAddress = joinLocation(location);
   const event = new Event({
     title,
     description,
@@ -130,7 +132,10 @@ router.post("/", verifyToken, async (req: Request, res: Response) => {
     venueId: venueId ? new mongoose.Types.ObjectId(venueId) : undefined,
     capacity,
     organizerId: user._id,
-    location,
+    location: {
+      ...location,
+      fullAddress,
+    },
     category,
     eventType,
     artistName: artistName ? artistName : undefined,
@@ -265,6 +270,38 @@ router.delete(
     }
   }
 );
+router.delete(
+  "/:eventId/deleteEvent",
+  verifyToken,
+  async (req: Request, res: Response) => {
+    try {
+      const userId = req.userId;
+      const { eventId } = req.params; // Extract eventId from params
+
+      // Find and delete the event
+      const event = await Event.findOneAndDelete({
+        organizerId: userId,
+        _id: eventId,
+      });
+
+      if (!event) {
+        return res
+          .status(404)
+          .json({ message: "Event not found/not created by this user" });
+      }
+
+      // Delete all tickets associated with the event
+      await Ticket.deleteMany({ eventId });
+
+      res
+        .status(200)
+        .json({ message: "Event deleted successfully", deleted: event });
+    } catch (error) {
+      console.log("Fail to delete event", error);
+      res.status(500).send({ message: "Internal server error" });
+    }
+  }
+);
 
 router.patch(
   "/:ticketId/updateTicket",
@@ -364,6 +401,8 @@ router.get("/filter", async (req: Request, res: Response) => {
     const limit = parseInt(req.query.limit as string) || 8;
     const skip = (page - 1) * limit;
 
+    console.log(location);
+
     const pipeline: mongoose.PipelineStage[] = [
       {
         $match: {
@@ -372,11 +411,12 @@ router.get("/filter", async (req: Request, res: Response) => {
               $or: [
                 { description: { $regex: regexKeyword } },
                 { title: { $regex: regexKeyword } },
-                { location: { $regex: regexKeyword } },
+                { "location.fullAddress": { $regex: regexKeyword } },
+
                 { artistName: { $regex: regexKeyword } },
               ],
             },
-            { location: { $regex: regexLocation } },
+            { "location.fullAddress": { $regex: regexLocation } },
             { eventType: { $regex: regexEventType } },
             { category: { $regex: regexCategory } },
           ],
@@ -503,7 +543,7 @@ router.delete(
     try {
       const userId = req.userId;
       const event = await Event.findOneAndDelete({
-        $and: [{ organizerId: userId }, { _id: req.query.eventId }],
+        $and: [{ organizerId: userId }, { _id: req.params.eventId }],
       });
 
       if (!event) {
@@ -511,7 +551,7 @@ router.delete(
           .status(404)
           .json({ message: "Event not found/not created by this user" });
       }
-      await Ticket.deleteMany({ eventId: req.query.eventId });
+      await Ticket.deleteMany({ eventId: req.params.eventId });
       res
         .status(200)
         .json({ message: "Event deleted successfully", deleted: event });
@@ -522,13 +562,13 @@ router.delete(
   }
 );
 
-router.patch(
+router.put(
   "/:eventId/updateEvent",
   verifyToken,
   async (req: Request, res: Response) => {
     try {
       const event = await Event.findOneAndUpdate(
-        { $and: [{ organizerId: req.userId }, { _id: req.query.eventId }] },
+        { $and: [{ organizerId: req.userId }, { _id: req.params.eventId }] },
         req.body,
         { new: true }
       );

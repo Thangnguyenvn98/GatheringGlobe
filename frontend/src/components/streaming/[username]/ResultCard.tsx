@@ -11,9 +11,14 @@ interface ResultCardProps {
 
 const ResultCard = ({ data }: ResultCardProps) => {
   const username =
-    typeof data.userId === "object" ? data.userId.username : "unknown";
+    data.userId && typeof data.userId === "object" && data.userId.username
+      ? data.userId.username
+      : "unknown";
   const userImageUrl =
-    typeof data.userId === "object" ? data.userId.imageUrl : "unknown";
+    data.userId && typeof data.userId === "object" && data.userId.imageUrl
+      ? data.userId.imageUrl
+      : "";
+
   return (
     <Link to={`/stream/${username}/watch`}>
       <div className="h-full w-full space-y-4">
@@ -22,7 +27,7 @@ const ResultCard = ({ data }: ResultCardProps) => {
           src={data.thumbnailUrl || ""}
           fallback={
             userImageUrl ||
-            `https://api.dicebear.com/5.x/open-peeps/svg?seed=${userImageUrl}2&size=64&face=smile,cute`
+            `https://api.dicebear.com/5.x/open-peeps/svg?seed=${username}&size=64&face=smile,cute`
           }
           username={username}
         />
@@ -36,11 +41,11 @@ const ResultCard = ({ data }: ResultCardProps) => {
             username={username}
             imageUrl={
               userImageUrl ||
-              `https://api.dicebear.com/5.x/open-peeps/svg?seed=${userImageUrl}2&size=64&face=smile,cute`
+              `https://api.dicebear.com/5.x/open-peeps/svg?seed=${username}&size=64&face=smile,cute`
             }
             isLive={data.isLive}
           />
-          <div className="flex flex-col text-sm overflor-hidden">
+          <div className="flex flex-col text-sm overflow-hidden">
             <p className="truncate font-semibold hover:text-blue-500">
               {data.name}
             </p>

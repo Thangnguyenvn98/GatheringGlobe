@@ -1,5 +1,13 @@
 import mongoose from "mongoose";
 
+export type LocationType = {
+  city: string;
+  postalCode: string;
+  country: string;
+  state?: string;
+  fullAddress?: string;
+};
+
 export type EventType = {
   _id: string;
   title: string;
@@ -9,7 +17,7 @@ export type EventType = {
   venueId?: string;
   capacity?: number;
   organizerId: string;
-  location: string;
+  location: LocationType;
   postalCode?: string;
   category: string;
   eventType: string;
@@ -18,6 +26,17 @@ export type EventType = {
   tickets: mongoose.Types.ObjectId[];
   roomChatLink: string;
 };
+
+const locationSchema = new mongoose.Schema(
+  {
+    city: { type: String, required: true },
+    postalCode: { type: String, required: true },
+    country: { type: String, required: true },
+    state: { type: String, required: false },
+    fullAddress: { type: String, required: false },
+  },
+  { _id: false }
+);
 
 // Update the mongoose schema for Event
 // Update the mongoose schema for Event
@@ -37,7 +56,7 @@ const eventSchema = new mongoose.Schema({
     ref: "User",
     required: true,
   },
-  location: { type: String, required: true },
+  location: { type: locationSchema, required: true },
   postalCode: { type: String, required: false },
   category: { type: String, required: true },
   eventType: { type: String, required: true },

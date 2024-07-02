@@ -9,7 +9,7 @@ export interface EventType {
   venueId?: string;
   capacity?: number;
   organizerId: string;
-  location: string;
+  location: LocationType;
   category: string;
   eventType: string;
   artistName: string;
@@ -17,4 +17,12 @@ export interface EventType {
   tickets: TicketType[];
   roomChatLink?: string;
   minPrice?: number;
+}
+
+export interface LocationType {
+  city: string;
+  postalCode: string;
+  country: string;
+  state?: string;
+  fullAddress?: string;
 }
