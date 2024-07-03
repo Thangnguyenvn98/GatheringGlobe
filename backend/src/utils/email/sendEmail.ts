@@ -23,16 +23,12 @@ const sendEmail = async (
   template: string
 ): Promise<void> => {
   const transporter = nodemailer.createTransport({
-    host: "smtp-mail.outlook.com",
+    host: "smtp.mailersend.net",
     port: 587,
-    secure: false,
+    secure: true,
     auth: {
       user: process.env.USER_EMAIL,
       pass: process.env.USER_PASSWORD,
-    },
-    tls: {
-      ciphers: "SSLv3",
-      rejectUnauthorized: false,
     },
   });
 

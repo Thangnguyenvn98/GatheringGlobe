@@ -25,17 +25,12 @@ export const forgetPassword = async (req: Request, res: Response) => {
 
     // Send the token to the user's email
     const transporter = nodemailer.createTransport({
-      // service: "outlook",
-      host: "smtp-mail.outlook.com",
+      host: "smtp.mailersend.net",
       port: 587,
-      secure: false,
+      secure: true,
       auth: {
-        user: "gatheringglobe@outlook.com",
-        pass: "123456789ok",
-      },
-      tls: {
-        ciphers: "SSLv3", // Use a secure cipher
-        rejectUnauthorized: false,
+        user: process.env.USER_EMAIL,
+        pass: process.env.USER_PASSWORD,
       },
     });
 
