@@ -37,7 +37,7 @@ export const forgetPassword = async (req: Request, res: Response) => {
 
     // Email configuration
     const mailOptions = {
-      from: process.env.PERSONAL_EMAIL,
+      from: process.env.USER_EMAIL,
       to: req.body.email,
       subject: "Reset Password",
       html: `<h1>Reset Your Password</h1>
