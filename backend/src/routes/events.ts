@@ -277,7 +277,7 @@ router.delete(
     try {
       const userId = req.userId;
       const { eventId } = req.params; // Extract eventId from params
-
+      console.log(eventId);
       // Find and delete the event
       const event = await Event.findOneAndDelete({
         organizerId: userId,

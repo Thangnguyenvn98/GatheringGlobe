@@ -6,6 +6,7 @@ import { generateEvents } from "./seedEvents";
 import { generateTickets } from "./seedTickets";
 import { generateUsers } from "./seedUsers";
 import { generateDiscounts } from "./seedDiscount";
+import { generateStreams } from "./seedStream";
 
 dotenv.config();
 

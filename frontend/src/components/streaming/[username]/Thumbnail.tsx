@@ -8,6 +8,7 @@ interface ThumbnailProps {
   fallback: string;
   username: string;
 }
+
 const Thumbnail = ({
   isLive = false,
   src,
@@ -18,7 +19,7 @@ const Thumbnail = ({
   console.log(isLive);
   if (!src) {
     content = (
-      <div className="bg-background flex flex-col items-center gap-y-4 justify-center h-full w-full transition-transform group-hover:translate-x-2 group-hover:-transalte-y-2 rounded-md">
+      <div className="flex items-center justify-center h-full w-full rounded-md bg-gray-200">
         <UserAvatar
           showBadge
           username={username}
@@ -31,18 +32,17 @@ const Thumbnail = ({
     content = (
       <img
         src={src}
-        className="group-hover:translate-x-2 group-hover:-translate-y-2 rounded-md object-cover transition-transform"
+        className="w-full h-full rounded-md object-cover"
         alt="Thumbnail"
       />
     );
   }
   return (
-    <div className="group aspect-video relative rounded-md cursor-pointer">
-      <div className="bg-blue-600 opacity-0 rounded-md absolute inset-0 transition-opacity flex items-center justify-center group-hover:opacity-100" />
+    <div className="group aspect-video relative rounded-md cursor-pointer overflow-hidden transition-transform duration-300 hover:-translate-y-2 hover:translate-x-2">
       {content}
 
-      {isLive && src && (
-        <div className="absolute top-2 left-2 group-hover:translate-x-2 group-hover:-translate-y-2 transition-transform">
+      {isLive && (
+        <div className="absolute top-2 left-2">
           <LiveBadge />
         </div>
       )}
