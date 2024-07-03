@@ -25,7 +25,8 @@ export const forgetPassword = async (req: Request, res: Response) => {
 
     // Send the token to the user's email
     const transporter = nodemailer.createTransport({
-      host: "smtp.mailersend.net",
+      service: "Zoho",
+      host: "smtp.zoho.com",
       port: 587,
       secure: false,
       auth: {

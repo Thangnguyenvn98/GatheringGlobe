@@ -23,7 +23,8 @@ const sendEmail = async (
   template: string
 ): Promise<void> => {
   const transporter = nodemailer.createTransport({
-    host: "smtp.mailersend.net",
+    service: "Zoho",
+    host: "smtp.zoho.com",
     port: 587,
     secure: false,
     auth: {
