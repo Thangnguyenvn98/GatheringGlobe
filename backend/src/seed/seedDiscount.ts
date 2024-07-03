@@ -10,9 +10,8 @@ export const generateDiscounts = async () => {
     startTime: { $gte: today },
   })
     .sort({ startDate: 1 })
-    .limit(5)
+    .limit(20)
     .exec();
-  console.log(events);
 
   const discounts = [];
 

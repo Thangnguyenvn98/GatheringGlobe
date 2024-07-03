@@ -8,7 +8,13 @@ import { useNavigate } from "react-router-dom";
 import { useCurrentUser } from "@/services/queries";
 import sanitizeHtml from "sanitize-html";
 import { format } from "date-fns";
-import { CalendarCheck2, FilePenLine, MapPin } from "lucide-react";
+import {
+  CalendarCheck2,
+  MapPin,
+  ChevronLeft,
+  ChevronRight,
+  FilePenLine,
+} from "lucide-react";
 import { UserAvatar } from "../ui/user-avatar";
 
 const EventDetail: React.FC = () => {
@@ -27,6 +33,7 @@ const EventDetail: React.FC = () => {
   }>({});
   const [totalCost, setTotalCost] = useState<number>(0);
   const [showTickets, setShowTickets] = useState<boolean>(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState<number>(0);
 
   useEffect(() => {
     if (eventData && eventData.tickets) {
@@ -156,27 +163,58 @@ const EventDetail: React.FC = () => {
     ...eventData.tickets.map((ticket: TicketType) => ticket.price),
   ).toFixed(2);
 
-  const eventLocation = eventData?.location.split(",");
+  const nextImage = () => {
+    setCurrentImageIndex((prevIndex) =>
+      prevIndex + 1 < eventData.imageUrls.length ? prevIndex + 1 : 0,
+    );
+  };
+
+  const prevImage = () => {
+    setCurrentImageIndex((prevIndex) =>
+      prevIndex - 1 >= 0 ? prevIndex - 1 : eventData.imageUrls.length - 1,
+    );
+  };
 
   const isAuthor = currentUser?._id === eventData?.organizerId._id;
 
   return (
-    <div className="p-5">
-      <div className="relative mb-4 flex justify-center mx-20">
+    <div className="event-detail-container pt-2 p-5">
+      <div className="relative mb-4 flex justify-center mx-20 ">
         <div
-          className="absolute mx-10 inset-0 bg-cover bg-center flex flex-col justify-center items-center filter blur-lg rounded-lg"
-          style={{ backgroundImage: `url(${eventData.imageUrls[0]})` }}
+          className="absolute inset-0 bg-cover bg-center flex flex-col justify-center items-center filter blur-xl rounded-lg w-[80%]"
+          style={{
+            backgroundImage: `url(${eventData.imageUrls[currentImageIndex]})`,
+            width: "80%",
+            left: "50%",
+            transform: "translateX(-50%)",
+          }}
         ></div>
         <div className="max-w-[900px]  flex justify-center items-center relative">
           <img
-            src={eventData.imageUrls[0]}
+            src={eventData.imageUrls[currentImageIndex]}
             alt={eventData.title}
-            className="object-cover h-[450px] w-[900px] mb-4 rounded-xl"
+            className="event-image rounded-lg mb-4 h-[550px] "
           />
+          {eventData.imageUrls.length > 1 && (
+            <>
+              <button
+                className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-gray-800 bg-opacity-50 text-white p-2 rounded-full"
+                onClick={prevImage}
+              >
+                <ChevronLeft className="w-6 h-6" />
+              </button>
+              <button
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-gray-800 bg-opacity-50 text-white p-2 rounded-full"
+                onClick={nextImage}
+              >
+                <ChevronRight className="w-6 h-6" />
+              </button>
+            </>
+          )}
         </div>
       </div>
-      <div className="flex flex-col md:flex-row py-4 mx-10 ">
-        <div className="w-full md:w-3/5 mb-4 md:mb-0 pr-4">
+      <div className="flex flex-col md:flex-row md:justify-center 2xl:gap-x-6 2xl:flex-row 2xl:justify-center py-4 mx-10 ">
+        <div className="w-full md:w-3/5 mb-4 md:mb-0 pr-4 2xl:w-1/3">
           <p className="text-gray-600 text-xl">{eventDate}</p>
 
           <h1 className="text-6xl font-bold text-black mb-2 max-w-[700px]">
@@ -197,9 +235,9 @@ const EventDetail: React.FC = () => {
               <MapPin fill="black" color="white" className="w-8 h-8" />
               <div className="flex flex-col">
                 <span className="font-semibold text-black">
-                  {eventLocation[0]}
+                  {eventData?.location.city}
                 </span>
-                <span> {eventData?.location}</span>
+                <span> {eventData?.location.fullAddress}</span>
               </div>
             </div>
           </div>
@@ -227,18 +265,7 @@ const EventDetail: React.FC = () => {
           </div>
         </div>
 
-        <div className="w-full md:w-2/5 md:sticky md:top-44 md:self-start">
-          {isAuthor && (
-            <div className="absolute z-50 top-0 -left-40">
-              <Link
-                className="flex items-center gap-x-2 p-4 hover:bg-slate-300 rounded-lg bg-white"
-                to={`/my-event/${eventId}/edit/`}
-              >
-                <FilePenLine className="w-8 h-8" />
-                <h2>Edit Event</h2>
-              </Link>
-            </div>
-          )}
+        <div className="w-full md:w-2/5 md:sticky md:top-44 md:self-start lg:max-w-[600px] 2xl:max-w-[600px]">
           {!showTickets ? (
             <div className="bg-white p-4 rounded-lg shadow-lg text-center">
               <div className="flex justify-center items-center mb-2">
@@ -262,7 +289,7 @@ const EventDetail: React.FC = () => {
               </Button>
             </div>
           ) : (
-            <div className="bg-white p-4 rounded-lg shadow-lg">
+            <div className="add-ticket-box bg-white p-4 rounded-lg shadow-lg">
               <h3 className="text-xl font-bold mb-2">Tickets</h3>
               {eventData.tickets.map((ticket: TicketType) => (
                 <div key={ticket._id} className="mb-1">
@@ -325,6 +352,17 @@ const EventDetail: React.FC = () => {
                   </Button>
                 </div>
               </div>
+            </div>
+          )}
+          {isAuthor && (
+            <div className="relative z-50 top-10 max-w-[150px]">
+              <Link
+                className="flex items-center gap-x-2 p-4 hover:bg-slate-300 rounded-lg bg-white"
+                to={`/my-event/${eventId}/edit/`}
+              >
+                <FilePenLine className="w-8 h-8" />
+                <h2>Edit Event</h2>
+              </Link>
             </div>
           )}
         </div>

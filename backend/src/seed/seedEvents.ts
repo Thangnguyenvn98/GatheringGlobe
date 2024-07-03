@@ -6,9 +6,17 @@ const categories = [
   "city",
   "tech",
   "people",
-  "animals",
   "food",
   "sports",
+  "education",
+  "fitness",
+  "nightlife",
+  "music",
+  "fashion",
+  "entertainment",
+  "travel",
+  "finance",
+  "pets",
 ];
 
 export const generateEvents = async (numEvents: number, users: any[]) => {
@@ -18,8 +26,8 @@ export const generateEvents = async (numEvents: number, users: any[]) => {
     const imageUrls = Array.from({ length: 5 }, () => {
       // Randomize category and optionally size for each image
       const category = faker.helpers.arrayElement(categories);
-      const width = faker.number.int({ min: 300, max: 800 });
-      const height = faker.number.int({ min: 300, max: 1200 });
+      const width = faker.number.int({ min: 600, max: 800 });
+      const height = faker.number.int({ min: 400, max: 1200 });
       return faker.image.urlLoremFlickr({ category, width, height });
     });
     const refDate = new Date();
@@ -30,6 +38,11 @@ export const generateEvents = async (numEvents: number, users: any[]) => {
     const endTime = new Date(
       startTime.getTime() + faker.number.int({ min: 3600000, max: 86400000 })
     );
+    const city = faker.location.city();
+    const country = faker.location.country();
+    const postalCode = faker.location.zipCode();
+    const province = faker.location.state();
+    const fullAddress = `${city}, ${province}, ${country}, ${postalCode}`;
     const event = new Event({
       title: faker.music.songName(),
       description: faker.lorem.paragraphs(2),
@@ -37,10 +50,20 @@ export const generateEvents = async (numEvents: number, users: any[]) => {
       endTime: endTime,
       capacity: faker.number.int({ min: 100, max: 500 }),
       organizerId: randomUser._id, // Link to a random user as organizer
-      location: faker.location.city(),
+      location: {
+        city: city,
+        country: country,
+        postalCode: postalCode,
+        state: province,
+        fullAddress: fullAddress,
+      },
       category: faker.helpers.arrayElement([
         "Music",
+        "Comedy",
         "Art",
+        "Food And Drink",
+        "Fitness",
+        "Nightlife",
         "Technology",
         "Sports",
         "Books",
@@ -48,6 +71,7 @@ export const generateEvents = async (numEvents: number, users: any[]) => {
         "Fashion",
         "Politics",
         "Parenting",
+        "Entertainment",
         "Pets",
         "Gardening",
         "Gaming",
