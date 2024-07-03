@@ -7,6 +7,7 @@ import { useMutation } from "@tanstack/react-query";
 import useBotMessagesStore from "@/hooks/use-bot-messages-store";
 import { CornerDownLeft, Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
+import { sendChatBotMessage } from "@/services/api";
 
 interface BotChatInputProps extends HTMLAttributes<HTMLDivElement> {}
 
@@ -18,21 +19,7 @@ const BotChatInput: FC<BotChatInputProps> = ({ className, ...props }) => {
 
   const { mutate: sendMessage, isPending } = useMutation({
     mutationKey: ["sendMessage"],
-    mutationFn: async (message: ChatBotUserMessage) => {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL}/api/chatbot`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            messages: [message],
-          }),
-        },
-      );
-      return response.text();
-    },
+    mutationFn: sendChatBotMessage,
     onMutate: (message: ChatBotUserMessage) => {
       addMessage([message]);
     },

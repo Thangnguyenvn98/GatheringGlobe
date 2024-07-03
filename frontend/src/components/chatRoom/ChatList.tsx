@@ -80,10 +80,11 @@ const ChatList: React.FC<ChatListProps> = ({
           >
             <div className="flex justify-between items-center">
               <div>
-                <h3 className="font-medium">
+                <p className="text-xl font-bold">{room.name}</p>
+
+                <h3 className="text-md text-gray-600">
                   {room.owner?.username || "Unknown User"}
                 </h3>
-                <p className="text-sm text-gray-600">{room.name}</p>
               </div>
               {userId === room.owner?._id && (
                 <div className="flex gap-x-2">

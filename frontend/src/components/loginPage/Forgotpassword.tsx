@@ -10,15 +10,12 @@ import toast from "react-hot-toast";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import axios from "axios";
 import { useForm } from "react-hook-form";
-// import { useNavigate } from "react-router-dom";
 import forgot from "../../images/forgot.jpg";
 import { Link } from "react-router-dom";
+import { forgetPasswordSubmit } from "@/services/api";
 
 const ForgotPassword = () => {
-  // const navigate = useNavigate();
-
   const {
     register,
     handleSubmit,
@@ -28,13 +25,9 @@ const ForgotPassword = () => {
 
   const onSubmit = async (values: any) => {
     try {
-      await axios.post(
-        "http://localhost:5050/api/authRoutes/forgetPassword",
-        values,
-      );
+      await forgetPasswordSubmit(values);
       toast.success("Email sent successfully");
       reset();
-      // navigate("/reset-password");
     } catch (error: any) {
       console.log(error);
       if (error.response) {

@@ -23,7 +23,10 @@ const sendEmail = async (
   template: string
 ): Promise<void> => {
   const transporter = nodemailer.createTransport({
-    service: "outlook",
+    service: "Zoho",
+    host: "smtp.zoho.com",
+    port: 587,
+    secure: false,
     auth: {
       user: process.env.USER_EMAIL,
       pass: process.env.USER_PASSWORD,

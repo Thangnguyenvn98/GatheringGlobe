@@ -25,23 +25,19 @@ export const forgetPassword = async (req: Request, res: Response) => {
 
     // Send the token to the user's email
     const transporter = nodemailer.createTransport({
-      // service: "outlook",
-      host: "smtp-mail.outlook.com",
+      service: "Zoho",
+      host: "smtp.zoho.com",
       port: 587,
       secure: false,
       auth: {
-        user: "gatheringglobe@outlook.com",
-        pass: "123456789ok",
-      },
-      tls: {
-        ciphers: "SSLv3", // Use a secure cipher
-        rejectUnauthorized: false,
+        user: process.env.USER_EMAIL,
+        pass: process.env.USER_PASSWORD,
       },
     });
 
     // Email configuration
     const mailOptions = {
-      from: "gatheringglobe@outlook.com",
+      from: process.env.USER_EMAIL,
       to: req.body.email,
       subject: "Reset Password",
       html: `<h1>Reset Your Password</h1>
