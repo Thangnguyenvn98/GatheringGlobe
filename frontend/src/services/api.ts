@@ -14,6 +14,7 @@ import { QrCode } from "@/components/QrCode/QrReader";
 import { EventFormData } from "@/components/newEventForm/EventForm";
 import { TicketFormData } from "@/components/TicketForm/TicketForm";
 import { AllOrderResponse } from "@/types/AllOrderResponse";
+import { ChatBotUserMessage } from "@/types/chatBotUserMessage";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 export const axiosInstance = axios.create({
@@ -46,6 +47,14 @@ export const RegisterUser = async (data: SignInFormData) => {
     console.error("Registration failed", error);
     throw error;
   }
+};
+
+export const forgetPasswordSubmit = async (data: string) => {
+  const response = await axiosInstance.post(
+    "api/authRoutes/forgetPassword",
+    data,
+  );
+  return response.data;
 };
 
 // Handle SignIn
@@ -255,6 +264,13 @@ export const sendUserHelpRequest = async (data: ContactUsFormData) => {
   return response.data;
 };
 
+export const sendChatBotMessage = async (message: ChatBotUserMessage) => {
+  const response = await axiosInstance.post("api/chatbot", {
+    messages: [message],
+  });
+  return response.data;
+};
+
 export const getAllEvents = async (page = 1) => {
   console.log("Page: ", page);
   const response = await axiosInstance.get(`/api/events?page=${page}&limit=12`);
@@ -294,8 +310,8 @@ export const resetPassword = async (
 ): Promise<boolean> => {
   try {
     console.log("Token: ", token);
-    const response = await axios.post(
-      `${API_BASE_URL}/api/authRoutes/reset-password`,
+    const response = await axiosInstance.post(
+      `/api/authRoutes/reset-password`,
       {
         userId,
         token,
