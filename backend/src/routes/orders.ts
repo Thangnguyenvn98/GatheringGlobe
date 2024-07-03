@@ -235,7 +235,7 @@ router.post(
       });
 
       const mailOptions = {
-        from: process.env.USER_EMAIL,
+        from: process.env.PERSONAL_EMAIL,
         to: orderObject.email,
         subject: "Your Ticket",
         html: `<p>Dear ${orderObject.firstName} ${orderObject.lastName},</p>
