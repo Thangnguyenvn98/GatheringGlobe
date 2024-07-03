@@ -1,10 +1,9 @@
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import "./EventCard.css";
 import { EventType } from "@/types/event";
 import { Ticket, Pencil, Trash2, ScanBarcode } from "lucide-react";
 import axios from "axios";
 import { Button } from "../ui/button";
-import { useCurrentUser } from "@/services/queries";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,22 +13,20 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-const EventCard = ({
-  event,
-  onClick,
-}: {
+interface EventCardProps {
   event: EventType | undefined;
   onClick: () => void;
-}) => {
+  onDeleteEvent?: (eventId: string) => void;
+}
+
+const EventCard = ({ event, onClick, onDeleteEvent }: EventCardProps) => {
   const location = useLocation();
-  const navigate = useNavigate();
 
   if (!event) {
     return <div>Loading...</div>;
   }
 
   const eventLink = `/discover/${event.title}/event/${event._id}`;
-  const { data: userData } = useCurrentUser();
   const formatDate = (dateString: string) => {
     const options: Intl.DateTimeFormatOptions = {
       weekday: "short",
@@ -43,7 +40,12 @@ const EventCard = ({
       new Date(dateString),
     );
   };
-
+  const handleDeleteClick = () => {
+    // Check if onDeleteEvent is defined before calling it
+    if (onDeleteEvent) {
+      onDeleteEvent(event._id);
+    }
+  };
   const getTicketColor = (index: number) => {
     const colors = [
       "bg-blue-100 text-blue-800",
@@ -68,26 +70,6 @@ const EventCard = ({
       } else {
         console.error("Failed to update event", error);
       }
-    }
-  };
-  const deleteEvent = async (eventId: string) => {
-    try {
-      const response = await axios.delete(`/api/events/${eventId}/deleteEvent`);
-      console.log(response.data.message);
-      // handle successful deletion, e.g., update state or UI
-      navigate(`/dashboard/${userData?.username ?? ""}`);
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.error("Failed to delete event", error.response?.data.message);
-      } else {
-        console.error("Failed to delete event", error);
-      }
-    }
-  };
-
-  const handleDelete = async () => {
-    if (window.confirm("Are you sure you want to delete this event?")) {
-      await deleteEvent(event._id);
     }
   };
 
@@ -150,21 +132,23 @@ const EventCard = ({
           <div className="ml-2 flex flex-col justify-center self-start gap-1 py-2">
             <DropdownMenu>
               <DropdownMenuTrigger>
-                <Button
-                  onClick={handleUpdate}
-                  className="bg-yellow-500 text-white"
-                >
+                <Button className="bg-yellow-500 text-white">
                   <Pencil className="w-5 h-5" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
                 <DropdownMenuLabel>Edit</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>Event </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Link to={`/my-event/${event._id}/edit/`}>Event</Link>
+                </DropdownMenuItem>
                 <DropdownMenuItem>Tickets</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-            <Button onClick={handleDelete} className="bg-red-500 text-white">
+            <Button
+              onClick={handleDeleteClick}
+              className="bg-red-500 text-white"
+            >
               <Trash2 className="w-5 h-5" />
             </Button>
             <Button onClick={handleUpdate} className="bg-gray-500 text-white">
