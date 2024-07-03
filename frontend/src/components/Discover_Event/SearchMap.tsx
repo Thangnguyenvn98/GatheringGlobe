@@ -28,7 +28,7 @@ const SearchMap = () => {
 
   return (
     <div className="fixed">
-      <div id="map" className="h-96 w-96">
+      <div id="map" className="h-96 w-96 -z-20">
         {map}
       </div>
     </div>

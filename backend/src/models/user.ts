@@ -18,7 +18,7 @@ const userSchema = new mongoose.Schema({
   firstName: { type: String, required: false },
   lastName: { type: String, required: false },
   email: { type: String, required: true, unqiue: true },
-  password: { type: String, required: true },
+  password: { type: String, required: false },
   stream: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Stream",
@@ -30,7 +30,7 @@ const userSchema = new mongoose.Schema({
 
 // Middleware for mongodb
 userSchema.pre("save", async function (next) {
-  if (this.isModified("password")) {
+  if (this.isModified("password") && this.password) {
     this.password = await bcrypt.hash(this.password, 8);
   }
   next();

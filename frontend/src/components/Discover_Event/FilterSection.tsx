@@ -86,10 +86,11 @@ const FilterSection = () => {
 
   const firstUpdate = useRef(0);
   const [searchParams, setSearchParams] = useSearchParams();
-  const [showCategory, setShowCategory] = useState(false);
-  const [showEventType, setShowEventType] = useState(false);
+  const [showCategory, setShowCategory] = useState(true);
+  const [showEventType, setShowEventType] = useState(true);
   const [priceMin, setPriceMin] = useState(searchParams.get("priceMin") || "");
   const [priceMax, setPriceMax] = useState(searchParams.get("priceMax") || "");
+  const [limit, setLimit] = useState(searchParams.get("limit") || "");
   const [category, setCategory] = useState(searchParams.get("category") || "");
   const [eventType, setEventType] = useState(
     searchParams.get("eventType") || "",
@@ -150,35 +151,40 @@ const FilterSection = () => {
     if (date?.to) searchParams.set("endTime", date.to.toISOString());
     else searchParams.delete("endTime");
 
+    if (limit) searchParams.set("limit", limit);
+    else searchParams.delete("limit");
+
     searchParams.delete("page");
     console.log("page", searchParams.get("page"));
     setSearchParams(searchParams);
-  }, [category, eventType, priceMin, priceMax, date]);
+  }, [category, eventType, priceMin, priceMax, date, limit]);
   console.log(category);
 
   return (
-    <div className="relative font-bold flex-col">
-      <h3>Sort by</h3>
-      <div className="border-none mx-5">
-        {sortOptions.map((sortOption, _) => (
-          <div key={sortOption} className="">
-            <input
-              type="radio"
-              name="sortegory"
-              id={sortOption}
-              value={sortOption}
-              checked={sortOption === sort}
-              onChange={(event) => setSort(event.target.value)}
-            />
-            <label className="font-light p-2" htmlFor={sortOption}>
-              {sortOption}
-            </label>
-          </div>
-        ))}
+    <div className="h-full w-full bg-white text-blue-800 p-5 px-10 space-y-4">
+      <h1 className="size-10 text-4xl mx-0 my-7 font-bold">Filter</h1>
+      <div>
+        <h3 className="font-bold">Sort by</h3>
+        <div className="border-none mx-5">
+          {sortOptions.map((sortOption, _) => (
+            <div key={sortOption} className="">
+              <input
+                type="radio"
+                name="sortegory"
+                id={sortOption}
+                value={sortOption}
+                checked={sortOption === sort}
+                onChange={(event) => setSort(event.target.value)}
+              />
+              <label className="font-light p-2" htmlFor={sortOption}>
+                {sortOption}
+              </label>
+            </div>
+          ))}
+        </div>
       </div>
-      {/* <h1 className="size-10 text-4xl mx-0 my-7">Filter</h1> */}
-      <div className=" top-[152px] bottom-7">
-        <h3>Categories</h3>
+      <div className="">
+        <h3 className="font-bold">Categories</h3>
         <div className="border-none mx-5">
           {categories.map((cat, _) => (
             <div key={cat}>
@@ -199,7 +205,7 @@ const FilterSection = () => {
         {showCategory ? (
           <Button
             onClick={() => setShowCategory(!showCategory)}
-            className="bg-transparent place-items-end p-0 shadow-none hover:bg-transparent mx-0 text-[12pt] text-grey-800"
+            className="bg-transparent text-[12pt] mx-5 place-items-end p-0 left-2 shadow-none hover:bg-transparent hover:underline text-grey-800"
           >
             See More
           </Button>
@@ -228,13 +234,13 @@ const FilterSection = () => {
             </Button>
           </div>
         )}
-        <div className="my-2">
+        <div className="my-2 w-64">
           <DatePickerWithRange
             setDateFromParent={setDate}
             dateFromParent={date}
           />
         </div>
-        <div className="flex flex-col">
+        <div className="flex flex-col w-64">
           <label className="font-bold" htmlFor="priceMin">
             Min Price
           </label>
@@ -256,7 +262,7 @@ const FilterSection = () => {
             onBlur={(e) => (e.target.style.borderWidth = "1px")}
           />
         </div>
-        <div className="flex flex-col">
+        <div className="flex flex-col w-64">
           <label className="font-bold" htmlFor="priceMax">
             Max Price
           </label>
@@ -278,7 +284,7 @@ const FilterSection = () => {
             onBlur={(e) => (e.target.style.borderWidth = "1px")}
           />
         </div>
-        <h3>Event Types</h3>
+        <h3 className="font-bold">Event Types</h3>
         <div className="border-none mx-5">
           {eventTypes.map((type, _) => (
             <div key={type}>
@@ -299,7 +305,7 @@ const FilterSection = () => {
         {showEventType ? (
           <Button
             onClick={() => setShowEventType(!showEventType)}
-            className="bg-transparent place-items-end p-0 shadow-none hover:bg-transparent mx-0 text-[12pt] text-grey-800 hover:underline"
+            className="bg-transparent text-[12pt] mx-5 place-items-end p-0 shadow-none hover:bg-transparent text-grey-800 hover:underline"
           >
             See More
           </Button>
@@ -328,6 +334,28 @@ const FilterSection = () => {
             </Button>
           </div>
         )}
+        <div className="flex flex-col w-64">
+          <label className="font-bold" htmlFor="limit">
+            Limit number events shown
+          </label>
+          <input
+            type="number"
+            name="limit"
+            key="limit"
+            id="limit"
+            value={limit ? limit : ""}
+            onChange={(e) => setLimit(e.target.value)}
+            style={{
+              marginLeft: "20px",
+              border: "1px solid #ccc",
+              borderRadius: "4px",
+              padding: "4px 8px",
+              fontWeight: "normal",
+              outline: "none", // Remove the default outline on focus
+            }}
+            onBlur={(e) => (e.target.style.borderWidth = "1px")}
+          />
+        </div>
       </div>
     </div>
   );

@@ -16,6 +16,8 @@ import streamRoutes from "./routes/stream";
 import blockRoutes from "./routes/blocks";
 import discountRoutes from "./routes/discounts";
 import chatBotRoutes from "./routes/chatBotRoutes";
+import Oauth from "./routes/oauth"
+import RequestOauth from "./routes/request"
 import { Server } from "socket.io";
 import http from "http";
 import Room from "./models/room";
@@ -58,6 +60,8 @@ const io = new Server(server, {
     methods: ["GET", "POST"],
   },
 });
+app.use("/api/request", RequestOauth);
+app.use("/api/oauth", Oauth);
 app.use("/api/users", userRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/room", roomRoutes);

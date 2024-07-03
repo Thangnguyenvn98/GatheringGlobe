@@ -1,8 +1,7 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import "./EventCard.css";
 import { EventType } from "@/types/event";
 import { Ticket, Pencil, Trash2, ScanBarcode } from "lucide-react";
-import axios from "axios";
 import { Button } from "../ui/button";
 import {
   DropdownMenu,
@@ -21,7 +20,7 @@ interface EventCardProps {
 
 const EventCard = ({ event, onClick, onDeleteEvent }: EventCardProps) => {
   const location = useLocation();
-
+  const navigate = useNavigate();
   if (!event) {
     return <div>Loading...</div>;
   }
@@ -56,28 +55,8 @@ const EventCard = ({ event, onClick, onDeleteEvent }: EventCardProps) => {
     return colors[index % colors.length];
   };
 
-  const updateEvent = async (eventId: string, updatedData: any) => {
-    try {
-      const response = await axios.patch(
-        `/api/events/${eventId}/updateEvent`,
-        updatedData,
-      );
-      console.log(response.data.message);
-      // handle successful update, e.g., update state or UI
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.error("Failed to update event", error.response?.data.message);
-      } else {
-        console.error("Failed to update event", error);
-      }
-    }
-  };
-
-  const handleUpdate = async () => {
-    const updatedData = {
-      title: "Updated Event Title", // Add other fields you want to update
-    };
-    await updateEvent(event._id, updatedData);
+  const handleScannerNavigate = () => {
+    navigate("/qr-scanner");
   };
 
   const hasManyTickets = event.tickets.length > 2; // Adjust the number of tickets to determine when to expand
@@ -151,7 +130,10 @@ const EventCard = ({ event, onClick, onDeleteEvent }: EventCardProps) => {
             >
               <Trash2 className="w-5 h-5" />
             </Button>
-            <Button onClick={handleUpdate} className="bg-gray-500 text-white">
+            <Button
+              onClick={handleScannerNavigate}
+              className="bg-gray-500 text-white"
+            >
               <ScanBarcode className="w-6 h-6" />
             </Button>
           </div>

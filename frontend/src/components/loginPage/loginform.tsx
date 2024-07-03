@@ -15,6 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { AxiosError } from "axios";
+import GoogleLogin from "./googleLogin";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -79,12 +80,13 @@ const Login = () => {
           </Button>
         </CardFooter>
         <div className="flex flex-col">
-          <Button
+          <GoogleLogin />
+          {/* <Button
             className="w-80 h-8 bg-red-600 text-white rounded mx-10 mb-3.5"
             type="submit"
           >
             Sign in with Google
-          </Button>
+          </Button> */}
           <div className="text-gray-600">
             <p className=" flex justify-center">
               <Link to="/forgot-password">Forgot Password</Link>
