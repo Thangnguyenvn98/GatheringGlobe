@@ -46,10 +46,7 @@ const formSchema = z
       .min(10, { message: "Title must be at least 10 characters long" }),
     description: z
       .string()
-      .min(50, { message: "Description must be at least 50 characters long" })
-      .max(500, {
-        message: "Description must be no more than 500 characters long",
-      }),
+      .min(50, { message: "Description must be at least 50 characters long" }),
     startTime: z.string().refine((date) => new Date(date) >= new Date(), {
       message: "Start time must be in the future",
     }),

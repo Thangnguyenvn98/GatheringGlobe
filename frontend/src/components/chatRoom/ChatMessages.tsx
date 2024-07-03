@@ -118,24 +118,6 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({
                       : "mr-auto ml-2 bg-chat text-left",
                   )}
                 >
-                  <span
-                    className={message.username === username ? "mr-2" : "ml-2"}
-                  >
-                    {message.message || ""}
-                  </span>
-                  {message.imageUrl && (
-                    <Button
-                      className="p-1 flex bg-transparent hover:bg-transparent justify-center items-center overflow-hidden max-h-[400px] h-auto"
-                      onClick={(e) => handleImagePreview(message.imageUrl, e)}
-                    >
-                      <img
-                        src={message.imageUrl}
-                        alt="Uploaded"
-                        className="max-h-full max-w-full object-contain cursor-pointer"
-                      />
-                    </Button>
-                  )}
-
                   <div
                     className={cn(
                       "flex text-sm items-center",
@@ -158,6 +140,26 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({
                       </span>
                     </div>
                   </div>
+                  <span
+                    className={cn(
+                      "text-xl",
+                      message.username === username ? "mr-2" : "ml-2",
+                    )}
+                  >
+                    {message.message || ""}
+                  </span>
+                  {message.imageUrl && (
+                    <Button
+                      className="p-1 flex bg-transparent hover:bg-transparent justify-center items-center overflow-hidden max-h-[400px] h-auto"
+                      onClick={(e) => handleImagePreview(message.imageUrl, e)}
+                    >
+                      <img
+                        src={message.imageUrl}
+                        alt="Uploaded"
+                        className="max-h-full max-w-full object-contain cursor-pointer"
+                      />
+                    </Button>
+                  )}
                 </div>
               ))}
           </Fragment>
