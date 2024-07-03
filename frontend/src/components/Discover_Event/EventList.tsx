@@ -54,7 +54,7 @@ const EventList: React.FC<EventListProps> = ({
 
   return (
     <div
-      className="flex flex-col place-items-center p-4 pb-5"
+      className="place-items-center p-4 pb-5 grid grid-cols-2 h-full"
       ref={topOfListRef}
     >
       {eventdatas.map((eventData) => (

@@ -40,23 +40,29 @@ const DiscoverEvent: React.FC = () => {
   }, [searchParams]);
 
   return (
-    <div>
-      <div className="grid grid-cols-6 ps-8 pt-8">
-        <FilterSection />
-        <div className="col-span-4 lg:col-span-3">
-          <div className="flex flex-col mb-2">
-            <EventList
-              isPending={isPending}
-              isError={isError}
-              eventdatas={data?.eventMatched || []}
-              topOfListRef={topOfListRef}
-            />
-            <EventPaginationButton
-              currentPage={parseInt(page)}
-              onPageChange={handlePageChange}
-              totalPages={data?.pagination?.totalPages || 1}
-              isPlaceholderData={isPlaceholderData}
-            />
+    <div className="left-0 w-full">
+      <div className="grid grid-cols-10 w-full">
+        <div className="col-span-2 bg-slate-300">
+          <FilterSection />
+        </div>
+        <div className="col-span-7 h-full bg-red">
+          <div className="flex flex-col mb-2 h-full justify-between">
+            <div className="h-full">
+              <EventList
+                isPending={isPending}
+                isError={isError}
+                eventdatas={data?.eventMatched || []}
+                topOfListRef={topOfListRef}
+              />
+            </div>
+            <div className="mb-0">
+              <EventPaginationButton
+                currentPage={parseInt(page)}
+                onPageChange={handlePageChange}
+                totalPages={data?.pagination?.totalPages || 1}
+                isPlaceholderData={isPlaceholderData}
+              />
+            </div>
           </div>
         </div>
         {/* <div className="hidden lg:flex">

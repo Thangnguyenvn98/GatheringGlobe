@@ -35,11 +35,11 @@ function DatePickerWithRange({
             variant={"outline"}
             size={"sm"}
             className={cn(
-              "w-auto p-0 justify-start text-left rounded-none font-bold bg-white text-text-black hover:bg-white border-none text-[12pt]",
-              !date && "text-black",
+              "w-auto p-0 justify-start text-left rounded-none font-bold bg-white  text-blue-800 hover:bg-white border-none text-[12pt]",
+              !date && " text-blue-800",
             )}
           >
-            <CalendarIcon className="mr-2 h-6 w-6 ml-0 text-black" />
+            <CalendarIcon className="mr-2 h-6 w-6 ml-0 text-blue-800" />
             {date?.from ? (
               date.to ? (
                 <>
