@@ -224,8 +224,8 @@ router.post(
 
       // Send email with QR code
       const transporter = nodemailer.createTransport({
-        // service: "outlook",
-        host: 'smtp-mail.outlook.com',
+        service: "Zoho",
+        host: "smtp.zoho.com",
         port: 587,
         secure: false,
         auth: {
