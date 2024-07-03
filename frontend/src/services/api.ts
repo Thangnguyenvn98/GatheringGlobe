@@ -367,6 +367,13 @@ export const applyDiscountCode = async (
   return response.data;
 };
 
+export const deleteEvent = async (eventId: string) => {
+  const response = await axiosInstance.delete(
+    `/api/events/${eventId}/deleteEvent`,
+  );
+  return response.data;
+};
+
 export const removeDiscountCode = async (
   cartItems: CartItem[],
   currentTotalCost: number,
