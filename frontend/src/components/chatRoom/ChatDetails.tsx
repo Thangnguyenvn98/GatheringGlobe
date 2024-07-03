@@ -21,12 +21,10 @@ const ChatDetails = ({
   }, [status, room, navigate]);
   if (!roomId) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="p-8 bg-white shadow-md rounded-lg border border-gray-200">
-          <p className="text-lg font-semibold text-gray-500">
-            Select a room to see details
-          </p>
-        </div>
+      <div className="absolute p-8 top-1/2 left-1/2 bg-white rounded-lg">
+        <p className="text-2xl font-semibold text-gray-500">
+          Select a room to see details
+        </p>
       </div>
     );
   }

@@ -30,7 +30,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
           {currentRoom ? (
             <div className="flex gap-x-2 items-center  ">
               <div>
-                <p className=" text-xl text-white">{currentRoom.name}</p>
+                <p className="text-3xl text-white">{currentRoom.name}</p>
                 <div className="flex items-center">
                   <h2 className="text-gray-400 text-sm">
                     {currentRoom.owner.username}

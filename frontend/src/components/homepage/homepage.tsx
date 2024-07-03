@@ -1,6 +1,4 @@
 import Timer from "./timer";
-import { Separator } from "../ui/separator";
-import Testimonials from "./testimonials";
 import Events from "./events";
 import EventList from "./EventList";
 import { useAllEventsPagination } from "@/services/queries";
@@ -46,13 +44,8 @@ const Homepage = () => {
         totalPages={data?.pagination?.totalPages}
         isPlaceholderData={isPlaceholderData}
       />
-      <Separator orientation="horizontal" className="mb-10 mt-10" />
-      <div>
+      <div className="mt-4">
         <Timer />
-      </div>
-      <Separator orientation="horizontal" className="mb-10 mt-10" />
-      <div>
-        <Testimonials />
       </div>
     </div>
   );
