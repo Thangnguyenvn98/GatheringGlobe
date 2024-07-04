@@ -567,6 +567,23 @@ router.put(
   verifyToken,
   async (req: Request, res: Response) => {
     try {
+      console.log("Request to update event:", req.params.eventId, req.body);
+
+      // Extract location details from req.body
+      const { city, postalCode, country, state } = req.body.location || {};
+
+      // Construct the fullAddress field
+      const fullAddress =
+        `${city || ""}, ${state || ""}, ${postalCode || ""}, ${country || ""}`
+          .trim()
+          .replace(/\s*,\s*$/, "");
+
+      // Update req.body with the constructed location object
+      req.body.location = {
+        ...req.body.location,
+        fullAddress,
+      };
+
       const event = await Event.findOneAndUpdate(
         { $and: [{ organizerId: req.userId }, { _id: req.params.eventId }] },
         req.body,
@@ -578,6 +595,7 @@ router.put(
           .status(404)
           .json({ message: "Event not found/not created by this user" });
       }
+
       res
         .status(200)
         .json({ message: "Event updated successfully", updated: event });
