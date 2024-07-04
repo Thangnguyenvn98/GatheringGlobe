@@ -424,16 +424,16 @@ router.get(
     const { qrCodeId, eventId } = req.params;
     try {
       const order = await Order.findById(qrCodeId);
-      const eventIdOrganize = await Event.findById(eventId);
+      const eventIdOrganizer = await Event.findById(eventId);
       if (!order) {
         return res
           .status(404)
           .json({ message: "Order not found or payment is not completed." });
       }
-      if (!eventIdOrganize) {
+      if (!eventIdOrganizer) {
         return res.status(404).json({ message: "There is no organizer" });
       }
-      if (eventId !== eventIdOrganize._id.toString()) {
+      if (req.userId !== eventIdOrganizer.organizerId.toString()) {
         return res
           .status(403)
           .json({ message: "The organizer does not have this event" });
