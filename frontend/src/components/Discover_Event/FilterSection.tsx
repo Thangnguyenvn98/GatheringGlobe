@@ -161,24 +161,27 @@ const FilterSection = () => {
   console.log(category);
 
   return (
-    <div className="h-full w-full bg-white text-blue-800 p-5 px-10 space-y-4">
+    <div className="h-full w-full bg-white  p-5 px-10 space-y-4">
       <h1 className="size-10 text-4xl mx-0 my-7 font-bold">Filter</h1>
       <div>
         <h3 className="font-bold">Sort by</h3>
         <div className="border-none mx-5">
           {sortOptions.map((sortOption, _) => (
-            <div key={sortOption} className="">
-              <input
-                type="radio"
-                name="sortegory"
-                id={sortOption}
-                value={sortOption}
-                checked={sortOption === sort}
-                onChange={(event) => setSort(event.target.value)}
-              />
-              <label className="font-light p-2" htmlFor={sortOption}>
-                {sortOption}
-              </label>
+            <div key={sortOption} className="flex flex-col">
+              <div className="flex items-center gap-x-2">
+                <input
+                  type="radio"
+                  name="sortegory"
+                  className="scale-radio"
+                  id={sortOption}
+                  value={sortOption}
+                  checked={sortOption === sort}
+                  onChange={(event) => setSort(event.target.value)}
+                />
+                <label className="font-light p-[0.2rem]" htmlFor={sortOption}>
+                  {sortOption}
+                </label>
+              </div>
             </div>
           ))}
         </div>
@@ -187,18 +190,21 @@ const FilterSection = () => {
         <h3 className="font-bold">Categories</h3>
         <div className="border-none mx-5">
           {categories.map((cat, _) => (
-            <div key={cat}>
-              <input
-                type="radio"
-                name="category"
-                id={cat}
-                value={cat}
-                checked={cat === category}
-                onChange={(event) => setCategory(event.target.value)}
-              />
-              <label className="font-light p-2" htmlFor={cat}>
-                {cat}
-              </label>
+            <div key={cat} className="flex flex-col">
+              <div className="flex items-center gap-x-2">
+                <input
+                  type="radio"
+                  name="category"
+                  className="scale-radio"
+                  id={cat}
+                  value={cat}
+                  checked={cat === category}
+                  onChange={(event) => setCategory(event.target.value)}
+                />
+                <label className="font-light p-[0.2rem]" htmlFor={cat}>
+                  {cat}
+                </label>
+              </div>
             </div>
           ))}
         </div>
@@ -212,18 +218,21 @@ const FilterSection = () => {
         ) : (
           <div className="border-none mx-5">
             {categoriesSeeMore.map((cat, _) => (
-              <div key={cat}>
-                <input
-                  type="radio"
-                  name="category"
-                  id={cat}
-                  value={cat}
-                  checked={cat === category}
-                  onChange={(event) => setCategory(event.target.value)}
-                />
-                <label className="font-light p-2" htmlFor={cat}>
-                  {cat}
-                </label>
+              <div key={cat} className="flex flex-col">
+                <div className="flex items-center gap-x-2">
+                  <input
+                    type="radio"
+                    name="category"
+                    className="scale-radio"
+                    id={cat}
+                    value={cat}
+                    checked={cat === category}
+                    onChange={(event) => setCategory(event.target.value)}
+                  />
+                  <label className="font-light p-[0.2rem]" htmlFor={cat}>
+                    {cat}
+                  </label>
+                </div>
               </div>
             ))}
             <Button
@@ -240,7 +249,7 @@ const FilterSection = () => {
             dateFromParent={date}
           />
         </div>
-        <div className="flex flex-col w-64">
+        <div className="flex flex-col w-64 mt-4">
           <label className="font-bold" htmlFor="priceMin">
             Min Price
           </label>
@@ -262,7 +271,7 @@ const FilterSection = () => {
             onBlur={(e) => (e.target.style.borderWidth = "1px")}
           />
         </div>
-        <div className="flex flex-col w-64">
+        <div className="flex flex-col w-64 mt-4">
           <label className="font-bold" htmlFor="priceMax">
             Max Price
           </label>
@@ -284,21 +293,24 @@ const FilterSection = () => {
             onBlur={(e) => (e.target.style.borderWidth = "1px")}
           />
         </div>
-        <h3 className="font-bold">Event Types</h3>
+        <h3 className="font-bold mt-4">Event Types</h3>
         <div className="border-none mx-5">
           {eventTypes.map((type, _) => (
-            <div key={type}>
-              <input
-                type="radio"
-                name="eventTypes"
-                id={type}
-                value={type}
-                checked={type === eventType}
-                onChange={(event) => setEventType(event.target.value)}
-              />
-              <label className="font-light p-2" htmlFor={type}>
-                {type}
-              </label>
+            <div key={type} className="flex flex-col">
+              <div className="flex items-center gap-x-2">
+                <input
+                  type="radio"
+                  name="eventTypes"
+                  id={type}
+                  value={type}
+                  className="scale-radio"
+                  checked={type === eventType}
+                  onChange={(event) => setEventType(event.target.value)}
+                />
+                <label className="font-light p-[0.2rem]" htmlFor={type}>
+                  {type}
+                </label>
+              </div>
             </div>
           ))}
         </div>
@@ -312,18 +324,20 @@ const FilterSection = () => {
         ) : (
           <div className="border-none mx-5">
             {eventTypesSeeMore.map((type, _) => (
-              <div key={type}>
-                <input
-                  type="radio"
-                  name="eventTypes"
-                  id={type}
-                  value={type}
-                  checked={type === eventType}
-                  onChange={(event) => setEventType(event.target.value)}
-                />
-                <label className="font-light p-2" htmlFor={type}>
-                  {type}
-                </label>
+              <div key={type} className="flex flex-col">
+                <div className="flex items-center gap-x-2">
+                  <input
+                    type="radio"
+                    name="eventTypes"
+                    id={type}
+                    value={type}
+                    checked={type === eventType}
+                    onChange={(event) => setEventType(event.target.value)}
+                  />
+                  <label className="font-light p-[0.2rem]" htmlFor={type}>
+                    {type}
+                  </label>
+                </div>
               </div>
             ))}
             <Button

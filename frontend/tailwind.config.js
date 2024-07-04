@@ -58,10 +58,16 @@ module.exports = withUt({
           foreground: "hsl(var(--card-foreground))",
         },
       },
+      fontFamily: {
+        'poppins': ['Poppins', 'sans-serif'], 
+      },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+      },
+      scale: {
+        'radio':'1.35'
       },
       keyframes: {
         "accordion-down": {
@@ -79,5 +85,5 @@ module.exports = withUt({
       },
     },
   },
-  plugins: [require("tailwindcss-animate"), require("@tailwindcss/typography")],
+  plugins: [require("tailwindcss-animate"), require("@tailwindcss/typography"), require("@tailwindcss/forms")],
 });
