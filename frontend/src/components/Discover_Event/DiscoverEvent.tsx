@@ -40,9 +40,9 @@ const DiscoverEvent: React.FC = () => {
   }, [searchParams]);
 
   return (
-    <div className="left-0 w-full">
+    <div className="left-0 w-full mb-4">
       <div className="grid grid-cols-10 w-full">
-        <div className="col-span-2 bg-slate-300">
+        <div className="col-span-2 bg-slate-300 -mb-4">
           <FilterSection />
         </div>
         <div className="col-span-7 h-full bg-red">

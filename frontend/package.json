@@ -35,6 +35,7 @@
     "@react-google-maps/api": "^2.19.3",
     "@stripe/react-stripe-js": "^2.7.1",
     "@stripe/stripe-js": "^3.4.0",
+    "@tailwindcss/forms": "^0.5.7",
     "@tanstack/react-query": "^5.28.9",
     "@tiptap/extension-underline": "^2.3.1",
     "@tiptap/pm": "^2.3.1",
