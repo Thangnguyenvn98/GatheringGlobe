@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { FcGoogle } from "react-icons/fc";
 
 function GoogleLogin() {
   const navigate = useNavigate();
@@ -20,11 +21,11 @@ function GoogleLogin() {
   }
   return (
     <Button
-      className="w-80 h-8 text-white rounded mx-10 mb-3.5"
+      className="w-[240px] h-8 text-black mb-4 bg-white shadow-md hover:bg-transparent flex items-center"
       type="button"
       onClick={() => auth()}
     >
-      {/* <img className="btn-auth-img" src={googleButton} alt='google sign in'/> */}
+      <FcGoogle className="mr-2 w-6 h-6" />
       Sign in with Google
     </Button>
   );

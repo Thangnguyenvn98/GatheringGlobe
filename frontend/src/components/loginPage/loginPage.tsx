@@ -16,17 +16,16 @@ const LoginPage = () => {
             alt="website party"
           />
         </div>
-        <div className="flex flex-col justify-center w-1/2 items-center p-8 mt-[-50px]">
-          <Link to="/">
+        <div className="flex flex-col justify-center w-1/2 relative items-center p-8 mt-[-50px]">
+          <Link to="/" className="absolute h-[200px] w-[200px] top-10">
             <img
               src={GatheringGlobe}
               alt="GatheringGlobe Logo"
-              className="justify-items-start my-20 "
-              style={{ width: "200px", height: "200px" }}
+              className="my-20 h-full w-full object-contain "
             />
           </Link>
 
-          <Tabs defaultValue="account" className="w-[400px] mt-[-65px]">
+          <Tabs defaultValue="account" className="w-[400px] mt-32">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="account">Log in</TabsTrigger>
               <TabsTrigger value="password">Sign Up</TabsTrigger>

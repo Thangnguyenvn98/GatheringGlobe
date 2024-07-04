@@ -74,22 +74,19 @@ const Login = () => {
             />
           </div>
         </CardContent>
-        <CardFooter>
-          <Button className="w-full mb-2 rounded-full" type="submit">
+        <CardFooter className="flex justify-center">
+          <Button className="w-[240px] " type="submit">
             Sign in
           </Button>
         </CardFooter>
-        <div className="flex flex-col">
+        <div className="flex flex-col items-center">
           <GoogleLogin />
-          {/* <Button
-            className="w-80 h-8 bg-red-600 text-white rounded mx-10 mb-3.5"
-            type="submit"
-          >
-            Sign in with Google
-          </Button> */}
+
           <div className="text-gray-600">
             <p className=" flex justify-center">
-              <Link to="/forgot-password">Forgot Password</Link>
+              <Link to="/forgot-password" className="underline text-blue-500">
+                Forgot Password
+              </Link>
             </p>
           </div>
         </div>
